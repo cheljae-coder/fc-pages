@@ -1,30 +1,285 @@
-<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>삼성생명 통합치매 치료비 상담신청</title><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Noto Sans KR',sans-serif;background:#fff;font-size:14px;}.top-bar{background:linear-gradient(135deg,#1e5cb3,#4f8ef7);color:#fff;padding:14px 18px;font-size:14px;font-weight:700;text-align:center;}.sec{padding:20px 18px;border-bottom:6px solid #f4f4f4;}.sec-t{font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:18px;}.field{display:flex;align-items:flex-start;margin-bottom:16px;}.fl{width:90px;font-size:14px;color:#333;padding-top:10px;flex-shrink:0;font-weight:500;}.fi{flex:1;}.fi input,.fi select{width:100%;border:1px solid #ddd;border-radius:4px;padding:9px 12px;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;background:#fff;}.fi input:focus,.fi select:focus{border-color:#1e5cb3;}.rr{display:flex;gap:18px;padding-top:8px;}.rr label{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;}.rr input{accent-color:#1e5cb3;width:16px;height:16px;}.pr{display:flex;align-items:center;gap:5px;}.pr select{border:1px solid #ddd;border-radius:4px;padding:9px 6px;font-size:14px;background:#fff;font-family:'Noto Sans KR',sans-serif;width:72px;flex-shrink:0;text-align:center;}.pr input{flex:1;min-width:0;border:1px solid #ddd;border-radius:4px;padding:9px 10px;font-size:15px;font-family:'Noto Sans KR',sans-serif;outline:none;text-align:center;font-weight:600;letter-spacing:2px;}.pr span{color:#aaa;font-size:16px;}.fi textarea{width:100%;border:1px solid #ddd;border-radius:4px;padding:9px 12px;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;min-height:80px;resize:none;line-height:1.6;}.psec{padding:20px 18px;}.pt{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:10px;}.pd{font-size:12px;color:#555;line-height:1.7;margin-bottom:18px;}.pd a{color:#1565c0;}.pg{margin-bottom:16px;}.pgh{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;}.pgh span{font-size:13px;color:#333;line-height:1.5;}.ab{background:#1a1a1a;color:#fff;border:none;border-radius:4px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;flex-shrink:0;min-width:90px;}.pi{border-top:1px solid #e0e0e0;}.pit{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;}.pit label{font-size:13px;color:#333;}.rb{display:flex;align-items:center;gap:4px;font-size:13px;color:#555;cursor:pointer;}.rb input{accent-color:#1e5cb3;width:15px;height:15px;}.sub-area{padding:20px 18px 40px;}.sub-btn{width:100%;background:linear-gradient(135deg,#1e5cb3,#4f8ef7);color:#fff;border:none;border-radius:10px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:999;padding:20px;}.modal.show{display:flex;}.mbox{background:#fff;border-radius:16px;padding:28px 24px;text-align:center;max-width:300px;width:100%;}.mbox .ico{font-size:40px;margin-bottom:12px;}.mbox h3{font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:8px;}.mbox p{font-size:13px;color:#666;line-height:1.6;}.mbox button{margin-top:18px;width:100%;background:linear-gradient(135deg,#1e5cb3,#4f8ef7);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}</style></head><body>
-<div class="top-bar">🎯 삼성생명 — 통합치매 치료비 상담신청</div>
-<form id="cf" action="" method="" onsubmit="return hs(event)">
-
-<input type="hidden" name="상품명" value="통합치매 치료비"><input type="hidden" name="담당자" value="양금남 (삼성생명)">
-<div class="sec"><div class="sec-t">상담 신청 정보 입력</div>
-<div class="field"><div class="fl">이름</div><div class="fi"><input type="text" name="이름" placeholder="홍길동" required></div></div>
-<div class="field"><div class="fl">성별</div><div class="fi"><div class="rr"><label><input type="radio" name="성별" value="남성" checked> 남성</label><label><input type="radio" name="성별" value="여성"> 여성</label></div></div></div>
-<div class="field"><div class="fl">생년월일</div><div class="fi"><input type="text" name="생년월일" placeholder="19900101" maxlength="8"></div></div>
-<div class="field"><div class="fl">연락처</div><div class="fi"><div class="pr"><select name="통신사"><option>010</option><option>011</option><option>016</option><option>017</option><option>019</option></select><span>-</span><input type="tel" name="중간번호" maxlength="4"><span>-</span><input type="tel" name="끝번호" maxlength="4"></div></div></div>
-<div class="field"><div class="fl">문의내용</div><div class="fi"><textarea name="문의내용" placeholder="통합치매 치료비에 대해 궁금한 점을 입력하십시오."></textarea></div></div>
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>삼성생명 통합치매 치료비 상담신청</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
+.top-bar{background:linear-gradient(135deg,#1e5cb3,#4f8ef7);color:#fff;padding:14px 18px;font-size:14px;font-weight:700;text-align:center;}
+.form-wrap{max-width:540px;margin:0 auto;background:#fff;min-height:100vh;}
+.sec{padding:20px 18px;border-bottom:6px solid #f4f4f4;}
+.sec-t{font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:18px;}
+.field{display:flex;align-items:flex-start;margin-bottom:16px;}
+.fl{width:90px;font-size:13px;color:#555;padding-top:10px;flex-shrink:0;font-weight:600;}
+.fi{flex:1;}
+.fi input,.fi select{width:100%;border:1.5px solid #ddd;border-radius:6px;padding:9px 12px;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;background:#fff;transition:border-color .2s;}
+.fi input:focus,.fi select:focus{border-color:#1e5cb3;}
+.rr{display:flex;gap:18px;padding-top:8px;}
+.rr label{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;}
+.rr input{accent-color:#1e5cb3;width:16px;height:16px;}
+.pr{display:flex;align-items:center;gap:5px;}
+.pr select{border:1.5px solid #ddd;border-radius:6px;padding:9px 6px;font-size:14px;background:#fff;font-family:'Noto Sans KR',sans-serif;width:72px;flex-shrink:0;text-align:center;}
+.pr input{flex:1;min-width:0;border:1.5px solid #ddd;border-radius:6px;padding:9px 10px;font-size:15px;font-family:'Noto Sans KR',sans-serif;outline:none;text-align:center;font-weight:600;letter-spacing:2px;}
+.pr span{color:#aaa;font-size:16px;}
+.fi textarea{width:100%;border:1.5px solid #ddd;border-radius:6px;padding:9px 12px;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;min-height:80px;resize:none;line-height:1.6;}
+.psec{padding:20px 18px;}
+.pt{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:10px;}
+.pd{font-size:12px;color:#555;line-height:1.7;margin-bottom:18px;}
+.pd a{color:#1565c0;}
+.pg{margin-bottom:16px;}
+.pgh{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;}
+.pgh span{font-size:13px;color:#333;line-height:1.5;}
+.ab{background:#1a1a1a;color:#fff;border:none;border-radius:6px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;flex-shrink:0;}
+.pi{border-top:1px solid #e0e0e0;}
+.pit{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;}
+.pit label{font-size:13px;color:#333;}
+.rb{display:flex;align-items:center;gap:5px;font-size:13px;color:#555;cursor:pointer;}
+.rb input{accent-color:#1e5cb3;width:15px;height:15px;}
+.sub-area{padding:20px 18px 48px;display:flex;flex-direction:column;gap:10px;}
+.sub-btn{width:100%;background:linear-gradient(135deg,#1e5cb3,#4f8ef7);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;box-shadow:0 4px 15px rgba(30,92,179,.35);}
+.pdf-btn{width:100%;background:#f0f4ff;color:#1e5cb3;border:2px solid #c5d6ff;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:999;padding:20px;}
+.modal.show{display:flex;}
+.mbox{background:#fff;border-radius:20px;padding:30px 24px;text-align:center;max-width:320px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.mbox .ico{font-size:44px;margin-bottom:12px;}
+.mbox h3{font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:8px;}
+.mbox p{font-size:13px;color:#666;line-height:1.7;}
+.mbox .mbtn{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.mbox button{width:100%;background:linear-gradient(135deg,#1e5cb3,#4f8ef7);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.mbox .dl-btn{background:#f0f4ff;color:#1e5cb3;border:2px solid #c5d6ff;}
+/* 로딩 오버레이 */
+#_ld{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:18px;}
+._sp{width:50px;height:50px;border:4px solid rgba(255,255,255,.2);border-top-color:#4f8ef7;border-radius:50%;animation:_spin 1s linear infinite;}
+@keyframes _spin{to{transform:rotate(360deg)}}
+/* PDF 전용 숨김 요소 */
+.no-pdf{} /* 인쇄시 숨길 요소 */
+</style>
+</head><body>
+<!-- 로딩 오버레이 -->
+<div id="_ld">
+  <div class="_sp"></div>
+  <div style="color:#fff;font-size:16px;font-weight:700;font-family:sans-serif" id="_ld_msg">📄 PDF 생성 중...</div>
+  <div style="color:rgba(255,255,255,.6);font-size:12px;font-family:sans-serif">잠시만 기다려 주십시오</div>
 </div>
-<div class="psec"><div class="pt">개인정보 수집 및 활용 동의</div>
+
+<div class="form-wrap">
+<div class="top-bar">🎯 삼성생명 — 통합치매 치료비 상담신청</div>
+
+<!-- 신청일시 (PDF에 포함) -->
+<div style="background:#f0f4ff;padding:10px 18px;font-size:12px;color:#555;text-align:right;border-bottom:1px solid #e0e8ff">
+  신청일시: <strong id="dt-str">2026년 4월 16일 7시 53분</strong>
+</div>
+
+<form id="cf">
+<input type="hidden" name="상품명" value="통합치매 치료비">
+<input type="hidden" name="담당자" value="양금남 (삼성생명)">
+<input type="hidden" name="담당자연락처" value="010-8116-2513">
+<input type="hidden" id="hd-phone" name="고객연락처">
+
+<div class="sec"><div class="sec-t">📋 상담 신청 정보</div>
+<div class="field"><div class="fl">이름 *</div><div class="fi"><input type="text" id="f-name" placeholder="홍길동"></div></div>
+<div class="field"><div class="fl">성별</div><div class="fi"><div class="rr"><label><input type="radio" name="성별" id="r-m" value="남성" checked> 남성</label><label><input type="radio" name="성별" id="r-f" value="여성"> 여성</label></div></div></div>
+<div class="field"><div class="fl">생년월일</div><div class="fi"><input type="text" id="f-birth" placeholder="19900101 (숫자 8자리)" maxlength="8" inputmode="numeric"></div></div>
+<div class="field"><div class="fl">연락처 *</div>
+  <div class="fi">
+    <div class="pr">
+      <select id="ph-pre"><option>010</option><option>011</option><option>016</option><option>017</option><option>019</option></select>
+      <span>-</span><input type="tel" id="ph-mid" maxlength="4" placeholder="1234" oninput="mergePhone()" inputmode="numeric">
+      <span>-</span><input type="tel" id="ph-end" maxlength="4" placeholder="5678" oninput="mergePhone()" inputmode="numeric">
+    </div>
+    <div id="ph-err" style="font-size:11px;color:#e53e3e;margin-top:4px;display:none">연락처를 입력하십시오.</div>
+  </div>
+</div>
+<div class="field"><div class="fl">문의내용</div><div class="fi"><textarea id="f-memo" placeholder="통합치매 치료비에 대해 궁금한 점을 입력하십시오."></textarea></div></div>
+</div>
+
+<div class="psec">
+<div class="pt">개인정보 수집 및 활용 동의</div>
 <div class="pd">귀하는 본 동의를 거부할 수 있으나, 거부 시 상담 신청이 불가능합니다. 연락중지청구시스템(<a href="https://www.donotcall.or.kr" target="_blank">www.donotcall.or.kr</a>)을 통해 언제든지 철회를 요청할 수 있습니다.</div>
-<div class="pg"><div class="pgh"><span>[필수] 개인정보 수집 및 활용 동의</span><button type="button" class="ab" onclick="aa('r')">전체동의</button></div>
-<div class="pi">
-<div class="pit"><label>개인정보의 수집 및 이용동의</label><label class="rb"><input type="checkbox" id="c1" name="개인정보수집이용" required> 동의</label></div>
-<div class="pit"><label>개인정보 위탁 및 제공동의</label><label class="rb"><input type="checkbox" id="c2" name="개인정보위탁제공" required> 동의</label></div>
-<div class="pit"><label>상담을 위한 연락 동의</label><label class="rb"><input type="checkbox" id="c3" name="연락동의" required> 동의</label></div>
-</div></div>
-<div class="pg" style="margin-top:8px"><div class="pgh"><span>[선택] 마케팅 정보 수신 동의</span><button type="button" class="ab" onclick="aa('o')">전체동의</button></div>
-<div class="pi">
-<div class="pit"><label>이메일 마케팅 정보 수신</label><label class="rb"><input type="checkbox" id="c4" name="마케팅이메일"> 동의</label></div>
-<div class="pit"><label>SMS 마케팅 정보 수신</label><label class="rb"><input type="checkbox" id="c5" name="마케팅SMS"> 동의</label></div>
-</div></div></div>
-<div class="sub-area"><button type="submit" class="sub-btn">📨 상담 신청하기</button></div>
+<div class="pg">
+  <div class="pgh"><span>[필수] 개인정보 수집 및 활용 동의</span><button type="button" class="ab" onclick="aa('r')">전체동의</button></div>
+  <div class="pi">
+    <div class="pit"><label>개인정보의 수집 및 이용동의</label><label class="rb"><input type="checkbox" id="c1"> 동의</label></div>
+    <div class="pit"><label>개인정보 위탁 및 제공동의</label><label class="rb"><input type="checkbox" id="c2"> 동의</label></div>
+    <div class="pit"><label>상담을 위한 연락 동의</label><label class="rb"><input type="checkbox" id="c3"> 동의</label></div>
+  </div>
+</div>
+<div class="pg" style="margin-top:8px">
+  <div class="pgh"><span>[선택] 마케팅 정보 수신 동의</span><button type="button" class="ab" onclick="aa('o')">전체동의</button></div>
+  <div class="pi">
+    <div class="pit"><label>이메일 마케팅 정보 수신</label><label class="rb"><input type="checkbox" id="c4"> 동의</label></div>
+    <div class="pit"><label>SMS 마케팅 정보 수신</label><label class="rb"><input type="checkbox" id="c5"> 동의</label></div>
+  </div>
+</div>
+</div>
+
+<div class="sub-area no-pdf">
+  <button type="button" class="sub-btn" onclick="hs()">📨 상담 신청 + PDF 저장</button>
+  <button type="button" class="pdf-btn" onclick="pdfOnly()">📄 PDF만 저장하기</button>
+</div>
 </form>
-<div class="modal" id="dm"><div class="mbox"><div class="ico">✅</div><h3>상담 신청 완료!</h3><p>양금남 담당자가<br>빠른 시일 내 연락드리겠습니다.<br><br>📞 010-8116-2513</p><button onclick="document.getElementById('dm').classList.remove('show')">확인</button></div></div>
-<script>function aa(t){if(t==='r'){['c1','c2','c3'].forEach(id=>document.getElementById(id).checked=true);}else{['c4','c5'].forEach(id=>document.getElementById(id).checked=true);}}function hs(e){if(!['c1','c2','c3'].every(id=>document.getElementById(id).checked)){alert('[필수] 개인정보 동의 항목을 확인하십시오.');return false;}e.preventDefault();document.getElementById('dm').classList.add('show');return false;}</script>
+
+<!-- 완료 모달 -->
+<div class="modal" id="dm">
+  <div class="mbox">
+    <div class="ico">✅</div>
+    <h3>상담 신청 완료!</h3>
+    <p id="dm-msg">양금남 담당자가<br>빠른 시일 내 연락드리겠습니다.<br><br>📞 010-8116-2513</p>
+    <div class="mbtn">
+      <button class="dl-btn" onclick="pdfOnly()">📥 신청서 PDF 다시 저장</button>
+      <button onclick="document.getElementById('dm').classList.remove('show')">확인</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+var _fa='https://formsubmit.co/cheljae@naver.com';
+var _useEmail=true;
+var _email='cheljae@naver.com';
+var _fc='양금남';
+var _co='삼성생명';
+var _pn='통합치매 치료비';
+var _phone='010-8116-2513';
+
+function mergePhone(){
+  var pre=document.getElementById('ph-pre')?document.getElementById('ph-pre').value:'';
+  var mid=document.getElementById('ph-mid')?document.getElementById('ph-mid').value:'';
+  var end=document.getElementById('ph-end')?document.getElementById('ph-end').value:'';
+  var hd=document.getElementById('hd-phone');
+  if(hd)hd.value=(mid||end)?pre+'-'+mid+'-'+end:'';
+}
+function aa(t){
+  if(t==='r'){['c1','c2','c3'].forEach(id=>document.getElementById(id).checked=true);}
+  else{['c4','c5'].forEach(id=>document.getElementById(id).checked=true);}
+}
+function validate(){
+  mergePhone();
+  var name=document.getElementById('f-name').value.trim();
+  if(!name){alert('이름을 입력하십시오.');return false;}
+  var hd=document.getElementById('hd-phone');
+  var phErr=document.getElementById('ph-err');
+  if(!hd||!hd.value||hd.value.replace(/-/g,'').length<9){
+    if(phErr)phErr.style.display='block';
+    document.getElementById('ph-mid').focus();
+    return false;
+  }else{if(phErr)phErr.style.display='none';}
+  if(!['c1','c2','c3'].every(id=>document.getElementById(id).checked)){
+    alert('[필수] 개인정보 동의 항목을 확인하십시오.');return false;
+  }
+  return true;
+}
+function showLoad(msg){
+  document.getElementById('_ld').style.display='flex';
+  document.getElementById('_ld_msg').textContent=msg||'처리 중...';
+}
+function hideLoad(){document.getElementById('_ld').style.display='none';}
+
+/* PDF 생성 핵심 함수 */
+async function genPDF(){
+  // 신청 버튼 일시 숨김 (캡처에서 제외)
+  var noP=document.querySelectorAll('.no-pdf');
+  noP.forEach(el=>el.style.visibility='hidden');
+  // 체크박스 상태 시각적으로 표시
+  ['c1','c2','c3','c4','c5'].forEach(id=>{
+    var el=document.getElementById(id);
+    if(el){el.style.outline=el.checked?'2px solid #1e5cb3':'2px solid #ddd';}
+  });
+  try{
+    var canvas=await html2canvas(document.querySelector('.form-wrap'),{
+      scale:1.8,useCORS:true,backgroundColor:'#ffffff',
+      ignoreElements:el=>el.classList.contains('no-pdf')
+    });
+    var {jsPDF}=window.jspdf;
+    var pw=canvas.width, ph=canvas.height;
+    var a4w=595.28, a4h=841.89;
+    var ratio=a4w/pw;
+    var doc=new jsPDF({orientation:ph*ratio>a4h?'portrait':'portrait',unit:'pt',format:'a4'});
+    var imgW=a4w, imgH=ph*ratio;
+    var pagesNeeded=Math.ceil(imgH/a4h);
+    for(var p=0;p<pagesNeeded;p++){
+      if(p>0)doc.addPage();
+      var sy=p*(a4h/ratio);
+      var sliceH=Math.min(a4h/ratio, ph-sy);
+      var sliceCanvas=document.createElement('canvas');
+      sliceCanvas.width=pw; sliceCanvas.height=sliceH;
+      sliceCanvas.getContext('2d').drawImage(canvas,0,sy,pw,sliceH,0,0,pw,sliceH);
+      var sliceImg=sliceCanvas.toDataURL('image/jpeg',0.9);
+      doc.addImage(sliceImg,'JPEG',0,0,imgW,sliceH*ratio);
+    }
+    return doc;
+  }finally{
+    noP.forEach(el=>el.style.visibility='');
+  }
+}
+
+/* PDF만 저장 */
+async function pdfOnly(){
+  showLoad('📄 PDF 생성 중...');
+  try{
+    var doc=await genPDF();
+    var name=document.getElementById('f-name').value.trim()||'고객';
+    doc.save(_pn+'_상담신청서_'+name+'.pdf');
+  }catch(e){alert('PDF 생성 실패: '+e.message);}
+  hideLoad();
+}
+
+/* 신청 + PDF */
+async function hs(){
+  if(!validate())return;
+  showLoad('📄 신청서 PDF 생성 중...');
+  try{
+    // 1. PDF 생성 및 저장
+    var doc=await genPDF();
+    var name=document.getElementById('f-name').value.trim()||'고객';
+    var fname=_pn+'_상담신청서_'+name+'.pdf';
+    doc.save(fname);
+
+    // 2. 이메일 전송 (FormSubmit AJAX)
+    if(_useEmail&&_fa){
+      showLoad('📧 이메일 전송 중...');
+      var birth=document.getElementById('f-birth').value.trim();
+      var memo=document.getElementById('f-memo').value.trim();
+      var gender=document.querySelector('input[name="성별"]:checked')?.value||'';
+      var phone=document.getElementById('hd-phone').value;
+      var privacy=['c1','c2','c3'].map(id=>document.getElementById(id).checked?'동의':'미동의');
+      var mktg=['c4','c5'].map(id=>document.getElementById(id).checked?'동의':'미동의');
+      var fd=new FormData();
+      fd.append('_subject',_pn+' 상담신청 — '+name);
+      fd.append('_captcha','false');
+      fd.append('_template','table');
+      fd.append('신청일시',document.getElementById('dt-str').textContent);
+      fd.append('상품명',_pn);
+      fd.append('담당자',_fc+' ('+_co+')');
+      fd.append('담당자연락처',_phone);
+      fd.append('고객이름',name);
+      fd.append('성별',gender);
+      fd.append('생년월일',birth);
+      fd.append('고객연락처',phone);
+      fd.append('문의내용',memo||'(내용 없음)');
+      fd.append('개인정보수집이용',privacy[0]);
+      fd.append('개인정보위탁제공',privacy[1]);
+      fd.append('연락동의',privacy[2]);
+      fd.append('이메일마케팅',mktg[0]);
+      fd.append('SMS마케팅',mktg[1]);
+      try{
+        await fetch(_fa,{method:'POST',body:fd,headers:{Accept:'application/json'}});
+      }catch(err){console.warn('FormSubmit 전송 오류:',err);}
+    }
+
+    // 3. 완료 모달
+    hideLoad();
+    var dmsg=document.getElementById('dm-msg');
+    if(dmsg)dmsg.innerHTML=_fc+' 담당자가<br>빠른 시일 내 연락드리겠습니다.<br><br>📞 '+_phone+'<br><br><strong style="color:#1e5cb3">📥 신청서 PDF가 저장되었습니다</strong><br><small style="color:#888">다운로드 폴더에서 확인하십시오</small>';
+    document.getElementById('dm').classList.add('show');
+  }catch(e){
+    hideLoad();
+    alert('오류 발생: '+e.message+'
+
+신청서가 저장되지 않았을 수 있습니다.');
+  }
+}
+</script>
 </body></html>
