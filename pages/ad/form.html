@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>삼성생명/삼성화재 치매통합치료비 특약 상담신청</title>
+<title>삼성생명/삼성화재 치매통합 치료비 상담신청</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -62,8 +62,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
 <div id="_ld"><div class="_sp"></div><div style="color:#fff;font-size:15px;font-weight:700;font-family:sans-serif" id="_ld_msg">처리 중...</div></div>
 
 <div class="wrap" id="form-wrap">
-<div class="top-bar">🎯 삼성생명/삼성화재 — 치매통합치료비 특약 상담신청</div>
-<div class="date-bar">신청일시: <strong id="dt-str">2026년 4월 17일 0시 40분</strong></div>
+<div class="top-bar">🎯 삼성생명/삼성화재 — 치매통합 치료비 상담신청</div>
+<div class="date-bar">신청일시: <strong id="dt-str">2026년 4월 17일 0시 56분</strong></div>
 
 <div class="sec">
   <div class="sec-t">📋 상담 신청 정보</div>
@@ -80,13 +80,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
   </div>
   <div class="field">
     <div class="fl">생년월일</div>
-    <div class="fi"><input type="text" id="f-birth" placeholder="예) 1990. 01. 01" maxlength="14" inputmode="numeric" oninput="onBirthInput(this)" autocomplete="bday"></div>
+    <div class="fi"><input type="text" id="f-birth" placeholder="예) 1990. 01. 01" maxlength="14" inputmode="numeric" autocomplete="bday"></div>
   </div>
   <div class="field">
     <div class="fl">연락처 *</div>
     <div class="fi">
       <input type="tel" id="f-phone" maxlength="13" placeholder="010-1234-5678"
-        oninput="onPhoneInput(this)" inputmode="numeric"
+        inputmode="numeric"
         style="width:100%;border:1.5px solid #ddd;border-radius:6px;padding:10px 12px;font-size:15px;font-family:'Noto Sans KR',sans-serif;outline:none;font-weight:600;letter-spacing:1px;">
       <input type="hidden" id="hd-phone">
       <div class="err-msg" id="ph-err">연락처를 입력하십시오.</div>
@@ -94,7 +94,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
   </div>
   <div class="field">
     <div class="fl">문의내용</div>
-    <div class="fi"><textarea id="f-memo" placeholder="치매통합치료비 특약에 대해 궁금한 점을 입력하십시오."></textarea></div>
+    <div class="fi"><textarea id="f-memo" placeholder="치매통합 치료비에 대해 궁금한 점을 입력하십시오."></textarea></div>
   </div>
 </div>
 
@@ -145,12 +145,60 @@ var _fa='https://formsubmit.co/cheljae@naver.com';
 var _useEmail=true;
 var _kakao='';
 var _smsnum='010-3371-2512';
-var _pn='치매통합치료비 특약';
+var _pn='치매통합 치료비';
 var _fc='양금남';
 var _co='삼성생명/삼성화재';
 var _phone='010-8116-2513';
-// 수신 방식에 따라 버튼 설정
+
+/* ── 유틸 함수 (DOMContentLoaded 전에 정의) ── */
+function fmtBirth(v){
+  var d=v.replace(/D/g,'').slice(0,8);
+  if(d.length<=4)return d;
+  if(d.length<=6)return d.slice(0,4)+'. '+d.slice(4);
+  return d.slice(0,4)+'. '+d.slice(4,6)+'. '+d.slice(6);
+}
+function onBirthInput(el){
+  var v=el.value.replace(/[^d]/g,'').slice(0,8);
+  var fmt=v.length<=4?v:v.length<=6?v.slice(0,4)+'. '+v.slice(4):v.slice(0,4)+'. '+v.slice(4,6)+'. '+v.slice(6);
+  var cur=el.selectionStart+(fmt.length-el.value.length);
+  el.value=fmt;
+  try{el.setSelectionRange(cur,cur);}catch(_){}
+}
+function fmtPhone(v){
+  var d=v.replace(/D/g,'');
+  if(d.length<=3)return d;
+  if(d.startsWith('02')){
+    if(d.length<=5)return d.slice(0,2)+'-'+d.slice(2);
+    if(d.length<=9)return d.slice(0,2)+'-'+d.slice(2,5)+'-'+d.slice(5);
+    return d.slice(0,2)+'-'+d.slice(2,6)+'-'+d.slice(6,10);
+  }
+  if(d.length<=6)return d.slice(0,3)+'-'+d.slice(3);
+  if(d.length<=10)return d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6);
+  return d.slice(0,3)+'-'+d.slice(3,7)+'-'+d.slice(7,11);
+}
+function onPhoneInput(el){
+  var d=el.value.replace(/D/g,'');
+  var fmt=fmtPhone(d);
+  el.value=fmt;
+  var hd=document.getElementById('hd-phone');
+  if(hd)hd.value=fmt;
+}
+
+// 입력 이벤트 등록 + 버튼 설정
 window.addEventListener('DOMContentLoaded',function(){
+  // 생년월일 자동 점 삽입
+  var birthEl=document.getElementById('f-birth');
+  if(birthEl){
+    birthEl.addEventListener('input',function(){onBirthInput(this);});
+    birthEl.addEventListener('keyup',function(){onBirthInput(this);});
+  }
+  // 전화번호 자동 하이픈
+  var phoneEl=document.getElementById('f-phone');
+  if(phoneEl){
+    phoneEl.addEventListener('input',function(){onPhoneInput(this);});
+    phoneEl.addEventListener('keyup',function(){onPhoneInput(this);});
+  }
+  // 버튼 설정
   var btn=document.getElementById('sub-btn');
   if(!btn)return;
   if(_kakao&&!_smsnum&&!_useEmail){
@@ -167,39 +215,6 @@ window.addEventListener('DOMContentLoaded',function(){
   }
 });
 
-/* 유틸 */
-function fmtBirth(v){
-  var d=v.replace(/D/g,'').slice(0,8);
-  if(d.length<=4)return d;
-  if(d.length<=6)return d.slice(0,4)+'. '+d.slice(4);
-  return d.slice(0,4)+'. '+d.slice(4,6)+'. '+d.slice(6);
-}
-function onBirthInput(el){
-  var old=el.value,cur=el.selectionStart;
-  el.value=fmtBirth(old);
-  var diff=el.value.length-old.length;
-  try{el.setSelectionRange(cur+diff,cur+diff);}catch(_){}
-}
-function fmtPhone(v){
-  var d=v.replace(/D/g,"");
-  if(d.length<=3) return d;
-  if(d.startsWith("02")){
-    if(d.length<=5) return d.slice(0,2)+"-"+d.slice(2);
-    if(d.length<=9) return d.slice(0,2)+"-"+d.slice(2,5)+"-"+d.slice(5);
-    return d.slice(0,2)+"-"+d.slice(2,6)+"-"+d.slice(6,10);
-  }
-  if(d.length<=6) return d.slice(0,3)+"-"+d.slice(3);
-  if(d.length<=10) return d.slice(0,3)+"-"+d.slice(3,6)+"-"+d.slice(6);
-  return d.slice(0,3)+"-"+d.slice(3,7)+"-"+d.slice(7,11);
-}
-function onPhoneInput(el){
-  var old=el.value,cur=el.selectionStart;
-  el.value=fmtPhone(old);
-  var diff=el.value.length-old.length;
-  try{el.setSelectionRange(cur+diff,cur+diff);}catch(_){}
-  var hd=document.getElementById("hd-phone");
-  if(hd)hd.value=el.value;
-}
 function mergePhone(){
   var fp=document.getElementById("f-phone");
   var hd=document.getElementById("hd-phone");
