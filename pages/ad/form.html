@@ -63,7 +63,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
 
 <div class="wrap" id="form-wrap">
 <div class="top-bar">🎯 삼성생명/삼성화재 — 치매통합 치료비 상담신청</div>
-<div class="date-bar">신청일시: <strong id="dt-str">2026년 4월 17일 0시 56분</strong></div>
+<div class="date-bar">신청일시: <strong id="dt-str">2026년 4월 17일 1시 15분</strong></div>
 
 <div class="sec">
   <div class="sec-t">📋 상담 신청 정보</div>
@@ -152,20 +152,20 @@ var _phone='010-8116-2513';
 
 /* ── 유틸 함수 (DOMContentLoaded 전에 정의) ── */
 function fmtBirth(v){
-  var d=v.replace(/D/g,'').slice(0,8);
+  var d=v.replace(/[^0-9]/g,'').slice(0,8);
   if(d.length<=4)return d;
   if(d.length<=6)return d.slice(0,4)+'. '+d.slice(4);
   return d.slice(0,4)+'. '+d.slice(4,6)+'. '+d.slice(6);
 }
 function onBirthInput(el){
-  var v=el.value.replace(/[^d]/g,'').slice(0,8);
+  var v=el.value.replace(/[^0-9]/g,'').slice(0,8);
   var fmt=v.length<=4?v:v.length<=6?v.slice(0,4)+'. '+v.slice(4):v.slice(0,4)+'. '+v.slice(4,6)+'. '+v.slice(6);
   var cur=el.selectionStart+(fmt.length-el.value.length);
   el.value=fmt;
   try{el.setSelectionRange(cur,cur);}catch(_){}
 }
 function fmtPhone(v){
-  var d=v.replace(/D/g,'');
+  var d=v.replace(/[^0-9]/g,'');
   if(d.length<=3)return d;
   if(d.startsWith('02')){
     if(d.length<=5)return d.slice(0,2)+'-'+d.slice(2);
@@ -177,7 +177,7 @@ function fmtPhone(v){
   return d.slice(0,3)+'-'+d.slice(3,7)+'-'+d.slice(7,11);
 }
 function onPhoneInput(el){
-  var d=el.value.replace(/D/g,'');
+  var d=el.value.replace(/[^0-9]/g,'');
   var fmt=fmtPhone(d);
   el.value=fmt;
   var hd=document.getElementById('hd-phone');
@@ -348,18 +348,13 @@ async function doSubmit(){
   };
   window._lastSubmit=info;
   // 신청 메시지 텍스트 생성
-  var msg='['+_pn+' 상담신청]
-'
-    +'이름: '+info.name+'
-'
-    +'연락처: '+info.phone+'
-'
-    +(info.birth?'생년월일: '+info.birth+'
-':'')
-    +(info.gender?'성별: '+info.gender+'
-':'')
-    +(info.memo?'문의내용: '+info.memo+'
-':'');
+  var nl='\n';
+  var msg='['+_pn+' 상담신청]'+nl
+    +'이름: '+info.name+nl
+    +'연락처: '+info.phone+nl
+    +(info.birth?'생년월일: '+info.birth+nl:'')
+    +(info.gender?'성별: '+info.gender+nl:'')
+    +(info.memo?'문의내용: '+info.memo+nl:'');
 
   // ── 모든 수신 방식 동시 처리 ──
   var sent=[];
@@ -416,22 +411,17 @@ function openKakao(){
   if(!_kakao){alert('카카오 오픈채팅 URL이 설정되지 않았습니다.');return;}
   var s=window._lastSubmit||{};
   // 오픈채팅 입장 후 고객이 신청내용을 붙여넣을 수 있도록 클립보드에 복사
-  var msg='['+_pn+' 상담신청]
-'
-    +'이름: '+(s.name||'')+'
-'
-    +'연락처: '+(s.phone||'')+'
-'
-    +'생년월일: '+(s.birth||'')+'
-'
-    +'성별: '+(s.gender||'')+'
-'
+  var nl='\n';
+  var msg='['+_pn+' 상담신청]'+nl
+    +'이름: '+(s.name||'')+nl
+    +'연락처: '+(s.phone||'')+nl
+    +'생년월일: '+(s.birth||'')+nl
+    +'성별: '+(s.gender||'')+nl
     +'문의내용: '+(s.memo||'(없음)');
   if(navigator.clipboard){navigator.clipboard.writeText(msg).catch(()=>{});}
   window.open(_kakao,'_blank');
   setTimeout(function(){
-    alert('📋 신청 내용이 복사되었습니다.
-카카오 오픈채팅에 붙여넣기 해주십시오.');
+    alert('📋 신청 내용이 복사되었습니다. 카카오 오픈채팅에 붙여넣기 해주십시오.');
   },600);
 }
 
@@ -439,16 +429,12 @@ function openKakao(){
 function doSMS(){
   if(!_smsnum){alert('SMS 수신 번호가 설정되지 않았습니다.');return;}
   var s=window._lastSubmit||{};
-  var msg='['+_pn+' 상담신청]
-'
-    +'이름:'+( s.name||'')+'
-'
-    +'연락처:'+(s.phone||'')+'
-'
-    +'생년월일:'+(s.birth||'')+'
-'
-    +'성별:'+(s.gender||'')+'
-'
+  var nl='\n';
+  var msg='['+_pn+' 상담신청]'+nl
+    +'이름:'+( s.name||'')+nl
+    +'연락처:'+(s.phone||'')+nl
+    +'생년월일:'+(s.birth||'')+nl
+    +'성별:'+(s.gender||'')+nl
     +'문의:'+(s.memo||'');
   var num=_smsnum.replace(/-/g,'');
   window.location.href='sms:'+num+'?body='+encodeURIComponent(msg);
@@ -461,8 +447,7 @@ async function doPdfOnly(){
   await tryGenPDF(name);
   hideLoad();
   if(typeof html2canvas==='undefined'){
-    alert('PDF 기능은 인터넷 연결이 필요합니다.
-연결 후 다시 시도하십시오.');
+    alert('PDF 기능은 인터넷 연결이 필요합니다. 연결 후 다시 시도하십시오.');
   }
 }
 </script>
