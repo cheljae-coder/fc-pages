@@ -270,6 +270,64 @@ body::after{
 /* ══ 반응형 ══ */
 .hide-sm{display:block;}
 @media(max-width:480px){.hide-sm{display:none;}}
+
+/* ══ 체크박스 선택 ══ */
+.ad-row.selected{background:rgba(74,126,248,.06);border-left:3px solid var(--blue);}
+.row-cb{
+  width:20px;height:20px;border-radius:6px;border:2px solid var(--bd2);
+  background:var(--s3);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.row-cb.checked{background:var(--blue);border-color:var(--blue);}
+.row-cb.checked::after{content:'✓';font-size:12px;font-weight:900;color:#fff;}
+
+/* ══ 일괄 액션바 ══ */
+.bulk-bar{
+  display:none;position:sticky;bottom:0;left:0;right:0;
+  background:var(--s1);border-top:1px solid var(--bd2);
+  padding:12px 16px;z-index:50;
+  flex-direction:row;align-items:center;gap:10px;
+  box-shadow:0 -4px 20px rgba(0,0,0,.4);
+}
+.bulk-bar.show{display:flex;}
+.bulk-count{
+  flex:1;font-size:13px;font-weight:700;color:var(--text);
+}
+.bulk-count span{color:var(--blue2);}
+.btn-bulk-del{
+  background:var(--red);color:#fff;border:none;border-radius:10px;
+  padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;
+  font-family:var(--font);display:flex;align-items:center;gap:6px;
+  transition:all .15s;
+}
+.btn-bulk-del:active{transform:scale(.96);}
+.btn-bulk-cancel{
+  background:var(--s3);color:var(--t2);border:1px solid var(--bd2);
+  border-radius:10px;padding:11px 14px;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:var(--font);
+}
+
+/* ══ 그룹 헤더 ══ */
+.grp-hd{
+  padding:10px 16px;font-size:10px;font-weight:800;
+  color:var(--t3);text-transform:uppercase;letter-spacing:.8px;
+  background:var(--s2);border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:8px;
+}
+.grp-hd-line{flex:1;height:1px;background:var(--bd2);}
+.grp-cb-all{cursor:pointer;font-size:11px;color:var(--t2);
+  display:flex;align-items:center;gap:5px;white-space:nowrap;}
+
+/* ══ 선택모드 진입 버튼 ══ */
+.btn-select-mode{
+  background:rgba(239,68,68,.08);color:var(--red);
+  border:1px solid rgba(239,68,68,.2);border-radius:8px;
+  padding:7px 13px;font-size:11px;font-weight:700;cursor:pointer;
+  font-family:var(--font);white-space:nowrap;
+  transition:all .15s;
+}
+.btn-select-mode.active{background:var(--red);color:#fff;}
+
 </style>
 </head>
 <body>
@@ -361,6 +419,7 @@ body::after{
       <button class="ftab" id="ft-today" onclick="setFTab('today',this)">오늘</button>
       <button class="ftab" id="ft-week" onclick="setFTab('week',this)">이번 주</button>
     </div>
+    <button class="btn-select-mode" id="sel-mode-btn" onclick="toggleSelectMode()">☑ 선택</button>
     <select class="sort-sel" id="sort-sel" onchange="renderAds()">
       <option value="date-desc">최신순</option>
       <option value="date-asc">오래된 순</option>
@@ -369,8 +428,14 @@ body::after{
   </div>
 
   <!-- ── 광고 목록 ── -->
-  <div id="ad-grid-wrap"><div class="ad-list"><div class="ad-row" id="row-0">
-    <div class="ad-row-main" onclick="toggleRow('det-0','row-0')">
+  <div id="ad-grid-wrap"><div><div class="grp-hd">
+      
+      <span>오늘</span>
+      <span style="color:var(--t2);font-size:9px;font-weight:600">1개</span>
+      <div class="grp-hd-line"></div>
+    </div>
+    <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-0">
+    <div class="ad-row-main" onclick="toggleRow('det-0','row-0')">  
       <div class="ad-row-num">1</div>
       <div class="ad-row-icon">🌐</div>
       <div class="ad-row-info">
@@ -409,9 +474,42 @@ body::after{
         </button>
       </div>
     </div>
-  </div></div></div>
+  </div></div></div></div>
 
 </div><!-- /wrap -->
+
+<!-- 일괄 삭제 액션바 -->
+<div class="bulk-bar" id="bulk-bar">
+  <div class="bulk-count"><span id="bulk-cnt">0</span>개 선택됨</div>
+  <button class="btn-bulk-cancel" onclick="clearSelection()">취소</button>
+  <button class="btn-bulk-del" onclick="openBulkDel()">🗑 선택 삭제</button>
+</div>
+
+<!-- 일괄 삭제 확인 모달 -->
+<div class="modal-bg" id="bdel-bg" onclick="closeModal('bdel')"></div>
+<div class="modal" id="bdel-modal">
+  <div class="modal-hd">
+    <div class="modal-title">🗑 선택 광고 삭제</div>
+    <button class="modal-close" onclick="closeModal('bdel')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="del-icon">⚠️</div>
+    <div class="del-msg">
+      <strong class="del-name" id="bdel-names"></strong><br>
+      위 광고가 GitHub에서 영구 삭제됩니다.<br>
+      <strong style="color:var(--red)">되돌릴 수 없습니다.</strong>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('bdel')">취소</button>
+      <button class="btn btn-danger" style="flex:1" id="bdel-confirm-btn" onclick="confirmBulkDel()">🗑 삭제</button>
+    </div>
+    <div class="loading" id="bdel-loading" style="display:none;padding:14px 0"><div class="spin"></div><span id="bdel-msg">삭제 중...</span></div>
+    <div class="err-box" id="bdel-err" style="margin-top:10px"></div>
+  </div>
+</div>
+
+
+<!-- /wrap -->
 
 <!-- ── QR 모달 ── -->
 <div class="modal-bg" id="qr-bg" onclick="closeModal('qr')"></div>
@@ -582,6 +680,8 @@ const STORE='adm_cfg_v1';
 let CFG={owner:'',repo:'fc-pages',token:''};
 let ALL_ADS=[];
 let FILTER='all';
+let SELECT_MODE=false;
+let SELECTED=new Set();
 let delTarget=null;
 let qrCurUrl='';
 
@@ -914,8 +1014,137 @@ function renderAds(){
     return;
   }
 
-  const html=`<div class="ad-list">${ads.map((a,i)=>adCard(a,i)).join('')}</div>`;
-  showGrid(html);
+  // 날짜별 그룹핑
+  const groups={};
+  ads.forEach((a,i)=>{
+    let grpKey='날짜 없음';
+    if(a.updatedAt){
+      const d=new Date(a.updatedAt),now=new Date();
+      const diff=Math.floor((now-d)/(1000*60*60*24));
+      if(diff===0)grpKey='오늘';
+      else if(diff<=7)grpKey='이번 주';
+      else if(diff<=30)grpKey='이번 달';
+      else{const m=d.getFullYear()+'년 '+(d.getMonth()+1)+'월';grpKey=m;}
+    }
+    if(!groups[grpKey])groups[grpKey]=[];
+    groups[grpKey].push({a,i});
+  });
+
+  const ORDER=['오늘','이번 주','이번 달'];
+  const grpKeys=Object.keys(groups).sort((x,y)=>{
+    const xi=ORDER.indexOf(x),yi=ORDER.indexOf(y);
+    if(xi>=0&&yi>=0)return xi-yi;
+    if(xi>=0)return -1;if(yi>=0)return 1;
+    return y.localeCompare(x);
+  });
+
+  let out='';
+  grpKeys.forEach(grp=>{
+    const items=groups[grp];
+    const slugs=items.map(({a})=>a.slug);
+    const allCk=slugs.every(s=>SELECTED.has(s));
+    // 그룹 헤더
+    out+=`<div class="grp-hd">
+      ${SELECT_MODE?`<label class="grp-cb-all">
+        <input type="checkbox" style="display:none" ${allCk?'checked':''} onchange="toggleGroupAll(${JSON.stringify(slugs)},this)">
+        <div class="row-cb${allCk?' checked':''}"></div>
+        전체
+      </label>`:''}
+      <span>${escH(grp)}</span>
+      <span style="color:var(--t2);font-size:9px;font-weight:600">${items.length}개</span>
+      <div class="grp-hd-line"></div>
+    </div>
+    <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px">${items.map(({a,i})=>adCard(a,i)).join('')}</div>`;
+  });
+
+  showGrid('<div>'+out+'</div>');
+}
+
+
+/* ══ 선택 모드 ══ */
+function toggleSelectMode(){
+  SELECT_MODE=!SELECT_MODE;
+  SELECTED.clear();
+  const btn=document.getElementById('sel-mode-btn');
+  if(btn){btn.textContent=SELECT_MODE?'✕ 선택 종료':'☑ 선택';
+    btn.classList.toggle('active',SELECT_MODE);}
+  renderAds();
+  updateBulkBar();
+}
+function toggleSelect(slug,el){
+  if(SELECTED.has(slug)){SELECTED.delete(slug);el.classList.remove('checked');}
+  else{SELECTED.add(slug);el.classList.add('checked');}
+  // 행 강조
+  const row=el.closest('.ad-row');
+  if(row)row.classList.toggle('selected',SELECTED.has(slug));
+  updateBulkBar();
+}
+function toggleGroupAll(slugs,cb){
+  const allChecked=slugs.every(s=>SELECTED.has(s));
+  slugs.forEach(s=>{
+    if(allChecked)SELECTED.delete(s);else SELECTED.add(s);
+  });
+  renderAds();updateBulkBar();
+}
+function clearSelection(){
+  SELECTED.clear();SELECT_MODE=false;
+  const btn=document.getElementById('sel-mode-btn');
+  if(btn){btn.textContent='☑ 선택';btn.classList.remove('active');}
+  renderAds();updateBulkBar();
+}
+function updateBulkBar(){
+  const bar=document.getElementById('bulk-bar');
+  const cnt=document.getElementById('bulk-cnt');
+  if(bar)bar.classList.toggle('show',SELECT_MODE&&SELECTED.size>0);
+  if(cnt)cnt.textContent=SELECTED.size;
+}
+function openBulkDel(){
+  if(!SELECTED.size)return;
+  const slugs=[...SELECTED];
+  document.getElementById('bdel-names').textContent=slugs.join(', ');
+  document.getElementById('bdel-err').classList.remove('show');
+  document.getElementById('bdel-loading').style.display='none';
+  document.getElementById('bdel-confirm-btn').disabled=false;
+  openModal('bdel');
+}
+async function confirmBulkDel(){
+  const slugs=[...SELECTED];
+  if(!slugs.length)return;
+  const btn=document.getElementById('bdel-confirm-btn');
+  const ld=document.getElementById('bdel-loading');
+  const err=document.getElementById('bdel-err');
+  const msg=document.getElementById('bdel-msg');
+  btn.disabled=true;ld.style.display='flex';err.classList.remove('show');
+
+  let deleted=0,failed=[];
+  for(const slug of slugs){
+    if(msg)msg.textContent=`"${slug}" 삭제 중... (${deleted+1}/${slugs.length})`;
+    try{
+      const files=['index.html','form.html','og-image.jpg'];
+      for(const fn of files){
+        const r=await GH(`pages/${slug}/${fn}`);
+        if(!r.ok)continue;
+        const j=await r.json();
+        const dr=await GH(`pages/${slug}/${fn}`,{
+          method:'DELETE',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({message:`[Admin] 삭제: ${slug}/${fn}`,sha:j.sha})
+        });
+        if(dr.ok)deleted++;
+      }
+      ALL_ADS=ALL_ADS.filter(a=>a.slug!==slug);
+    }catch(e){failed.push(slug);}
+  }
+  updateStats();
+  SELECTED.clear();SELECT_MODE=false;
+  closeModal('bdel');
+  const btn2=document.getElementById('sel-mode-btn');
+  if(btn2){btn2.textContent='☑ 선택';btn2.classList.remove('active');}
+  renderAds();updateBulkBar();
+  const msg2=failed.length
+    ?`⚠ ${slugs.length-failed.length}개 삭제, ${failed.length}개 실패`
+    :`🗑 ${slugs.length}개 광고 삭제 완료`;
+  showToast(msg2,failed.length?'error':'success');
 }
 
 /* ══ 광고 카드 HTML ══ */
@@ -928,8 +1157,8 @@ function adCard(a,idx){
   const detId='det-'+idx;
 
   return`<div class="ad-row" id="${rowId}">
-    <div class="ad-row-main" onclick="toggleRow('${detId}','${rowId}')">
-      <div class="ad-row-num">${idx+1}</div>
+    <div class="ad-row-main" onclick="${SELECT_MODE?'toggleSelect(\''+a.slug+'\',this.querySelector(\'.row-cb\'))':('toggleRow(\''+detId+'\',\''+rowId+'\')')}">  
+      ${SELECT_MODE?`<div class="row-cb${SELECTED.has(a.slug)?' checked':''}" onclick="event.stopPropagation();toggleSelect('${a.slug}',this)"></div>`:`<div class="ad-row-num">${idx+1}</div>`}
       <div class="ad-row-icon">${isLive?'🌐':'📄'}</div>
       <div class="ad-row-info">
         <div class="ad-row-name" title="${safeSlug}">${safeSlug}</div>
