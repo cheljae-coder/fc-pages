@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#060a14">
+<title>AI 광고 Pro — 관리자</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&amp;family=Syne:wght@700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+/* ══ 변수 ══ */
+:root{
+  --bg:#060a14;--s1:#0b0f1e;--s2:#10152a;--s3:#161c35;--s4:#1c2340;
+  --bd:#1f2840;--bd2:#283050;
+  --blue:#4a7ef8;--blue2:#6fa0ff;--purple:#7c5cfc;
+  --green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;
+  --text:#dde2f8;--t2:#7a84a8;--t3:#3a4060;
+  --font:'Noto Sans KR',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow-x:hidden;font-family:var(--font);}
+body{background:var(--bg);color:var(--text);line-height:1.5;}
+
+/* ══ 배경 효과 ══ */
+body::before{
+  content:'';position:fixed;top:-30vh;left:-20vw;width:70vw;height:70vh;
+  background:radial-gradient(ellipse,rgba(74,126,248,.06) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+body::after{
+  content:'';position:fixed;bottom:-20vh;right:-20vw;width:60vw;height:60vh;
+  background:radial-gradient(ellipse,rgba(124,92,252,.05) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+
+/* ══ 레이아웃 ══ */
+.wrap{max-width:960px;margin:0 auto;padding:0 16px;position:relative;z-index:1;}
+
+/* ══ 헤더 ══ */
+.header{
+  padding:20px 0 16px;
+  border-bottom:1px solid var(--bd);
+  margin-bottom:24px;
+  display:flex;align-items:center;gap:14px;
+}
+.logo{
+  width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+  box-shadow:0 4px 16px rgba(74,126,248,.35);
+}
+.logo-txt{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+.logo-txt em{
+  background:linear-gradient(90deg,var(--blue2),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal;
+}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+
+/* ══ 설정 패널 ══ */
+.config-panel{
+  background:var(--s1);border:1px solid var(--bd);border-radius:16px;
+  padding:20px;margin-bottom:20px;
+}
+.config-title{font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+@media(max-width:540px){.config-grid{grid-template-columns:1fr;}}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg label{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;}
+.fg input{
+  background:var(--s3);border:1.5px solid var(--bd2);border-radius:9px;
+  padding:11px 13px;color:var(--text);font-size:13px;font-family:var(--mono);
+  outline:none;transition:border-color .2s;
+}
+.fg input:focus{border-color:var(--blue);}
+.fg input::placeholder{color:var(--t3);font-family:var(--font);}
+.fg-full{grid-column:1/-1;}
+.tk{position:relative;}
+.tk input{padding-right:52px;}
+.tk button{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--t3);cursor:pointer;font-size:11px;
+}
+.config-btns{display:flex;gap:8px;}
+
+/* ══ 버튼 ══ */
+.btn{
+  padding:11px 18px;border-radius:10px;border:none;
+  font-size:13px;font-weight:700;font-family:var(--font);
+  cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;
+}
+.btn:active{transform:scale(.96);}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;box-shadow:0 4px 16px rgba(74,126,248,.3);}
+.btn-ghost{background:var(--s3);color:var(--t2);border:1px solid var(--bd2);}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+.btn-sm{padding:7px 13px;font-size:11px;border-radius:7px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ══ 통계바 ══ */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;
+}
+@media(max-width:480px){.stats-bar{grid-template-columns:1fr 1fr;}}
+.stat-card{
+  background:var(--s1);border:1px solid var(--bd);border-radius:13px;
+  padding:14px 15px;
+}
+.stat-num{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;line-height:1;margin-bottom:3px;}
+.stat-lbl{font-size:10px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.stat-ico{font-size:16px;margin-bottom:6px;}
+
+/* ══ 검색/필터 ══ */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.search-box{
+  flex:1;min-width:180px;background:var(--s1);border:1px solid var(--bd);
+  border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;
+}
+.search-box input{
+  flex:1;background:none;border:none;color:var(--text);font-size:13px;
+  outline:none;font-family:var(--font);
+}
+.search-box input::placeholder{color:var(--t3);}
+.filter-tabs{display:flex;gap:6px;}
+.ftab{
+  padding:7px 14px;border-radius:20px;border:1px solid var(--bd2);
+  background:var(--s3);color:var(--t3);font-size:11px;font-weight:700;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.ftab.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.sort-sel{
+  background:var(--s3);border:1.5px solid var(--bd2);border-radius:9px;
+  padding:8px 12px;color:var(--t2);font-size:12px;outline:none;
+  font-family:var(--font);cursor:pointer;
+}
+
+/* ══ 광고 카드 ══ */
+/* ══ 광고 목록 ══ */
+.ad-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--bd);border-radius:14px;overflow:hidden;}
+.ad-row{
+  background:var(--s1);border-bottom:1px solid var(--bd);
+  padding:0;transition:background .15s;animation:rowIn .25s ease both;
+}
+.ad-row:last-child{border-bottom:none;}
+.ad-row:hover{background:var(--s2);}
+@keyframes rowIn{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:translateX(0);}}
+
+.ad-row-main{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;}
+.ad-row-num{
+  width:24px;height:24px;border-radius:7px;background:var(--s3);
+  border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--t3);flex-shrink:0;
+}
+.ad-row-icon{font-size:16px;flex-shrink:0;}
+.ad-row-info{flex:1;min-width:0;}
+.ad-row-name{
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:800;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px;
+}
+.ad-row-meta{font-size:10px;color:var(--t3);display:flex;align-items:center;gap:6px;}
+.ad-row-badge{
+  font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;flex-shrink:0;
+}
+.b-live{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);}
+.b-check{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
+.ad-row-chevron{
+  font-size:14px;color:var(--t3);flex-shrink:0;transition:transform .2s;
+}
+.ad-row-chevron.open{transform:rotate(90deg);}
+
+/* 펼침 상세 패널 */
+.ad-row-detail{
+  display:none;padding:0 14px 14px;
+  border-top:1px solid var(--bd);background:var(--s2);
+}
+.ad-row-detail.open{display:block;}
+.detail-url{
+  background:var(--s3);border:1px solid var(--bd2);border-radius:8px;
+  padding:9px 11px;margin:10px 0;display:flex;align-items:center;gap:7px;
+}
+.url-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.detail-url-txt{
+  font-family:var(--mono);font-size:10px;color:var(--blue2);
+  flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.detail-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.meta-chip{
+  font-size:10px;padding:3px 8px;border-radius:6px;
+  background:var(--s3);color:var(--t2);border:1px solid var(--bd2);font-weight:500;
+}
+.detail-acts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.ca{
+  border:none;border-radius:9px;padding:10px 4px;cursor:pointer;
+  transition:all .15s;display:flex;flex-direction:column;align-items:center;
+  gap:3px;font-size:9px;font-weight:700;font-family:var(--font);
+}
+.ca:active{transform:scale(.91);}
+.ca .cai{font-size:16px;}
+.ca-open{background:rgba(74,126,248,.1);color:var(--blue2);border:1px solid rgba(74,126,248,.2);}
+.ca-copy{background:rgba(6,182,212,.08);color:#22d3ee;border:1px solid rgba(6,182,212,.2);}
+.ca-qr{background:rgba(124,92,252,.08);color:#a78bfa;border:1px solid rgba(124,92,252,.2);}
+.ca-del{background:rgba(239,68,68,.06);color:var(--red);border:1px solid rgba(239,68,68,.15);}
+
+
+/* ══ 빈 상태 ══ */
+.empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:64px 24px;text-align:center;gap:14px;
+}
+.empty-ico{font-size:56px;opacity:.12;}
+.empty-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t2);}
+.empty-sub{font-size:13px;color:var(--t3);line-height:1.7;}
+
+/* ══ 모달 ══ */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:300;display:none;}
+.modal-bg.open{display:block;}
+.modal{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.95);
+  background:var(--s1);border:1px solid var(--bd2);border-radius:20px;
+  z-index:301;width:90%;max-width:380px;display:none;
+  box-shadow:0 40px 100px rgba(0,0,0,.6);
+}
+.modal.open{display:block;animation:modalIn .25s cubic-bezier(.32,1.2,.4,1) forwards;}
+@keyframes modalIn{to{transform:translate(-50%,-50%) scale(1);}}
+.modal-hd{padding:18px 20px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;}
+.modal-close{width:26px;height:26px;border-radius:50%;background:var(--s3);border:none;color:var(--t2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:18px 20px 22px;}
+
+/* ══ QR 모달 ══ */
+.qr-wrap{background:#fff;border-radius:12px;padding:16px;display:flex;justify-content:center;margin-bottom:14px;}
+.qr-url{font-family:var(--mono);font-size:10px;color:var(--blue2);word-break:break-all;text-align:center;line-height:1.6;margin-bottom:14px;}
+
+/* ══ 삭제 확인 모달 ══ */
+.del-icon{font-size:40px;text-align:center;margin-bottom:10px;}
+.del-msg{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:16px;text-align:center;}
+.del-name{font-weight:700;color:var(--text);}
+
+/* ══ 로딩 / 토스트 ══ */
+.loading{
+  display:flex;align-items:center;justify-content:center;
+  padding:48px;gap:12px;color:var(--t2);font-size:13px;
+}
+.spin{
+  width:24px;height:24px;border:2.5px solid var(--bd2);border-top-color:var(--blue);
+  border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);
+  background:var(--s3);border:1px solid var(--bd2);border-radius:20px;
+  padding:10px 18px;font-size:13px;font-weight:600;white-space:nowrap;
+  z-index:500;transition:transform .3s cubic-bezier(.32,1.2,.4,1);
+  box-shadow:0 8px 28px rgba(0,0,0,.4);
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:rgba(34,197,94,.3);color:var(--green);}
+.toast.error{border-color:rgba(239,68,68,.3);color:var(--red);}
+.toast.info{border-color:rgba(74,126,248,.3);color:var(--blue2);}
+
+/* ══ 오류 박스 ══ */
+.err-box{
+  background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);
+  border-radius:12px;padding:14px 16px;font-size:12px;color:var(--red);
+  line-height:1.7;display:none;
+}
+.err-box.show{display:block;}
+
+/* ══ 반응형 ══ */
+.hide-sm{display:block;}
+@media(max-width:480px){.hide-sm{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ── 헤더 ── -->
+  <div class="header">
+    <div class="logo">🎯</div>
+    <div>
+      <div class="logo-txt">AI <em>광고 Pro</em></div>
+      <div style="font-size:10px;color:var(--t3);font-weight:600;letter-spacing:.4px">ADMIN DASHBOARD</div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost btn-sm" onclick="openDeploy()" title="관리 페이지를 GitHub Pages에 배포">☁️ 배포</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleConfig()">⚙️ 설정</button>
+      <button class="btn btn-primary btn-sm" onclick="diagAndLoad()" id="refresh-btn">
+        <span>🔄</span> <span class="hide-sm">새로고침</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── GitHub 설정 패널 ── -->
+  <div class="config-panel" id="config-panel" style="display: none;">
+    <div class="config-title">
+      <span style="color:var(--blue2)">⚙️</span> GitHub 연결 설정
+    </div>
+    <div id="url-notice" style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:9px;padding:10px 13px;font-size:11px;color:var(--t2);line-height:1.7;margin-bottom:12px">
+      ⚠️ <strong style="color:var(--text)">새 기기·URL에서 접속 시 설정을 다시 입력해야 합니다.</strong><br>
+      앱에서 사용하는 GitHub 사용자명·레포·토큰을 동일하게 입력하십시오.
+    </div>
+    <div class="config-grid">
+      <div class="fg">
+        <label>GitHub 사용자명</label>
+        <input id="cfg-owner" placeholder="username" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>레포지토리명</label>
+        <input id="cfg-repo" placeholder="fc-pages" value="fc-pages">
+      </div>
+      <div class="fg fg-full">
+        <label>Personal Access Token</label>
+        <div class="tk">
+          <input id="cfg-token" type="password" placeholder="ghp_..." autocomplete="off">
+          <button onclick="tvCfg()">보기</button>
+        </div>
+      </div>
+    </div>
+    <div class="err-box" id="cfg-err"></div>
+    <div style="height:10px"></div>
+    <div class="config-btns">
+      <button class="btn btn-primary" onclick="saveCfg()">✅ 저장 및 연결</button>
+      <button class="btn btn-ghost" onclick="toggleConfig()">닫기</button>
+    </div>
+  </div>
+
+  <!-- ── 통계 ── -->
+  <div class="stats-bar" id="stats-bar" style="display: grid;">
+    <div class="stat-card">
+      <div class="stat-ico">📋</div>
+      <div class="stat-num" id="st-total">1</div>
+      <div class="stat-lbl">전체 광고</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">🌐</div>
+      <div class="stat-num" id="st-live">1</div>
+      <div class="stat-lbl">배포 활성</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">📅</div>
+      <div class="stat-num" id="st-today">1</div>
+      <div class="stat-lbl">오늘 업데이트</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">💾</div>
+      <div class="stat-num" id="st-size">3</div>
+      <div class="stat-lbl">총 파일 수</div>
+    </div>
+  </div>
+
+  <!-- ── 검색/필터 ── -->
+  <div class="toolbar" id="toolbar" style="display: flex;">
+    <div class="search-box">
+      <span style="font-size:14px;color:var(--t3)">🔍</span>
+      <input type="text" id="search-inp" placeholder="광고 슬러그 검색..." oninput="filterAds()">
+    </div>
+    <div class="filter-tabs">
+      <button class="ftab active" id="ft-all" onclick="setFTab('all',this)">전체</button>
+      <button class="ftab" id="ft-today" onclick="setFTab('today',this)">오늘</button>
+      <button class="ftab" id="ft-week" onclick="setFTab('week',this)">이번 주</button>
+    </div>
+    <select class="sort-sel" id="sort-sel" onchange="renderAds()">
+      <option value="date-desc">최신순</option>
+      <option value="date-asc">오래된 순</option>
+      <option value="name-asc">이름순</option>
+    </select>
+  </div>
+
+  <!-- ── 광고 목록 ── -->
+  <div id="ad-grid-wrap"><div class="ad-list"><div class="ad-row" id="row-0">
+    <div class="ad-row-main" onclick="toggleRow('det-0','row-0')">
+      <div class="ad-row-num">1</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad">ad</div>
+        <div class="ad-row-meta">
+          <span>🕐 7시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-0">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-0">
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad/')">📋</button>
+      </div>
+      <div class="detail-chips">
+        <div class="meta-chip">📄 index.html</div>
+        <div class="meta-chip">📋 form.html</div>
+        <div class="meta-chip">📁 3개 파일</div>
+      </div>
+      <div class="detail-acts">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad/','ad')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad')">
+          <span class="cai">🗑</span>삭제
+        </button>
+      </div>
+    </div>
+  </div></div></div>
+
+</div><!-- /wrap -->
+
+<!-- ── QR 모달 ── -->
+<div class="modal-bg" id="qr-bg" onclick="closeModal('qr')"></div>
+<div class="modal" id="qr-modal">
+  <div class="modal-hd">
+    <div class="modal-title" id="qr-title">QR 코드</div>
+    <button class="modal-close" onclick="closeModal('qr')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="qr-wrap"><div id="qr-box"></div></div>
+    <div class="qr-url" id="qr-url"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" style="flex:1" onclick="cpyQrUrl()">🔗 URL 복사</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="openQrUrl()">🌐 열기</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── 배포 모달 ── -->
+<div class="modal-bg open" id="dep-bg" onclick="closeModal('dep')"></div>
+<div class="modal open" id="dep-modal">
+  <div class="modal-hd">
+    <div class="modal-title">☁️ 관리 페이지 GitHub 배포</div>
+    <button class="modal-close" onclick="closeModal('dep')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div style="background:rgba(74,126,248,.07);border:1px solid rgba(74,126,248,.2);border-radius:11px;padding:14px;font-size:12px;color:var(--t2);line-height:1.8;margin-bottom:16px">
+      <strong style="color:var(--text)">왜 배포해야 하나요?</strong><br>
+      파일을 직접 열면(file://) 브라우저가 GitHub API를 차단합니다.<br>
+      GitHub Pages에 배포하면 아래 URL로 접속하여<br>
+      모든 기능이 정상 작동합니다.<br><br>
+      📌 배포 후 URL:<br>
+      <span id="dep-url-preview" style="font-family:var(--mono);color:var(--blue2);font-size:11px;word-break:break-all">https://cheljae-coder.github.io/fc-pages/ad-admin.html</span>
+    </div>
+    <div class="loading" id="dep-loading" style="display: flex; padding: 16px 0px;">
+      <div class="spin"></div><span id="dep-msg">현재 페이지 준비 중...</span>
+    </div>
+    <div class="err-box" id="dep-err" style="margin-bottom:12px"></div>
+    <div id="dep-success" style="display:none;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:11px;padding:14px;text-align:center;margin-bottom:14px">
+      <div style="font-size:20px;margin-bottom:6px">✅</div>
+      <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:6px">배포 완료!</div>
+      <div style="font-size:11px;color:var(--t2);line-height:1.7;margin-bottom:10px">1~2분 후 아래 URL로 접속하십시오</div>
+      <a id="dep-result-url" href="#" target="_blank" style="font-family:var(--mono);font-size:11px;color:var(--blue2);word-break:break-all;display:block;margin-bottom:10px"></a>
+      <button class="btn btn-primary btn-sm" onclick="cpyDepUrl()">🔗 URL 복사</button>
+    </div>
+    <div style="display:flex;gap:8px" id="dep-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('dep')">취소</button>
+      <button class="btn btn-primary" style="flex:1" id="dep-run-btn" onclick="deployAdmin()" disabled="">☁️ 지금 배포</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 삭제 확인 모달 ── -->
+<div class="modal-bg" id="del-bg" onclick="closeModal('del')"></div>
+<div class="modal" id="del-modal">
+  <div class="modal-hd">
+    <div class="modal-title">🗑 광고 삭제</div>
+    <button class="modal-close" onclick="closeModal('del')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="del-icon">⚠️</div>
+    <div class="del-msg">
+      <span class="del-name" id="del-name"></span><br>
+      광고 페이지와 상담폼 파일이<br>GitHub에서 영구 삭제됩니다.<br>
+      <strong style="color:var(--red)">이 작업은 되돌릴 수 없습니다.</strong>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('del')">취소</button>
+      <button class="btn btn-danger" style="flex:1" id="del-confirm-btn" onclick="confirmDel()">🗑 삭제</button>
+    </div>
+    <div class="loading" id="del-loading" style="display:none;padding:16px 0">
+      <div class="spin"></div><span>삭제 중...</span>
+    </div>
+    <div class="err-box" id="del-err" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<div class="toast success" id="toast">✅ 연결 성공</div>
+
+<script>
+
+/* ══ 관리 페이지 자체 배포 ══ */
+let _depResultUrl='';
+
+function openDeploy(){
+  if(!CFG.owner||!CFG.token){
+    showToast('⚠ 먼저 GitHub 설정을 입력하십시오','error');
+    toggleConfig();return;
+  }
+  const previewUrl=`https://${CFG.owner}.github.io/${CFG.repo}/ad-admin.html`;
+  document.getElementById('dep-url-preview').textContent=previewUrl;
+  document.getElementById('dep-loading').style.display='none';
+  document.getElementById('dep-err').classList.remove('show');
+  document.getElementById('dep-success').style.display='none';
+  document.getElementById('dep-btns').style.display='flex';
+  openModal('dep');
+}
+
+async function deployAdmin(){
+  const btn=document.getElementById('dep-run-btn');
+  const ld=document.getElementById('dep-loading');
+  const err=document.getElementById('dep-err');
+  const suc=document.getElementById('dep-success');
+  btn.disabled=true;ld.style.display='flex';err.classList.remove('show');suc.style.display='none';
+
+  try{
+    // 현재 페이지 HTML 직접 추출 (file:// 환경에서도 동작)
+    document.getElementById('dep-msg').textContent='현재 페이지 준비 중...';
+    let pageHtml;
+    try{
+      // GitHub Pages에서 열린 경우 fetch 시도
+      const resp=await fetch(location.href,{cache:'no-store'});
+      if(resp.ok) pageHtml=await resp.text();
+    }catch(_){}
+    // fetch 실패(로컬 파일 등)이면 현재 DOM에서 직접 추출
+    if(!pageHtml){
+      pageHtml='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+    }
+    const b64=btoa(unescape(encodeURIComponent(pageHtml)));
+
+    // 기존 파일 sha 조회
+    let sha=null;
+    document.getElementById('dep-msg').textContent='GitHub 업로드 중...';
+    const check=await GH('ad-admin.html');
+    if(check.ok){sha=(await check.json()).sha;}
+
+    // 업로드
+    const body={message:'[Admin] 관리 페이지 배포',content:b64};
+    if(sha)body.sha=sha;
+    const put=await GH('ad-admin.html',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+
+    if(!put.ok){
+      const j=await put.json().catch(()=>({}));
+      throw new Error(j.message||`HTTP ${put.status}`);
+    }
+
+    // .nojekyll 확인/생성
+    const njCheck=await GH('.nojekyll');
+    if(!njCheck.ok){
+      await GH('.nojekyll',{method:'PUT',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({message:'add .nojekyll',content:btoa('')})});
+    }
+
+    _depResultUrl=`https://${CFG.owner}.github.io/${CFG.repo}/ad-admin.html`;
+    document.getElementById('dep-result-url').textContent=_depResultUrl;
+    document.getElementById('dep-result-url').href=_depResultUrl;
+    ld.style.display='none';suc.style.display='block';
+    document.getElementById('dep-btns').style.display='none';
+    showToast('☁️ 배포 완료!','success');
+  }catch(e){
+    err.textContent='배포 실패: '+e.message;err.classList.add('show');
+    btn.disabled=false;
+  }finally{
+    ld.style.display='none';btn.disabled=false;
+  }
+}
+function cpyDepUrl(){
+  navigator.clipboard.writeText(_depResultUrl).then(()=>showToast('🔗 URL 복사 완료','success'));
+}
+
+/* ══ 저장소 ══ */
+const STORE='adm_cfg_v1';
+let CFG={owner:'',repo:'fc-pages',token:''};
+let ALL_ADS=[];
+let FILTER='all';
+let delTarget=null;
+let qrCurUrl='';
+
+/* ══ 초기화 ══ */
+function init(){
+  const saved=localStorage.getItem(STORE);
+  if(saved){
+    try{Object.assign(CFG,JSON.parse(saved));}catch(_){}
+  }
+  if(CFG.owner){ document.getElementById('cfg-owner').value=CFG.owner; }
+  if(CFG.repo){  document.getElementById('cfg-repo').value=CFG.repo;   }
+  if(CFG.token){ document.getElementById('cfg-token').value=CFG.token; }
+
+  if(CFG.owner&&CFG.token){
+    document.getElementById('config-panel').style.display='none';
+    diagAndLoad();
+  } else {
+    // 설정 없으면 패널 열고 안내 표시
+    document.getElementById('config-panel').style.display='block';
+    showGrid('<div class="empty"><div class="empty-ico">🔑</div>'
+      +'<div class="empty-title">GitHub 설정을 입력하십시오</div>'
+      +'<div class="empty-sub">위 설정 패널에서 GitHub 사용자명과 토큰을 입력한 후<br>저장 및 연결 버튼을 탭하십시오.<br><br>'
+      +'<span style="color:var(--amber)">⚠ 다른 기기·브라우저에서 열면 설정을 새로 입력해야 합니다</span></div></div>');
+  }
+}
+
+/* ══ 설정 ══ */
+function toggleConfig(){
+  const p=document.getElementById('config-panel');
+  p.style.display=p.style.display==='none'?'block':'none';
+}
+function tvCfg(){
+  const i=document.getElementById('cfg-token');
+  i.type=i.type==='password'?'text':'password';
+}
+function saveCfg(){
+  const owner=document.getElementById('cfg-owner').value.trim();
+  const repo=document.getElementById('cfg-repo').value.trim()||'fc-pages';
+  const token=document.getElementById('cfg-token').value.trim();
+  const e=document.getElementById('cfg-err');
+  e.classList.remove('show');
+  if(!owner||!token){
+    e.textContent='⚠ 사용자명과 토큰을 입력하십시오.';e.classList.add('show');return;
+  }
+  if(!token.startsWith('ghp_')&&!token.startsWith('github_pat_')){
+    e.textContent='⚠ 올바른 토큰 형식이 아닙니다. (ghp_ 또는 github_pat_ 로 시작)';e.classList.add('show');return;
+  }
+  CFG={owner,repo,token};
+  localStorage.setItem(STORE,JSON.stringify(CFG));
+  showToast('🔍 연결 확인 중...','info');
+  diagAndLoad();
+}
+
+/* ══ GitHub API ══ */
+const GH=(path,opt={})=>{
+  const hdrs={Authorization:`token ${CFG.token}`,
+    Accept:'application/vnd.github.v3+json',
+    'X-Requested-With':'XMLHttpRequest'};
+  const merged={...opt,headers:{...hdrs,...(opt.headers||{})}};
+  return fetch(`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${path}`,merged);
+};
+// 연결 진단 API (인증 불필요)
+const GH_TEST=()=>fetch('https://api.github.com/zen',{headers:{'Accept':'application/vnd.github.v3+json'}});
+const GH_USER=(tok)=>fetch('https://api.github.com/user',{headers:{Authorization:`token ${tok}`,Accept:'application/vnd.github.v3+json'}});
+const GH_REPO=(own,rep,tok)=>fetch(`https://api.github.com/repos/${own}/${rep}`,{headers:{Authorization:`token ${tok}`,Accept:'application/vnd.github.v3+json'}});
+
+
+/* ══ 연결 진단 후 로드 ══ */
+async function diagAndLoad(){
+  document.getElementById('config-panel').style.display='none';
+  showGrid('<div class="loading"><div class="spin"></div><span>연결 진단 중...</span></div>');
+
+  // ① 인터넷 + GitHub 연결 테스트
+  try{
+    const ping=await GH_TEST();
+    if(!ping.ok&&ping.status!==200){
+      return showDiagError('github_down','GitHub 서버 응답 오류','GitHub.com 자체에 문제가 있거나 네트워크가 차단되었습니다.',ping.status);
+    }
+  }catch(e){
+    // file:// 이거나 네트워크 단절
+    const isFile=location.protocol==='file:';
+    if(isFile){
+      return showDiagError('file_protocol','파일을 직접 열어서 발생하는 오류',
+        '브라우저 보안 정책으로 로컬 파일에서는 외부 API를 호출할 수 없습니다. 아래 방법으로 해결하십시오.');
+    }
+    return showDiagError('network','인터넷 연결 없음','GitHub API에 접속할 수 없습니다.',e.message);
+  }
+
+  // ② 토큰 유효성 테스트
+  try{
+    const me=await GH_USER(CFG.token);
+    if(me.status===401){
+      return showDiagError('token_invalid','토큰 인증 실패','입력한 토큰이 유효하지 않거나 만료되었습니다.');
+    }
+    if(me.status===403){
+      return showDiagError('token_perm','토큰 권한 부족','토큰에 필요한 권한이 없습니다.');
+    }
+  }catch(e){
+    return showDiagError('network','네트워크 오류',e.message);
+  }
+
+  // ③ 레포지토리 접근 테스트
+  try{
+    const repo=await GH_REPO(CFG.owner,CFG.repo,CFG.token);
+    if(repo.status===404){
+      return showDiagError('repo_not_found','레포지토리를 찾을 수 없음',
+        `"${CFG.owner}/${CFG.repo}" 레포지토리가 존재하지 않거나 접근 권한이 없습니다.`);
+    }
+  }catch(e){
+    return showDiagError('network','네트워크 오류',e.message);
+  }
+
+  // 모두 통과 → 로드
+  showToast('✅ 연결 성공','success');
+  loadAds();
+}
+
+function showDiagError(code,title,desc,extra){
+  const solutions={
+    file_protocol:[
+      '아래 [☁️ GitHub에 배포] 버튼을 클릭하십시오.',
+      '배포 후 생성된 URL을 크롬에서 열면 정상 작동합니다.',
+      '예) https://계정명.github.io/fc-pages/ad-admin.html',
+    ],
+    token_invalid:[
+      'GitHub → 프로필 → 설정 → 개발자 설정 → 세분화된 토큰',
+      '해당 토큰의 만료일을 확인하십시오.',
+      '만료됐다면 새 토큰을 발급해 설정에 다시 입력하십시오.',
+    ],
+    token_perm:[
+      'GitHub → 개발자 설정 → 해당 토큰 클릭',
+      '리포지토리 권한 → 콘텐츠(Contents): 읽기 및 쓰기 로 변경',
+      '저장 후 다시 시도하십시오.',
+    ],
+    repo_not_found:[
+      `GitHub에서 ${CFG.owner}/${CFG.repo} 레포지토리를 확인하십시오.`,
+      '레포지토리가 없다면 새로 만드십시오.',
+      '레포지토리는 공개(Public) 상태여야 합니다.',
+    ],
+    github_down:[
+      'https://githubstatus.com 에서 GitHub 서버 상태를 확인하십시오.',
+      '잠시 후 다시 시도하십시오.',
+    ],
+    network:[
+      '인터넷 연결 상태를 확인하십시오.',
+      'VPN 사용 중이라면 잠시 해제 후 시도하십시오.',
+      '잠시 후 다시 시도하십시오.',
+    ],
+  };
+  const steps=solutions[code]||['설정값을 다시 확인하십시오.'];
+  const stepsHtml=steps.map((s,i)=>`
+    <div style="display:flex;gap:8px;margin-top:8px;text-align:left">
+      <div style="width:20px;height:20px;border-radius:50%;background:var(--amber);color:#000;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.7">${escH(s)}</div>
+    </div>`).join('');
+
+  const extraHtml=extra?`<div style="font-family:var(--mono);font-size:11px;color:var(--t3);margin-top:6px;padding:8px 10px;background:var(--s3);border-radius:7px">${escH(String(extra))}</div>`:'';
+
+  showGrid(`<div class="empty">
+    <div class="empty-ico">⚠️</div>
+    <div class="empty-title">${escH(title)}</div>
+    <div class="empty-sub" style="text-align:left;max-width:380px">
+      ${escH(desc)}${extraHtml}${stepsHtml}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px;width:100%;max-width:300px">
+      ${code==='file_protocol'?`<button class="btn btn-primary" onclick="openDeploy()">☁️ GitHub에 배포하기</button>`:''}
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('config-panel').style.display='block'">⚙️ 설정 다시 확인</button>
+      <button class="btn btn-ghost btn-sm" onclick="diagAndLoad()">🔄 다시 시도</button>
+    </div>
+  </div>`);
+}
+
+/* ══ 광고 목록 로드 ══ */
+async function loadAds(){
+  if(!CFG.owner||!CFG.token){
+    showGrid('<div class="empty"><div class="empty-ico">⚙️</div><div class="empty-title">GitHub 설정 필요</div><div class="empty-sub">우측 상단 설정 버튼을 탭하여<br>GitHub 연결 정보를 입력하십시오</div></div>');
+    return;
+  }
+  showGrid('<div class="loading"><div class="spin"></div><span>광고 목록 불러오는 중...</span></div>');
+  document.getElementById('stats-bar').style.display='none';
+  document.getElementById('toolbar').style.display='none';
+
+  try{
+    const r=await GH('pages');
+    if(!r.ok){
+      const j=await r.json().catch(()=>({}));
+      if(r.status===404){
+        showGrid('<div class="empty"><div class="empty-ico">📂</div><div class="empty-title">pages 폴더 없음</div><div class="empty-sub">아직 배포된 광고가 없습니다.<br>앱에서 광고를 배포하면 이곳에 표시됩니다.</div></div>');
+      } else if(r.status===401||r.status===403){
+        showGrid(errHtml('인증 오류','토큰이 유효하지 않거나 권한이 없습니다.','토큰을 재발급하여 설정에 다시 입력하십시오.'));
+      } else {
+        showGrid(errHtml('연결 오류',j.message||`HTTP ${r.status}`,'GitHub 설정값을 확인하십시오.'));
+      }
+      return;
+    }
+    const dirs=await r.json();
+    const adDirs=dirs.filter(d=>d.type==='dir');
+
+    if(!adDirs.length){
+      showGrid('<div class="empty"><div class="empty-ico">📋</div><div class="empty-title">배포된 광고 없음</div><div class="empty-sub">앱에서 광고를 생성하고 배포하면<br>이곳에서 관리하실 수 있습니다</div></div>');
+      return;
+    }
+
+    // 각 폴더의 파일 목록 병렬 조회
+    const details=await Promise.all(adDirs.map(async d=>{
+      try{
+        const fr=await GH(`pages/${d.name}`);
+        if(!fr.ok) return {slug:d.name,files:[],updated:d.sha};
+        const files=await fr.json();
+        const hasIndex=files.some(f=>f.name==='index.html');
+        const hasForm=files.some(f=>f.name==='form.html');
+        const lastMod=files.reduce((acc,f)=>acc,null); // sha 기반 최신 파일
+        return{slug:d.name,files,hasIndex,hasForm,fileCount:files.length,sha:d.sha};
+      }catch(_){return{slug:d.name,files:[],hasIndex:false,hasForm:false,fileCount:0};}
+    }));
+
+    // git commits API로 마지막 수정일 조회 (최대 20개만)
+    const commitsR=await fetch(`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/commits?path=pages&per_page=50`,{
+      headers:{Authorization:`token ${CFG.token}`,Accept:'application/vnd.github.v3+json'}
+    });
+    const commitMap={};
+    if(commitsR.ok){
+      const commits=await commitsR.json();
+      commits.forEach(c=>{
+        // 커밋 메시지에서 slug 추출
+        const m=(c.commit?.message||'').match(/pages\/([^/]+)\//);
+        if(m&&!commitMap[m[1]]) commitMap[m[1]]=c.commit.committer.date;
+      });
+    }
+
+    ALL_ADS=details.map(d=>({
+      ...d,
+      url:`https://${CFG.owner}.github.io/${CFG.repo}/pages/${d.slug}/`,
+      updatedAt:commitMap[d.slug]||null,
+    }));
+
+    updateStats();
+    document.getElementById('stats-bar').style.display='grid';
+    document.getElementById('toolbar').style.display='flex';
+    renderAds();
+
+  }catch(e){
+    const msg=e.message||'';
+    if(msg.includes('Failed to fetch')||msg.includes('NetworkError')){
+      showDiagError(location.protocol==='file:'?'file_protocol':'network',
+        location.protocol==='file:'?'파일을 직접 열어서 발생하는 오류':'네트워크 연결 오류',
+        location.protocol==='file:'?'브라우저 보안 정책으로 로컬 파일에서는 외부 API를 호출할 수 없습니다.'
+          :'GitHub API에 접속할 수 없습니다.',msg);
+    } else {
+      showDiagError('network','오류 발생',msg);
+    }
+    console.error('[loadAds]',e);
+  }
+}
+
+function errHtmlSteps(title,desc,steps){
+  const stepsHtml=steps.map((s,i)=>`
+    <div style="display:flex;gap:8px;margin-top:8px;text-align:left">
+      <div style="width:18px;height:18px;border-radius:50%;background:var(--amber);color:#000;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</div>
+      <div style="font-size:11px;color:var(--t2);line-height:1.65">${escH(s)}</div>
+    </div>`).join('');
+  return`<div class="empty">
+    <div class="empty-ico">⚠️</div>
+    <div class="empty-title">${escH(title)}</div>
+    <div class="empty-sub" style="text-align:left;max-width:400px">${escH(desc)}${stepsHtml}</div>
+    <button class="btn btn-primary" onclick="openDeploy()" style="margin-top:16px">☁️ 관리페이지를 GitHub에 배포</button>
+    <button class="btn btn-ghost btn-sm" onclick="loadAds()" style="margin-top:8px">🔄 다시 시도</button>
+  </div>`;
+}
+
+function errHtml(title,desc,hint){
+  return `<div class="empty">
+    <div class="empty-ico">❌</div>
+    <div class="empty-title">${title}</div>
+    <div class="empty-sub">${escH(desc)}<br><br><span style="color:var(--amber)">${escH(hint)}</span></div>
+  </div>`;
+}
+
+/* ══ 통계 업데이트 ══ */
+function updateStats(){
+  const total=ALL_ADS.length;
+  const live=ALL_ADS.filter(a=>a.hasIndex).length;
+  const today=ALL_ADS.filter(a=>{
+    if(!a.updatedAt)return false;
+    const d=new Date(a.updatedAt);const n=new Date();
+    return d.toDateString()===n.toDateString();
+  }).length;
+  const totalFiles=ALL_ADS.reduce((s,a)=>s+a.fileCount,0);
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-live').textContent=live;
+  document.getElementById('st-today').textContent=today;
+  document.getElementById('st-size').textContent=totalFiles;
+}
+
+/* ══ 필터/정렬/렌더 ══ */
+function setFTab(f,el){
+  FILTER=f;
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderAds();
+}
+function filterAds(){renderAds();}
+
+function renderAds(){
+  const q=(document.getElementById('search-inp')?.value||'').toLowerCase().trim();
+  const sort=document.getElementById('sort-sel')?.value||'date-desc';
+  const now=new Date();
+  const weekAgo=new Date(now-7*86400000);
+
+  let ads=ALL_ADS.filter(a=>{
+    if(q&&!a.slug.toLowerCase().includes(q))return false;
+    if(FILTER==='today'&&a.updatedAt){
+      const d=new Date(a.updatedAt);return d.toDateString()===now.toDateString();
+    }
+    if(FILTER==='week'&&a.updatedAt){
+      return new Date(a.updatedAt)>=weekAgo;
+    }
+    return true;
+  });
+
+  ads=[...ads].sort((a,b)=>{
+    if(sort==='date-desc') return (b.updatedAt||'')>(a.updatedAt||'')?1:-1;
+    if(sort==='date-asc')  return (a.updatedAt||'')>(b.updatedAt||'')?1:-1;
+    if(sort==='name-asc')  return a.slug.localeCompare(b.slug);
+    return 0;
+  });
+
+  if(!ads.length){
+    showGrid('<div class="empty"><div class="empty-ico">🔍</div><div class="empty-title">결과 없음</div><div class="empty-sub">다른 검색어나 필터를 사용하십시오</div></div>');
+    return;
+  }
+
+  const html=`<div class="ad-list">${ads.map((a,i)=>adCard(a,i)).join('')}</div>`;
+  showGrid(html);
+}
+
+/* ══ 광고 카드 HTML ══ */
+function adCard(a,idx){
+  const safeUrl=a.url.replace(/'/g,'%27');
+  const safeSlug=escH(a.slug);
+  const dateStr=a.updatedAt?fmtDate(a.updatedAt):'—';
+  const isLive=a.hasIndex;
+  const rowId='row-'+idx;
+  const detId='det-'+idx;
+
+  return`<div class="ad-row" id="${rowId}">
+    <div class="ad-row-main" onclick="toggleRow('${detId}','${rowId}')">
+      <div class="ad-row-num">${idx+1}</div>
+      <div class="ad-row-icon">${isLive?'🌐':'📄'}</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="${safeSlug}">${safeSlug}</div>
+        <div class="ad-row-meta">
+          <span>🕐 ${dateStr}</span>
+          ${a.fileCount?`<span>· 📁 ${a.fileCount}개`+`</span>`:''}
+        </div>
+      </div>
+      <div class="ad-row-badge ${isLive?'b-live':'b-check'}">${isLive?'🟢 라이브':'⏳ 미확인'}</div>
+      <div class="ad-row-chevron" id="chv-${idx}">›</div>
+    </div>
+    <div class="ad-row-detail" id="${detId}">
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">${a.url}</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('${safeUrl}')">📋</button>
+      </div>
+      <div class="detail-chips">
+        ${a.hasIndex?'<div class="meta-chip">📄 index.html</div>':''}
+        ${a.hasForm?'<div class="meta-chip">📋 form.html</div>':''}
+        <div class="meta-chip">📁 ${a.fileCount}개 파일</div>
+      </div>
+      <div class="detail-acts">
+        <button class="ca ca-open" onclick="window.open('${safeUrl}','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('${safeUrl}')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('${safeUrl}','${safeSlug}')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('${safeSlug}')">
+          <span class="cai">🗑</span>삭제
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleRow(detId,rowId){
+  const det=document.getElementById(detId);
+  const chv=document.querySelectorAll(`#${rowId} .ad-row-chevron`)[0];
+  if(!det)return;
+  const isOpen=det.classList.contains('open');
+  // 다른 모두 닫기
+  document.querySelectorAll('.ad-row-detail.open').forEach(el=>el.classList.remove('open'));
+  document.querySelectorAll('.ad-row-chevron.open').forEach(el=>el.classList.remove('open'));
+  if(!isOpen){det.classList.add('open');if(chv)chv.classList.add('open');}
+}
+
+/* ══ QR 모달 ══ */
+function openQR(url,slug){
+  qrCurUrl=decodeURIComponent(url.replace(/%27/g,"'"));
+  document.getElementById('qr-title').textContent='📱 '+slug;
+  document.getElementById('qr-url').textContent=qrCurUrl;
+  const box=document.getElementById('qr-box');
+  box.innerHTML='';
+  new QRCode(box,{text:qrCurUrl,width:180,height:180,colorDark:'#1a1a2e',colorLight:'#ffffff'});
+  openModal('qr');
+}
+function cpyQrUrl(){cpy(qrCurUrl);}
+function openQrUrl(){window.open(qrCurUrl,'_blank');}
+
+/* ══ 삭제 모달 ══ */
+function openDel(slug){
+  delTarget=slug;
+  document.getElementById('del-name').textContent=slug;
+  document.getElementById('del-err').classList.remove('show');
+  document.getElementById('del-loading').style.display='none';
+  document.getElementById('del-confirm-btn').disabled=false;
+  openModal('del');
+}
+
+async function confirmDel(){
+  if(!delTarget)return;
+  const slug=delTarget;
+  const btn=document.getElementById('del-confirm-btn');
+  const ld=document.getElementById('del-loading');
+  const err=document.getElementById('del-err');
+  btn.disabled=true;ld.style.display='flex';err.classList.remove('show');
+
+  try{
+    // index.html, form.html 각각 sha 조회 후 삭제
+    const files=['index.html','form.html'];
+    let deleted=0;
+    for(const fn of files){
+      const r=await GH(`pages/${slug}/${fn}`);
+      if(!r.ok) continue; // 파일 없으면 스킵
+      const j=await r.json();
+      const sha=j.sha;
+      const dr=await GH(`pages/${slug}/${fn}`,{
+        method:'DELETE',
+        headers:{Authorization:`token ${CFG.token}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+        body:JSON.stringify({message:`[Admin] 광고 삭제: ${slug}/${fn}`,sha})
+      });
+      if(dr.ok) deleted++;
+    }
+
+    ALL_ADS=ALL_ADS.filter(a=>a.slug!==slug);
+    updateStats();
+    renderAds();
+    closeModal('del');
+    showToast(`🗑 ${slug} 삭제 완료 (${deleted}개 파일)`,'success');
+  }catch(e){
+    err.textContent='삭제 실패: '+e.message;err.classList.add('show');
+    btn.disabled=false;
+  }finally{
+    ld.style.display='none';
+  }
+}
+
+/* ══ 유틸 ══ */
+function openModal(id){
+  document.getElementById(id+'-bg').classList.add('open');
+  document.getElementById(id+'-modal').classList.add('open');
+}
+function closeModal(id){
+  document.getElementById(id+'-bg').classList.remove('open');
+  document.getElementById(id+'-modal').classList.remove('open');
+}
+function showGrid(html){document.getElementById('ad-grid-wrap').innerHTML=html;}
+function cpy(txt){
+  navigator.clipboard.writeText(decodeURIComponent(txt.replace(/%27/g,"'")))
+    .then(()=>showToast('🔗 URL 복사 완료','success'));
+}
+
+let _tt;
+function showToast(msg,type='info'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast ${type}`;
+  void t.offsetWidth;t.classList.add('show');
+  clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+function fmtDate(iso){
+  const d=new Date(iso);
+  const now=new Date();
+  const diff=Math.floor((now-d)/1000);
+  if(diff<60) return '방금 전';
+  if(diff<3600) return Math.floor(diff/60)+'분 전';
+  if(diff<86400) return Math.floor(diff/3600)+'시간 전';
+  if(diff<86400*7) return Math.floor(diff/86400)+'일 전';
+  return d.getFullYear()+'.'+(d.getMonth()+1)+'.'+d.getDate();
+}
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ══ 시작 ══ */
+init();
+</script>
+
+
+</body></html>
