@@ -32,13 +32,13 @@ body{
 body::before,body::after{display:none;}
 
 /* ══ 레이아웃 ══ */
-.wrap{max-width:960px;margin:0 auto;padding:0 16px;position:relative;z-index:1;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 14px;position:relative;z-index:1;}
 
 /* ══ 헤더 ══ */
 .header{
-  padding:20px 0 16px;
+  padding:14px 0 12px;
   border-bottom:1px solid rgba(0,0,0,.08);
-  margin-bottom:24px;
+  margin-bottom:14px;
   display:flex;align-items:center;gap:14px;
 }
 .logo{
@@ -97,24 +97,25 @@ body::before,body::after{display:none;}
 
 /* ══ 통계바 ══ */
 .stats-bar{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:0;margin-top:16px;
 }
-@media(max-width:480px){.stats-bar{grid-template-columns:1fr 1fr;}}
+@media(min-width:600px){.stats-bar{grid-template-columns:repeat(4,1fr);}}
 .stat-card{
   background:#fff;border:1px solid var(--bd);
-  border-radius:13px;padding:14px 15px;
-  transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.04);
+  border-radius:10px;padding:10px 12px;
+  transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.04);
+  display:flex;align-items:center;gap:10px;
 }
-.stat-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.08);transform:translateY(-1px);}
-.stat-num{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;line-height:1;margin-bottom:3px;color:var(--text);}
-.stat-lbl{font-size:10px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
-.stat-ico{font-size:16px;margin-bottom:6px;}
+.stat-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.stat-num{font-family:'Noto Sans KR',sans-serif;font-size:20px;font-weight:800;line-height:1;color:var(--text);}
+.stat-lbl{font-size:11px;color:var(--t2);font-weight:600;}
+.stat-ico{font-size:18px;flex-shrink:0;}
 
 /* ══ 검색/필터 ══ */
-.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
 .search-box{
   flex:1;min-width:180px;background:#fff;border:1px solid var(--bd);
-  border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;
+  border-radius:10px;padding:11px 16px;display:flex;align-items:center;gap:8px;
   box-shadow:0 1px 3px rgba(0,0,0,.04);
 }
 .search-box input{
@@ -146,21 +147,21 @@ body::before,body::after{display:none;}
 .ad-row:hover{background:#faf7f3;}
 @keyframes rowIn{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:translateX(0);}}
 
-.ad-row-main{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;}
+.ad-row-main{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;}
 .ad-row-num{
-  width:24px;height:24px;border-radius:7px;background:var(--s3);
+  width:28px;height:28px;border-radius:8px;background:var(--s3);
   border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:700;color:var(--t3);flex-shrink:0;
+  font-size:11px;font-weight:700;color:var(--t3);flex-shrink:0;
 }
-.ad-row-icon{font-size:16px;flex-shrink:0;}
+.ad-row-icon{font-size:20px;flex-shrink:0;}
 .ad-row-info{flex:1;min-width:0;}
 .ad-row-name{
-  font-family:'Syne',sans-serif;font-size:13px;font-weight:800;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px;
+  font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px;
 }
-.ad-row-meta{font-size:10px;color:var(--t3);display:flex;align-items:center;gap:6px;}
+.ad-row-meta{font-size:11px;color:var(--t3);display:flex;align-items:center;gap:8px;}
 .ad-row-badge{
-  font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;flex-shrink:0;
+  font-size:10px;padding:3px 10px;border-radius:10px;font-weight:700;flex-shrink:0;
 }
 .b-live{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);}
 .b-check{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
@@ -192,12 +193,12 @@ body::before,body::after{display:none;}
 }
 .detail-acts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
 .ca{
-  border:none;border-radius:9px;padding:10px 4px;cursor:pointer;
+  border:none;border-radius:10px;padding:12px 6px;cursor:pointer;
   transition:all .15s;display:flex;flex-direction:column;align-items:center;
-  gap:3px;font-size:9px;font-weight:700;font-family:var(--font);
+  gap:4px;font-size:11px;font-weight:700;font-family:var(--font);
 }
 .ca:active{transform:scale(.91);}
-.ca .cai{font-size:16px;}
+.ca .cai{font-size:20px;}
 .ca-open{background:rgba(74,126,248,.1);color:var(--blue2);border:1px solid rgba(74,126,248,.2);}
 .ca-copy{background:rgba(6,182,212,.08);color:#22d3ee;border:1px solid rgba(6,182,212,.2);}
 .ca-qr{background:rgba(124,92,252,.08);color:#a78bfa;border:1px solid rgba(124,92,252,.2);}
@@ -387,35 +388,11 @@ body::before,body::after{display:none;}
     </div>
   </div>
 
-  <!-- ── 통계 ── -->
-  <div class="stats-bar" id="stats-bar" style="display: grid;">
-    <div class="stat-card">
-      <div class="stat-ico">📋</div>
-      <div class="stat-num" id="st-total">1</div>
-      <div class="stat-lbl">전체 광고</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-ico">🌐</div>
-      <div class="stat-num" id="st-live">1</div>
-      <div class="stat-lbl">배포 활성</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-ico">📅</div>
-      <div class="stat-num" id="st-today">1</div>
-      <div class="stat-lbl">오늘 업데이트</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-ico">💾</div>
-      <div class="stat-num" id="st-size">3</div>
-      <div class="stat-lbl">총 파일 수</div>
-    </div>
-  </div>
-
-  <!-- ── 검색/필터 ── -->
+  <!-- ── 검색/필터 툴바 (목록 위) ── -->
   <div class="toolbar" id="toolbar" style="display: flex;">
     <div class="search-box">
       <span style="font-size:14px;color:var(--t3)">🔍</span>
-      <input type="text" id="search-inp" placeholder="광고 슬러그 검색..." oninput="filterAds()">
+      <input type="text" id="search-inp" placeholder="광고 검색..." oninput="filterAds()">
     </div>
     <div class="filter-tabs">
       <button class="ftab active" id="ft-all" onclick="setFTab('all',this)">전체</button>
@@ -430,8 +407,8 @@ body::before,body::after{display:none;}
     </select>
   </div>
 
-  <!-- ── 광고 목록 ── -->
-  <div id="ad-grid-wrap"><div><div class="grp-hd">
+  <!-- ── 광고 목록 (메인, 상단 배치) ── -->
+  <div id="ad-grid-wrap" style="margin-bottom:20px"><div><div class="grp-hd">
       
       <span>오늘</span>
       <span style="color:var(--t2);font-size:9px;font-weight:600">1개</span>
@@ -478,6 +455,30 @@ body::before,body::after{display:none;}
       </div>
     </div>
   </div></div></div></div>
+
+  <!-- ── 통계 (하단 배치) ── -->
+  <div class="stats-bar" id="stats-bar" style="display: grid; margin-top: 4px;">
+    <div class="stat-card">
+      <div class="stat-ico">📋</div>
+      <div class="stat-num" id="st-total">1</div>
+      <div class="stat-lbl">전체 광고</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">🌐</div>
+      <div class="stat-num" id="st-live">1</div>
+      <div class="stat-lbl">배포 활성</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">📅</div>
+      <div class="stat-num" id="st-today">1</div>
+      <div class="stat-lbl">오늘 업데이트</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">💾</div>
+      <div class="stat-num" id="st-size">3</div>
+      <div class="stat-lbl">총 파일 수</div>
+    </div>
+  </div>
 
 </div><!-- /wrap -->
 
