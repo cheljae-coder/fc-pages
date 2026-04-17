@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>삼성생명/삼성화재 치매통합 치료비 특약 (삼성생명/삼성화재) 상담신청</title>
+<title>삼성생명/삼성화재 삼성생명/삼성화재 치매통합 치료비 특약 상담신청</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -62,8 +62,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
 <div id="_ld"><div class="_sp"></div><div style="color:#fff;font-size:15px;font-weight:700;font-family:sans-serif" id="_ld_msg">처리 중...</div></div>
 
 <div class="wrap" id="form-wrap">
-<div class="top-bar">🎯 삼성생명/삼성화재 — 치매통합 치료비 특약 (삼성생명/삼성화재) 상담신청</div>
-<div class="date-bar">신청일시: <strong id="dt-str">2026년 4월 17일 18시 18분</strong></div>
+<div class="top-bar">🎯 삼성생명/삼성화재 — 삼성생명/삼성화재 치매통합 치료비 특약 상담신청</div>
+<div class="date-bar">신청일시: <strong id="dt-str">2026년 4월 17일 18시 32분</strong></div>
 
 <div class="sec">
   <div class="sec-t">📋 상담 신청 정보</div>
@@ -94,7 +94,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
   </div>
   <div class="field">
     <div class="fl">문의내용</div>
-    <div class="fi"><textarea id="f-memo" placeholder="치매통합 치료비 특약 (삼성생명/삼성화재)에 대해 궁금한 점을 입력하십시오."></textarea></div>
+    <div class="fi"><textarea id="f-memo" placeholder="삼성생명/삼성화재 치매통합 치료비 특약에 대해 궁금한 점을 입력하십시오."></textarea></div>
   </div>
 </div>
 
@@ -145,7 +145,7 @@ var _fa='https://formsubmit.co/ajax/cheljae@naver.com';
 var _useEmail=true;
 var _kakao='';
 var _smsnum='010-3371-2512';
-var _pn='치매통합 치료비 특약 (삼성생명/삼성화재)';
+var _pn='삼성생명/삼성화재 치매통합 치료비 특약';
 var _fc='양금남';
 var _co='삼성생명/삼성화재';
 var _phone='010-8116-2513';
@@ -276,29 +276,30 @@ async function sendEmail(name){
   var memo=(document.getElementById('f-memo')||{}).value.trim();
   var gender=(document.querySelector('input[name="성별"]:checked')||{}).value||'';
   var phone=(document.getElementById('hd-phone')||{}).value;
-  var fd=new FormData();
-  fd.append('_subject',_pn+' 상담신청 — '+name);
-  fd.append('_captcha','false');
-  fd.append('_template','table');
-  fd.append('신청일시',(document.getElementById('dt-str')||{}).textContent||'');
-  fd.append('상품명',_pn);
-  fd.append('담당자',_fc+' ('+_co+')');
-  fd.append('담당자연락처',_phone);
-  fd.append('고객이름',name);
-  fd.append('성별',gender);
-  fd.append('생년월일',birth);
-  fd.append('고객연락처',phone);
-  fd.append('문의내용',memo||'(내용 없음)');
-  fd.append('개인정보수집이용',document.getElementById('c1').checked?'동의':'미동의');
-  fd.append('개인정보위탁제공',document.getElementById('c2').checked?'동의':'미동의');
-  fd.append('연락동의',document.getElementById('c3').checked?'동의':'미동의');
-  fd.append('이메일마케팅',document.getElementById('c4').checked?'동의':'미동의');
-  fd.append('SMS마케팅',document.getElementById('c5').checked?'동의':'미동의');
+  var payload={
+    '_subject':_pn+' 상담신청 — '+name,
+    '_captcha':'false',
+    '_template':'table',
+    '신청일시':(document.getElementById('dt-str')||{}).textContent||'',
+    '상품명':_pn,
+    '담당자':_fc+' ('+_co+')',
+    '담당자연락처':_phone,
+    '고객이름':name,
+    '성별':gender,
+    '생년월일':birth,
+    '고객연락처':phone,
+    '문의내용':memo||'(내용 없음)',
+    '개인정보수집이용':document.getElementById('c1').checked?'동의':'미동의',
+    '개인정보위탁제공':document.getElementById('c2').checked?'동의':'미동의',
+    '연락동의':document.getElementById('c3').checked?'동의':'미동의',
+    '이메일마케팅':document.getElementById('c4').checked?'동의':'미동의',
+    'SMS마케팅':document.getElementById('c5').checked?'동의':'미동의'
+  };
   try{
     var res=await fetch(_fa,{
       method:'POST',
-      body:fd,
-      headers:{'Accept':'application/json'}
+      body:JSON.stringify(payload),
+      headers:{'Content-Type':'application/json','Accept':'application/json'}
     });
     if(!res.ok){
       var j=await res.json().catch(function(){return {};});
@@ -306,7 +307,7 @@ async function sendEmail(name){
     }
     var result=await res.json().catch(function(){return {};});
     if(result.success==='false'||result.success===false){
-      throw new Error('FormSubmit 전송 실패: '+JSON.stringify(result));
+      throw new Error('FormSubmit 전송 실패');
     }
   }catch(e){
     console.warn('이메일 전송 오류:',e);
