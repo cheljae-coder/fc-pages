@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>삼성생명/삼성화재 치매통합 치료비 상담신청</title>
+<title>삼성생명/삼성화재 치매통합 치료비 특약 (삼성생명/삼성화재) 상담신청</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -62,8 +62,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
 <div id="_ld"><div class="_sp"></div><div style="color:#fff;font-size:15px;font-weight:700;font-family:sans-serif" id="_ld_msg">처리 중...</div></div>
 
 <div class="wrap" id="form-wrap">
-<div class="top-bar">🎯 삼성생명/삼성화재 — 치매통합 치료비 상담신청</div>
-<div class="date-bar">신청일시: <strong id="dt-str">2026년 4월 17일 5시 20분</strong></div>
+<div class="top-bar">🎯 삼성생명/삼성화재 — 치매통합 치료비 특약 (삼성생명/삼성화재) 상담신청</div>
+<div class="date-bar">신청일시: <strong id="dt-str">2026년 4월 17일 18시 18분</strong></div>
 
 <div class="sec">
   <div class="sec-t">📋 상담 신청 정보</div>
@@ -94,7 +94,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
   </div>
   <div class="field">
     <div class="fl">문의내용</div>
-    <div class="fi"><textarea id="f-memo" placeholder="치매통합 치료비에 대해 궁금한 점을 입력하십시오."></textarea></div>
+    <div class="fi"><textarea id="f-memo" placeholder="치매통합 치료비 특약 (삼성생명/삼성화재)에 대해 궁금한 점을 입력하십시오."></textarea></div>
   </div>
 </div>
 
@@ -141,11 +141,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
 </div>
 
 <script>
-var _fa='https://formsubmit.co/cheljae@naver.com';
+var _fa='https://formsubmit.co/ajax/cheljae@naver.com';
 var _useEmail=true;
 var _kakao='';
 var _smsnum='010-3371-2512';
-var _pn='치매통합 치료비';
+var _pn='치매통합 치료비 특약 (삼성생명/삼성화재)';
 var _fc='양금남';
 var _co='삼성생명/삼성화재';
 var _phone='010-8116-2513';
@@ -294,8 +294,24 @@ async function sendEmail(name){
   fd.append('연락동의',document.getElementById('c3').checked?'동의':'미동의');
   fd.append('이메일마케팅',document.getElementById('c4').checked?'동의':'미동의');
   fd.append('SMS마케팅',document.getElementById('c5').checked?'동의':'미동의');
-  try{await fetch(_fa,{method:'POST',body:fd,headers:{Accept:'application/json'}});}
-  catch(e){console.warn('이메일 전송 오류:',e);}
+  try{
+    var res=await fetch(_fa,{
+      method:'POST',
+      body:fd,
+      headers:{'Accept':'application/json'}
+    });
+    if(!res.ok){
+      var j=await res.json().catch(function(){return {};});
+      throw new Error('FormSubmit 오류: '+(j.message||res.status));
+    }
+    var result=await res.json().catch(function(){return {};});
+    if(result.success==='false'||result.success===false){
+      throw new Error('FormSubmit 전송 실패: '+JSON.stringify(result));
+    }
+  }catch(e){
+    console.warn('이메일 전송 오류:',e);
+    throw e;
+  }
 }
 
 /* PDF 생성 (선택기능 — 실패해도 신청은 완료됨) */
