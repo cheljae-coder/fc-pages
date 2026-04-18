@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>삼성생명/삼성화재 치매통합 치료비 상담신청</title>
+<title>삼성생명/삼성화재 치매통합치료비 상담신청</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -62,8 +62,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
 <div id="_ld"><div class="_sp"></div><div style="color:#fff;font-size:15px;font-weight:700;font-family:sans-serif" id="_ld_msg">처리 중...</div></div>
 
 <div class="wrap" id="form-wrap">
-<div class="top-bar">🎯 삼성생명/삼성화재 — 치매통합 치료비 상담신청</div>
-<div class="date-bar">신청일시: <strong id="dt-str">2026년 4월 18일 10시 3분</strong></div>
+<div class="top-bar">🎯 삼성생명/삼성화재 — 치매통합치료비 상담신청</div>
+<div class="date-bar">신청일시: <strong id="dt-str">2026년 4월 18일 10시 13분</strong></div>
 
 <div class="sec">
   <div class="sec-t">📋 상담 신청 정보</div>
@@ -94,7 +94,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
   </div>
   <div class="field">
     <div class="fl">문의내용</div>
-    <div class="fi"><textarea id="f-memo" placeholder="치매통합 치료비에 대해 궁금한 점을 입력하십시오."></textarea></div>
+    <div class="fi"><textarea id="f-memo" placeholder="치매통합치료비에 대해 궁금한 점을 입력하십시오."></textarea></div>
   </div>
 </div>
 
@@ -121,7 +121,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
 
 <div class="btn-area">
   <button class="sub-btn" id="sub-btn" onclick="doSubmit()">📨 상담 신청하기</button>
-  <button class="pdf-btn" onclick="doPdfOnly()">📄 신청서 PDF로 저장</button>
 </div>
 </div>
 
@@ -134,7 +133,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f7f8fc;font-size:14px;}
     <div class="mbtns" id="dm-btns">
       <button class="mbtn mbtn-g" id="btn-kakao" style="display:none"></button>
       <button class="mbtn" id="btn-sms" style="display:none"></button>
-      <button class="mbtn mbtn-g" onclick="doPdfOnly()">📥 신청서 PDF 저장</button>
       <button class="mbtn" onclick="document.getElementById('dm').classList.remove('show')">확인</button>
     </div>
   </div>
@@ -145,7 +143,7 @@ var _fa='https://formsubmit.co/ajax/cheljae@naver.com';
 var _useEmail=true;
 var _kakao='';
 var _smsnum='';
-var _pn='치매통합 치료비';
+var _pn='치매통합치료비';
 var _fc='양금남';
 var _co='삼성생명/삼성화재';
 var _phone='010-8116-2513';
@@ -315,39 +313,6 @@ async function sendEmail(name){
   }
 }
 
-/* PDF 생성 (선택기능 — 실패해도 신청은 완료됨) */
-async function tryGenPDF(name){
-  if(typeof html2canvas==='undefined'||typeof window.jspdf==='undefined'){
-    console.warn('PDF 라이브러리 미로드, 건너뜀');
-    return;
-  }
-  try{
-    var wrap=document.getElementById('form-wrap');
-    var btns=document.querySelector('.btn-area');
-    if(btns)btns.style.display='none';
-    var canvas=await html2canvas(wrap,{scale:1.8,useCORS:true,backgroundColor:'#ffffff',logging:false});
-    if(btns)btns.style.display='flex';
-    var {jsPDF}=window.jspdf;
-    var a4w=595.28,a4h=841.89;
-    var ratio=a4w/canvas.width;
-    var doc=new jsPDF({unit:'pt',format:'a4'});
-    var imgH=canvas.height*ratio;
-    var pages=Math.ceil(imgH/a4h);
-    for(var p=0;p<pages;p++){
-      if(p>0)doc.addPage();
-      var sy=p*(a4h/ratio);
-      var sh=Math.min(a4h/ratio,canvas.height-sy);
-      var sc=document.createElement('canvas');
-      sc.width=canvas.width;sc.height=sh;
-      sc.getContext('2d').drawImage(canvas,0,sy,canvas.width,sh,0,0,canvas.width,sh);
-      doc.addImage(sc.toDataURL('image/jpeg',0.88),'JPEG',0,0,a4w,sh*ratio);
-    }
-    doc.save(_pn+'_상담신청서_'+name+'.pdf');
-  }catch(e){
-    console.warn('PDF 생성 실패(무시):', e);
-    if(document.querySelector('.btn-area'))document.querySelector('.btn-area').style.display='flex';
-  }
-}
 
 /* 신청 버튼 */
 async function doSubmit(){
@@ -403,8 +368,6 @@ async function doSubmit(){
   // 4. 완료 처리
   showDoneModal(name,sent);
   btn.disabled=false;
-  // PDF 백그라운드 저장
-  tryGenPDF(name);
 }
 
 function showDoneModal(name,sent){
@@ -457,19 +420,7 @@ function doSMS(){
   window.location.href='sms:'+num+'?body='+encodeURIComponent(msg);
 }
 
-/* PDF만 저장 */
-async function doPdfOnly(){
-  showLoad('📄 PDF 생성 중...');
-  var name=(document.getElementById('f-name')||{}).value.trim()||'고객';
-  await tryGenPDF(name);
-  hideLoad();
-  if(typeof html2canvas==='undefined'){
-    alert('PDF 기능은 인터넷 연결이 필요합니다. 연결 후 다시 시도하십시오.');
-  }
-}
 </script>
-<!-- PDF 라이브러리 (선택적 로드 — 실패해도 신청은 작동) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" onerror="console.warn('html2canvas 로드 실패')"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" onerror="console.warn('jsPDF 로드 실패')"></script>
+
 </body>
 </html>
