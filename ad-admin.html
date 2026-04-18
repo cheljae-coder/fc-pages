@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#060a14">
-<title>AI 광고 Pro — 관리자</title>
+<title>배포 관리 — AI 광고 Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&amp;family=Syne:wght@700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -101,12 +101,16 @@ body::before,body::after{display:none;}
 }
 @media(min-width:600px){.stats-bar{grid-template-columns:repeat(4,1fr);}}
 .stat-card{
-  background:#fff;border:1px solid var(--bd);
+  background:#fff;border:1.5px solid var(--bd);
   border-radius:10px;padding:10px 12px;
   transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.04);
   display:flex;align-items:center;gap:10px;
+  cursor:pointer;user-select:none;
 }
-.stat-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.stat-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.12);transform:translateY(-1px);}
+.stat-card.active{border-color:var(--blue);background:#eef4ff;box-shadow:0 2px 12px rgba(45,107,228,.15);}
+.stat-card.active .stat-num{color:var(--blue);}
+.stat-card.active .stat-lbl{color:var(--blue2);}
 .stat-num{font-family:'Noto Sans KR',sans-serif;font-size:20px;font-weight:800;line-height:1;color:var(--text);}
 .stat-lbl{font-size:11px;color:var(--t2);font-weight:600;}
 .stat-ico{font-size:18px;flex-shrink:0;}
@@ -332,6 +336,59 @@ body::before,body::after{display:none;}
 }
 .btn-select-mode.active{background:var(--red);color:#fff;}
 
+
+/* ══ 파일 목록 ══ */
+.file-list{margin:8px 0 10px;display:flex;flex-direction:column;gap:4px;}
+.file-row{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border:1px solid var(--bd);border-radius:8px;
+  padding:9px 12px;
+}
+.file-ico{font-size:15px;flex-shrink:0;}
+.file-info{flex:1;min-width:0;}
+.file-name{font-size:12px;font-weight:700;color:var(--text);font-family:var(--mono);}
+.file-size{font-size:10px;color:var(--t3);margin-top:1px;}
+.file-acts{display:flex;gap:5px;flex-shrink:0;}
+.file-btn{
+  border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;
+  cursor:pointer;font-family:var(--font);transition:all .15s;
+}
+.file-btn:active{transform:scale(.92);}
+.fbtn-view{background:rgba(74,126,248,.1);color:var(--blue2);}
+.fbtn-del{background:rgba(239,68,68,.08);color:var(--red);}
+.file-edit-area{display:none;margin-top:6px;padding:10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd2);}
+.file-edit-area.open{display:block;}
+.file-edit-area textarea{
+  width:100%;min-height:120px;background:var(--s3);border:1px solid var(--bd2);
+  border-radius:6px;padding:8px;color:var(--text);font-family:var(--mono);
+  font-size:11px;line-height:1.5;resize:vertical;outline:none;
+}
+.file-edit-btns{display:flex;gap:6px;margin-top:8px;}
+
+
+/* ══ 파일 체크박스 + 뷰어 ══ */
+.file-cb{width:18px;height:18px;border-radius:5px;border:2px solid var(--bd2);
+  background:#fff;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.file-cb.checked{background:var(--blue);border-color:var(--blue);}
+.file-cb.checked::after{content:'✓';font-size:11px;font-weight:900;color:#fff;}
+.file-sel-bar{display:none;align-items:center;gap:8px;padding:8px 10px;
+  background:#eef4ff;border:1px solid rgba(45,107,228,.2);border-radius:8px;margin-bottom:8px;}
+.file-sel-bar.show{display:flex;}
+.file-sel-bar span{flex:1;font-size:12px;font-weight:700;color:var(--blue);}
+.file-view-modal{display:none;position:fixed;inset:0;z-index:500;flex-direction:column;background:var(--s1);}
+.file-view-modal.open{display:flex;}
+.file-view-hd{display:flex;align-items:center;gap:10px;padding:14px 16px;
+  border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0;}
+.file-view-name{flex:1;font-size:13px;font-weight:800;font-family:var(--mono);color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-view-body{flex:1;overflow:auto;padding:0;}
+.file-view-body textarea{width:100%;height:100%;border:none;outline:none;
+  background:var(--s2);color:var(--text);font-family:var(--mono);font-size:12px;
+  line-height:1.7;padding:16px;resize:none;box-sizing:border-box;}
+.file-view-body img{max-width:100%;display:block;margin:0 auto;padding:16px;}
+.file-view-foot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--bd);
+  background:var(--s1);flex-shrink:0;}
+
 </style>
 </head>
 <body>
@@ -342,8 +399,8 @@ body::before,body::after{display:none;}
   <div class="header">
     <div class="logo">🎯</div>
     <div>
-      <div class="logo-txt">AI <em>광고 Pro</em></div>
-      <div style="font-size:10px;color:var(--t3);font-weight:600;letter-spacing:.4px">ADMIN DASHBOARD</div>
+      <div class="logo-txt">AI <em>배포 관리</em></div>
+      <div style="font-size:10px;color:var(--t3);font-weight:600;letter-spacing:.4px">DEPLOY MANAGER</div>
     </div>
     <div class="header-right">
       <button class="btn btn-ghost btn-sm" onclick="openDeploy()" title="관리 페이지를 GitHub Pages에 배포">☁️ 배포</button>
@@ -411,7 +468,7 @@ body::before,body::after{display:none;}
   <div id="ad-grid-wrap" style="margin-bottom:20px"><div><div class="grp-hd">
       
       <span>오늘</span>
-      <span style="color:var(--t2);font-size:9px;font-weight:600">1개</span>
+      <span style="color:var(--t2);font-size:9px;font-weight:600">14개</span>
       <div class="grp-hd-line"></div>
     </div>
     <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-0">
@@ -421,25 +478,22 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad">ad</div>
         <div class="ad-row-meta">
-          <span>🕐 8분 전</span>
-          <span>· 📁 15개</span>
+          <span>🕐 46분 전</span>
+          <span>· 📁 8개</span>
         </div>
       </div>
       <div class="ad-row-badge b-live">🟢 라이브</div>
       <div class="ad-row-chevron" id="chv-0">›</div>
     </div>
-    <div class="ad-row-detail" id="det-0">
+    <div class="ad-row-detail" id="det-0" data-slug="ad">
+      <!-- URL 바 -->
       <div class="detail-url">
         <div class="url-dot"></div>
         <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad/</div>
         <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad/')">📋</button>
       </div>
-      <div class="detail-chips">
-        <div class="meta-chip">📄 index.html</div>
-        <div class="meta-chip">📋 form.html</div>
-        <div class="meta-chip">📁 15개 파일</div>
-      </div>
-      <div class="detail-acts">
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
         <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad/','_blank')">
           <span class="cai">🌐</span>열기
         </button>
@@ -450,32 +504,757 @@ body::before,body::after{display:none;}
           <span class="cai">📱</span>QR
         </button>
         <button class="ca ca-del" onclick="openDel('ad')">
-          <span class="cai">🗑</span>삭제
+          <span class="cai">🗑</span>폴더삭제
         </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad" data-slug="ad">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-1">
+    <div class="ad-row-main" onclick="toggleRow('det-1','row-1')">  
+      <div class="ad-row-num">2</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-173929">ad-20260418-173929</div>
+        <div class="ad-row-meta">
+          <span>🕐 4시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-1">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-1" data-slug="ad-20260418-173929">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-173929/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-173929/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-173929/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-173929/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-173929/','ad-20260418-173929')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-173929')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-173929" data-slug="ad-20260418-173929">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-2">
+    <div class="ad-row-main" onclick="toggleRow('det-2','row-2')">  
+      <div class="ad-row-num">3</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-172031">ad-20260418-172031</div>
+        <div class="ad-row-meta">
+          <span>🕐 5시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-2">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-2" data-slug="ad-20260418-172031">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-172031/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-172031/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-172031/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-172031/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-172031/','ad-20260418-172031')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-172031')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-172031" data-slug="ad-20260418-172031">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-3">
+    <div class="ad-row-main" onclick="toggleRow('det-3','row-3')">  
+      <div class="ad-row-num">4</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-170658">ad-20260418-170658</div>
+        <div class="ad-row-meta">
+          <span>🕐 5시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-3">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-3" data-slug="ad-20260418-170658">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-170658/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-170658/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-170658/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-170658/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-170658/','ad-20260418-170658')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-170658')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-170658" data-slug="ad-20260418-170658">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-4">
+    <div class="ad-row-main" onclick="toggleRow('det-4','row-4')">  
+      <div class="ad-row-num">5</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-165447">ad-20260418-165447</div>
+        <div class="ad-row-meta">
+          <span>🕐 5시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-4">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-4" data-slug="ad-20260418-165447">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-165447/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-165447/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-165447/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-165447/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-165447/','ad-20260418-165447')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-165447')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-165447" data-slug="ad-20260418-165447">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-5">
+    <div class="ad-row-main" onclick="toggleRow('det-5','row-5')">  
+      <div class="ad-row-num">6</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-164906">ad-20260418-164906</div>
+        <div class="ad-row-meta">
+          <span>🕐 5시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-5">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-5" data-slug="ad-20260418-164906">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164906/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164906/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164906/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164906/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164906/','ad-20260418-164906')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-164906')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-164906" data-slug="ad-20260418-164906">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-6">
+    <div class="ad-row-main" onclick="toggleRow('det-6','row-6')">  
+      <div class="ad-row-num">7</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-164830">ad-20260418-164830</div>
+        <div class="ad-row-meta">
+          <span>🕐 5시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-6">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-6" data-slug="ad-20260418-164830">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164830/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164830/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164830/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164830/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164830/','ad-20260418-164830')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-164830')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-164830" data-slug="ad-20260418-164830">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-7">
+    <div class="ad-row-main" onclick="toggleRow('det-7','row-7')">  
+      <div class="ad-row-num">8</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-164322">ad-20260418-164322</div>
+        <div class="ad-row-meta">
+          <span>🕐 5시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-7">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-7" data-slug="ad-20260418-164322">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164322/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164322/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164322/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164322/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-164322/','ad-20260418-164322')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-164322')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-164322" data-slug="ad-20260418-164322">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-8">
+    <div class="ad-row-main" onclick="toggleRow('det-8','row-8')">  
+      <div class="ad-row-num">9</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-163812">ad-20260418-163812</div>
+        <div class="ad-row-meta">
+          <span>🕐 6시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-8">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-8" data-slug="ad-20260418-163812">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-163812/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-163812/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-163812/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-163812/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-163812/','ad-20260418-163812')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-163812')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-163812" data-slug="ad-20260418-163812">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-9">
+    <div class="ad-row-main" onclick="toggleRow('det-9','row-9')">  
+      <div class="ad-row-num">10</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-163241">ad-20260418-163241</div>
+        <div class="ad-row-meta">
+          <span>🕐 6시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-9">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-9" data-slug="ad-20260418-163241">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-163241/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-163241/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-163241/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-163241/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-163241/','ad-20260418-163241')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-163241')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-163241" data-slug="ad-20260418-163241">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-10">
+    <div class="ad-row-main" onclick="toggleRow('det-10','row-10')">  
+      <div class="ad-row-num">11</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-162901">ad-20260418-162901</div>
+        <div class="ad-row-meta">
+          <span>🕐 6시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-10">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-10" data-slug="ad-20260418-162901">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-162901/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-162901/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-162901/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-162901/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-162901/','ad-20260418-162901')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-162901')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-162901" data-slug="ad-20260418-162901">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-11">
+    <div class="ad-row-main" onclick="toggleRow('det-11','row-11')">  
+      <div class="ad-row-num">12</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-125341">ad-20260418-125341</div>
+        <div class="ad-row-meta">
+          <span>🕐 9시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-11">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-11" data-slug="ad-20260418-125341">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125341/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125341/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125341/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125341/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125341/','ad-20260418-125341')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-125341')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-125341" data-slug="ad-20260418-125341">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-12">
+    <div class="ad-row-main" onclick="toggleRow('det-12','row-12')">  
+      <div class="ad-row-num">13</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-125308">ad-20260418-125308</div>
+        <div class="ad-row-meta">
+          <span>🕐 9시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-12">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-12" data-slug="ad-20260418-125308">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125308/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125308/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125308/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125308/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125308/','ad-20260418-125308')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-125308')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-125308" data-slug="ad-20260418-125308">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-13">
+    <div class="ad-row-main" onclick="toggleRow('det-13','row-13')">  
+      <div class="ad-row-num">14</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-125150">ad-20260418-125150</div>
+        <div class="ad-row-meta">
+          <span>🕐 9시간 전</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-13">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-13" data-slug="ad-20260418-125150">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125150/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125150/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125150/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125150/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-125150/','ad-20260418-125150')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-125150')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-125150" data-slug="ad-20260418-125150">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div></div><div class="grp-hd">
+      
+      <span>날짜 없음</span>
+      <span style="color:var(--t2);font-size:9px;font-weight:600">4개</span>
+      <div class="grp-hd-line"></div>
+    </div>
+    <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-14">
+    <div class="ad-row-main" onclick="toggleRow('det-14','row-14')">  
+      <div class="ad-row-num">15</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-124908">ad-20260418-124908</div>
+        <div class="ad-row-meta">
+          <span>🕐 —</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-14">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-14" data-slug="ad-20260418-124908">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-124908/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-124908/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-124908/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-124908/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-124908/','ad-20260418-124908')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-124908')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-124908" data-slug="ad-20260418-124908">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-15">
+    <div class="ad-row-main" onclick="toggleRow('det-15','row-15')">  
+      <div class="ad-row-num">16</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-122847">ad-20260418-122847</div>
+        <div class="ad-row-meta">
+          <span>🕐 —</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-15">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-15" data-slug="ad-20260418-122847">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-122847/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-122847/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-122847/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-122847/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-122847/','ad-20260418-122847')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-122847')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-122847" data-slug="ad-20260418-122847">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-16">
+    <div class="ad-row-main" onclick="toggleRow('det-16','row-16')">  
+      <div class="ad-row-num">17</div>
+      <div class="ad-row-icon">🌐</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-122641">ad-20260418-122641</div>
+        <div class="ad-row-meta">
+          <span>🕐 —</span>
+          <span>· 📁 3개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🟢 라이브</div>
+      <div class="ad-row-chevron" id="chv-16">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-16" data-slug="ad-20260418-122641">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-122641/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-122641/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-122641/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-122641/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-122641/','ad-20260418-122641')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-122641')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-122641" data-slug="ad-20260418-122641">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div><div class="ad-row" id="row-17">
+    <div class="ad-row-main" onclick="toggleRow('det-17','row-17')">  
+      <div class="ad-row-num">18</div>
+      <div class="ad-row-icon">📄</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="ad-20260418-121015">ad-20260418-121015</div>
+        <div class="ad-row-meta">
+          <span>🕐 —</span>
+          <span>· 📁 1개</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-check">⏳ 미확인</div>
+      <div class="ad-row-chevron" id="chv-17">›</div>
+    </div>
+    <div class="ad-row-detail" id="det-17" data-slug="ad-20260418-121015">
+      <!-- URL 바 -->
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-121015/</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-121015/')">📋</button>
+      </div>
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-121015/','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-121015/')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-20260418-121015/','ad-20260418-121015')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="openDel('ad-20260418-121015')">
+          <span class="cai">🗑</span>폴더삭제
+        </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-ad-20260418-121015" data-slug="ad-20260418-121015">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
       </div>
     </div>
   </div></div></div></div>
 
   <!-- ── 통계 (하단 배치) ── -->
   <div class="stats-bar" id="stats-bar" style="display: grid; margin-top: 4px;">
-    <div class="stat-card">
+    <div class="stat-card" id="sc-all" onclick="statFilter('all')">
       <div class="stat-ico">📋</div>
-      <div class="stat-num" id="st-total">1</div>
+      <div class="stat-num" id="st-total">18</div>
       <div class="stat-lbl">전체 광고</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" id="sc-live" onclick="statFilter('live')">
       <div class="stat-ico">🌐</div>
-      <div class="stat-num" id="st-live">1</div>
+      <div class="stat-num" id="st-live">17</div>
       <div class="stat-lbl">배포 활성</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" id="sc-today" onclick="statFilter('today')">
       <div class="stat-ico">📅</div>
-      <div class="stat-num" id="st-today">1</div>
+      <div class="stat-num" id="st-today">14</div>
       <div class="stat-lbl">오늘 업데이트</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" id="sc-files" onclick="statFilter('files')">
       <div class="stat-ico">💾</div>
-      <div class="stat-num" id="st-size">15</div>
+      <div class="stat-num" id="st-size">57</div>
       <div class="stat-lbl">총 파일 수</div>
     </div>
   </div>
@@ -537,20 +1316,43 @@ body::before,body::after{display:none;}
 <div class="modal-bg open" id="dep-bg" onclick="closeModal('dep')"></div>
 <div class="modal open" id="dep-modal">
   <div class="modal-hd">
-    <div class="modal-title">☁️ 관리 페이지 GitHub 배포</div>
+    <div class="modal-title">☁️ GitHub 배포</div>
     <button class="modal-close" onclick="closeModal('dep')">✕</button>
   </div>
   <div class="modal-body">
-    <div style="background:rgba(74,126,248,.07);border:1px solid rgba(74,126,248,.2);border-radius:11px;padding:14px;font-size:12px;color:var(--t2);line-height:1.8;margin-bottom:16px">
-      <strong style="color:var(--text)">왜 배포해야 하나요?</strong><br>
-      파일을 직접 열면(file://) 브라우저가 GitHub API를 차단합니다.<br>
-      GitHub Pages에 배포하면 아래 URL로 접속하여<br>
-      모든 기능이 정상 작동합니다.<br><br>
+    <!-- 파일 선택 -->
+    <div style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">배포할 파일</div>
+        <button class="file-btn fbtn-view" onclick="addDepFile()" style="font-size:11px">➕ 파일 추가</button>
+      </div>
+      <!-- 고정: ad-admin.html -->
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:#fff;border:1.5px solid var(--bd);border-radius:10px;margin-bottom:6px">
+        <input type="checkbox" id="dep-cb-admin" checked="" style="width:16px;height:16px;accent-color:var(--blue);flex-shrink:0">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:700;color:var(--text)">📊 ad-admin.html</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:1px">배포 관리 대시보드 (현재 파일)</div>
+        </div>
+      </div>
+      <!-- 동적 파일 목록 -->
+      <div id="dep-extra-files">
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 13px;background:#fff;border:1.5px solid rgba(74,126,248,.3);border-radius:10px;margin-bottom:6px">
+      <input type="checkbox" id="dep-cb-0" checked="" style="width:16px;height:16px;accent-color:var(--blue);flex-shrink:0">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;color:var(--text)">📄 fc-app-free-10.html</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px">232KB</div>
+      </div>
+      <button style="border:none;background:none;color:var(--red);font-size:16px;cursor:pointer;padding:2px 4px" onclick="removeDepFile(0)">✕</button>
+    </div></div>
+      <!-- 파일 추가 입력창 -->
+      <input type="file" id="dep-add-file-input" accept=".html,.js,.css,.json,.txt,.png,.jpg,.jpeg" multiple="" style="display:none" onchange="onDepFilesAdded(this)">
+    </div>
+    <div style="background:rgba(74,126,248,.07);border:1px solid rgba(74,126,248,.2);border-radius:10px;padding:11px 13px;font-size:11px;color:var(--t2);line-height:1.8;margin-bottom:14px">
       📌 배포 후 URL:<br>
-      <span id="dep-url-preview" style="font-family:var(--mono);color:var(--blue2);font-size:11px;word-break:break-all">https://cheljae-coder.github.io/fc-pages/ad-admin.html</span>
+      <span id="dep-url-preview" style="font-family:var(--mono);color:var(--blue2);font-size:10px;word-break:break-all">https://cheljae-coder.github.io/fc-pages/ad-admin.html</span>
     </div>
     <div class="loading" id="dep-loading" style="display: flex; padding: 16px 0px;">
-      <div class="spin"></div><span id="dep-msg">현재 페이지 준비 중...</span>
+      <div class="spin"></div><span id="dep-msg">(1/2) ad-admin.html 업로드 중...</span>
     </div>
     <div class="err-box" id="dep-err" style="margin-bottom:12px"></div>
     <div id="dep-success" style="display:none;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:11px;padding:14px;text-align:center;margin-bottom:14px">
@@ -592,7 +1394,7 @@ body::before,body::after{display:none;}
   </div>
 </div>
 
-<div class="toast success" id="toast">✅ 연결 성공</div>
+<div class="toast success" id="toast">✅ fc-app-free-10.html 추가됨</div>
 
 <script>
 
@@ -613,63 +1415,125 @@ function openDeploy(){
   openModal('dep');
 }
 
+/* ══ 다중 파일 배포 ══ */
+const _depFiles=[]; // {name, content, isText}
+
+function addDepFile(){
+  document.getElementById('dep-add-file-input').click();
+}
+
+function onDepFilesAdded(input){
+  const files=[...input.files];
+  files.forEach(file=>{
+    const reader=new FileReader();
+    const isText=/\.(html|htm|js|css|json|txt|md|xml|svg)$/i.test(file.name);
+    if(isText){
+      reader.onload=e=>{
+        // 중복 제거
+        const idx=_depFiles.findIndex(f=>f.name===file.name);
+        if(idx>=0)_depFiles.splice(idx,1);
+        _depFiles.push({name:file.name,content:e.target.result,isText:true,size:file.size});
+        renderDepFiles();
+        showToast('✅ '+file.name+' 추가됨','success');
+      };
+      reader.readAsText(file,'utf-8');
+    } else {
+      reader.onload=e=>{
+        const b64=e.target.result.split(',')[1];
+        const idx=_depFiles.findIndex(f=>f.name===file.name);
+        if(idx>=0)_depFiles.splice(idx,1);
+        _depFiles.push({name:file.name,b64,isText:false,size:file.size});
+        renderDepFiles();
+        showToast('✅ '+file.name+' 추가됨','success');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  input.value='';
+}
+
+function renderDepFiles(){
+  const wrap=document.getElementById('dep-extra-files');
+  if(!wrap)return;
+  if(!_depFiles.length){wrap.innerHTML='';return;}
+  wrap.innerHTML=_depFiles.map((f,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 13px;background:#fff;border:1.5px solid rgba(74,126,248,.3);border-radius:10px;margin-bottom:6px">
+      <input type="checkbox" id="dep-cb-${i}" checked style="width:16px;height:16px;accent-color:var(--blue);flex-shrink:0">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;color:var(--text)">${/\.html?$/i.test(f.name)?'📄':f.isText?'📝':'🖼'} ${escH(f.name)}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px">${Math.round((f.size||0)/1024)}KB</div>
+      </div>
+      <button style="border:none;background:none;color:var(--red);font-size:16px;cursor:pointer;padding:2px 4px" onclick="removeDepFile(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removeDepFile(i){
+  _depFiles.splice(i,1);
+  renderDepFiles();
+}
+
+async function ghPutContent(path,b64,msg){
+  let sha=null;
+  const check=await GH(path);
+  if(check.ok)sha=(await check.json()).sha;
+  const body={message:msg||'update '+path,content:b64};
+  if(sha)body.sha=sha;
+  const r=await GH(path,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||r.status);}
+  return r;
+}
+
 async function deployAdmin(){
+  const cbAdmin=document.getElementById('dep-cb-admin')?.checked;
+  const extraSelected=_depFiles.filter((_,i)=>document.getElementById('dep-cb-'+i)?.checked);
+  if(!cbAdmin&&!extraSelected.length){showToast('배포할 파일을 선택하십시오','error');return;}
+
   const btn=document.getElementById('dep-run-btn');
   const ld=document.getElementById('dep-loading');
   const err=document.getElementById('dep-err');
   const suc=document.getElementById('dep-success');
-  btn.disabled=true;ld.style.display='flex';err.classList.remove('show');suc.style.display='none';
+  btn.disabled=true;ld.style.display='flex';err.textContent='';suc.style.display='none';
+
+  const ts=Date.now();
+  const uploaded=[];
+  let n=0;
+  const total=(cbAdmin?1:0)+extraSelected.length;
 
   try{
-    // 현재 페이지 HTML 직접 추출 (file:// 환경에서도 동작)
-    document.getElementById('dep-msg').textContent='현재 페이지 준비 중...';
-    let pageHtml;
-    try{
-      // GitHub Pages에서 열린 경우 fetch 시도
-      const resp=await fetch(location.href,{cache:'no-store'});
-      if(resp.ok) pageHtml=await resp.text();
-    }catch(_){}
-    // fetch 실패(로컬 파일 등)이면 현재 DOM에서 직접 추출
-    if(!pageHtml){
-      pageHtml='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
-    }
-    const b64=btoa(unescape(encodeURIComponent(pageHtml)));
-
-    // 기존 파일 sha 조회
-    let sha=null;
-    document.getElementById('dep-msg').textContent='GitHub 업로드 중...';
-    const check=await GH('ad-admin.html');
-    if(check.ok){sha=(await check.json()).sha;}
-
-    // 업로드
-    const body={message:'[Admin] 관리 페이지 배포',content:b64};
-    if(sha)body.sha=sha;
-    const put=await GH('ad-admin.html',{
-      method:'PUT',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(body)
-    });
-
-    if(!put.ok){
-      const j=await put.json().catch(()=>({}));
-      throw new Error(j.message||`HTTP ${put.status}`);
-    }
-
-    // .nojekyll 확인/생성
+    // .nojekyll
     const njCheck=await GH('.nojekyll');
-    if(!njCheck.ok){
-      await GH('.nojekyll',{method:'PUT',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({message:'add .nojekyll',content:btoa('')})});
+    if(!njCheck.ok)await GH('.nojekyll',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'add .nojekyll',content:btoa('')})});
+
+    // ① ad-admin.html
+    if(cbAdmin){
+      n++;document.getElementById('dep-msg').textContent=`(${n}/${total}) ad-admin.html 업로드 중...`;
+      let pageHtml;
+      try{const resp=await fetch(location.href,{cache:'no-store'});if(resp.ok)pageHtml=await resp.text();}catch(_){}
+      if(!pageHtml)pageHtml='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+      await ghPutContent('ad-admin.html',btoa(unescape(encodeURIComponent(pageHtml))),'[배포] ad-admin '+ts);
+      uploaded.push('ad-admin.html');
     }
 
-    _depResultUrl=`https://${CFG.owner}.github.io/${CFG.repo}/ad-admin.html`;
-    document.getElementById('dep-result-url').textContent=_depResultUrl;
-    document.getElementById('dep-result-url').href=_depResultUrl;
+    // ② 추가 파일들 — apps/{파일명} 폴더에 저장
+    for(const f of extraSelected){
+      n++;document.getElementById('dep-msg').textContent=`(${n}/${total}) ${f.name} 업로드 중...`;
+      const b64=f.isText?btoa(unescape(encodeURIComponent(f.content))):f.b64;
+      // ad-admin.html 외 파일은 apps/ 폴더에 저장
+      const path=f.name==='ad-admin.html'?f.name:'apps/'+f.name;
+      await ghPutContent(path,b64,'[배포] '+f.name+' '+ts);
+      uploaded.push(path);
+    }
+
+    const urls=uploaded.map(path=>`https://${CFG.owner}.github.io/${CFG.repo}/${path}`);
+    _depResultUrl=urls[0]||'';
+    document.getElementById('dep-result-url').textContent=urls.join('\n');
+    document.getElementById('dep-result-url').href=urls[0]||'#';
+    document.getElementById('dep-result-url').style.whiteSpace='pre-line';
     ld.style.display='none';suc.style.display='block';
     document.getElementById('dep-btns').style.display='none';
-    showToast('☁️ 배포 완료!','success');
+    showToast('☁️ '+uploaded.length+'개 파일 배포 완료!','success');
   }catch(e){
-    err.textContent='배포 실패: '+e.message;err.classList.add('show');
+    err.textContent='배포 실패: '+e.message;
     btn.disabled=false;
   }finally{
     ld.style.display='none';btn.disabled=false;
@@ -964,6 +1828,268 @@ function errHtml(title,desc,hint){
   </div>`;
 }
 
+
+/* ══ 통계 카드 필터 ══ */
+let STAT_FILTER='all';
+function statFilter(type){
+  STAT_FILTER=type;
+  // active 표시
+  ['sc-all','sc-live','sc-today','sc-files'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.classList.toggle('active',
+      (type==='all'&&id==='sc-all')||
+      (type==='live'&&id==='sc-live')||
+      (type==='today'&&id==='sc-today')||
+      (type==='files'&&id==='sc-files')
+    );
+  });
+  renderAds();
+  // 목록으로 스크롤
+  const grid=document.getElementById('ad-grid-wrap');
+  if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+
+/* ══ 파일 보기/수정/삭제 ══ */
+async function viewFile(slug,fileName,fid){
+  const area=document.getElementById(fid);
+  const ta=document.getElementById(fid+'-ta');
+  if(!area||!ta)return;
+  // 토글
+  if(area.classList.contains('open')){area.classList.remove('open');return;}
+  // 다른 편집창 닫기
+  document.querySelectorAll('.file-edit-area.open').forEach(el=>el.classList.remove('open'));
+  ta.value='불러오는 중...';
+  area.classList.add('open');
+  try{
+    const r=await GH(`pages/${slug}/${fileName}`);
+    if(!r.ok)throw new Error('파일 로드 실패');
+    const j=await r.json();
+    // base64 디코딩
+    ta.value=decodeURIComponent(escape(atob(j.content.replace(/\n/g,''))));
+    ta._sha=j.sha;
+  }catch(e){ta.value='파일 로드 오류: '+e.message;}
+}
+
+function closeFileEdit(fid){
+  const area=document.getElementById(fid);
+  if(area)area.classList.remove('open');
+}
+
+async function saveFile(slug,fileName,fid){
+  const ta=document.getElementById(fid+'-ta');
+  if(!ta)return;
+  const content=ta.value;
+  const sha=ta._sha;
+  if(!sha){showToast('SHA 정보 없음. 다시 불러오십시오.','error');return;}
+  showToast('💾 저장 중...','info');
+  try{
+    const b64=btoa(unescape(encodeURIComponent(content)));
+    const r=await GH(`pages/${slug}/${fileName}`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:`[수정] ${slug}/${fileName}`,content:b64,sha})
+    });
+    if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||r.status);}
+    const j=await r.json();
+    // SHA 업데이트
+    ta._sha=j.content?.sha;
+    closeFileEdit(fid);
+    showToast(`✅ ${fileName} 저장 완료`,'success');
+  }catch(e){showToast('저장 실패: '+e.message,'error');}
+}
+
+async function delFile(slug,fileName){
+  if(!confirm(`"${fileName}" 파일을 삭제하시겠습니까?\n되돌릴 수 없습니다.`))return;
+  showToast('🗑 삭제 중...','info');
+  try{
+    const r=await GH(`pages/${slug}/${fileName}`);
+    if(!r.ok)throw new Error('파일 정보 조회 실패');
+    const j=await r.json();
+    const dr=await GH(`pages/${slug}/${fileName}`,{
+      method:'DELETE',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:`[삭제] ${slug}/${fileName}`,sha:j.sha})
+    });
+    if(!dr.ok){const dj=await dr.json().catch(()=>({}));throw new Error(dj.message||dr.status);}
+    showToast(`🗑 ${fileName} 삭제 완료`,'success');
+    // 목록 새로고침
+    setTimeout(()=>diagAndLoad(),800);
+  }catch(e){showToast('삭제 실패: '+e.message,'error');}
+}
+
+
+/* ══ 파일 목록 동적 로드 ══ */
+async function loadFileList(slug, container){
+  if(!container)return;
+  container.dataset.loaded='1';
+  container.innerHTML='<div style="font-size:11px;color:var(--t3);padding:8px 2px">⏳ 불러오는 중...</div>';
+  try{
+    const r=await GH('pages/'+slug);
+    if(!r.ok)throw new Error('파일 목록 로드 실패 ('+r.status+')');
+    const files=await r.json();
+    if(!files.length){container.innerHTML='<div style="font-size:11px;color:var(--t3);padding:8px 2px">📂 파일 없음</div>';return;}
+
+    // 전체선택 + 일괄삭제 바
+    let html='<div class="file-sel-bar" id="fsb-'+slug+'">'
+      +'<span id="fsb-cnt-'+slug+'">0개 선택</span>'
+      +'<button class="file-btn fbtn-del" onclick="delSelectedFiles(\''+slug+'\')">🗑 선택 삭제</button>'
+      +'</div>';
+
+    // 전체선택 헤더
+    html+='<div class="file-row" style="background:var(--s2);border-color:var(--bd2)">'
+      +'<div class="file-cb" id="cb-all-'+slug+'" onclick="toggleAllFiles(\''+slug+'\')"></div>'
+      +'<div class="file-info"><div class="file-name" style="color:var(--t2)">전체 선택</div></div>'
+      +'<div class="file-acts"><span style="font-size:10px;color:var(--t3)">'+files.length+'개 파일</span></div>'
+      +'</div>';
+
+    // 파일 행
+    html+=files.map(f=>{
+      const fico=f.name.endsWith('.html')?'📄':f.name.endsWith('.jpg')||f.name.endsWith('.png')||f.name.endsWith('.gif')||f.name.endsWith('.webp')?'🖼':'📎';
+      const fsz=f.size?(f.size>1024?(Math.round(f.size/1024)+'KB'):f.size+'B'):'';
+      const isText=f.name.endsWith('.html')||f.name.endsWith('.js')||f.name.endsWith('.css')||f.name.endsWith('.json')||f.name.endsWith('.txt')||f.name.endsWith('.md');
+      const isImg=f.name.endsWith('.jpg')||f.name.endsWith('.jpeg')||f.name.endsWith('.png')||f.name.endsWith('.gif')||f.name.endsWith('.webp');
+      return '<div class="file-row" id="fr-'+slug+'-'+f.name.replace(/[^a-z0-9]/g,'-')+'">'
+        +'<div class="file-cb" onclick="toggleFileCheck(\''+slug+'\',\''+f.name+'\',this)"></div>'
+        +'<span class="file-ico">'+fico+'</span>'
+        +'<div class="file-info"><div class="file-name">'+escH(f.name)+'</div><div class="file-size">'+fsz+'</div></div>'
+        +'<div class="file-acts">'
+        +((isText||isImg)?'<button class="file-btn fbtn-view" onclick="openFileView(\''+slug+'\',\''+f.name+'\','+isText+','+isImg+')">보기</button>':'')
+        +(isText?'<button class="file-btn" style="background:rgba(34,197,94,.1);color:var(--green)" onclick="openFileView(\''+slug+'\',\''+f.name+'\',true,false,true)">수정</button>':'')
+        +'<button class="file-btn fbtn-del" onclick="delFile(\''+slug+'\',\''+f.name+'\')">삭제</button>'
+        +'</div>'
+        +'</div>';
+    }).join('');
+
+    container.innerHTML=html;
+    container._files=files; // 파일 목록 캐시
+  }catch(e){
+    container.dataset.loaded='0';
+    container.innerHTML='<div style="font-size:11px;color:var(--red);padding:8px 2px">⚠️ '+escH(e.message)+'<br><button class="file-btn fbtn-view" style="margin-top:6px" onclick="loadFileList(\''+slug+'\',this.closest(\'.file-list\'))">🔄 다시 시도</button></div>';
+  }
+}
+
+/* ══ 파일 체크박스 ══ */
+function toggleFileCheck(slug,fileName,cb){
+  cb.classList.toggle('checked');
+  updateFileSelBar(slug);
+}
+function toggleAllFiles(slug){
+  const cbs=document.querySelectorAll('#fl-'+slug+' .file-cb:not(#cb-all-'+slug+')');
+  const allCk=[...cbs].every(c=>c.classList.contains('checked'));
+  cbs.forEach(c=>c.classList.toggle('checked',!allCk));
+  const allCb=document.getElementById('cb-all-'+slug);
+  if(allCb)allCb.classList.toggle('checked',!allCk);
+  updateFileSelBar(slug);
+}
+function updateFileSelBar(slug){
+  const cbs=document.querySelectorAll('#fl-'+slug+' .file-row .file-cb.checked');
+  const cnt=cbs.length;
+  const bar=document.getElementById('fsb-'+slug);
+  const cntEl=document.getElementById('fsb-cnt-'+slug);
+  if(bar)bar.classList.toggle('show',cnt>0);
+  if(cntEl)cntEl.textContent=cnt+'개 선택';
+  // 전체선택 체크박스 동기화
+  const total=document.querySelectorAll('#fl-'+slug+' .file-row .file-cb:not(#cb-all-'+slug+')').length;
+  const allCb=document.getElementById('cb-all-'+slug);
+  if(allCb)allCb.classList.toggle('checked',cnt>0&&cnt===total);
+}
+async function delSelectedFiles(slug){
+  const cbs=[...document.querySelectorAll('#fl-'+slug+' .file-row .file-cb.checked')];
+  if(!cbs.length)return;
+  const names=cbs.map(cb=>cb.closest('.file-row').querySelector('.file-name')?.textContent).filter(Boolean);
+  if(!confirm('선택한 '+names.length+'개 파일을 삭제하시겠습니까?\n'+names.join('\n')+'\n\n되돌릴 수 없습니다.'))return;
+  let ok=0;
+  for(const name of names){
+    try{
+      const r=await GH('pages/'+slug+'/'+name);
+      if(!r.ok)continue;
+      const j=await r.json();
+      await GH('pages/'+slug+'/'+name,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'[삭제] '+slug+'/'+name,sha:j.sha})});
+      ok++;
+    }catch(_){}
+  }
+  showToast('🗑 '+ok+'/'+names.length+'개 삭제 완료','success');
+  setTimeout(()=>diagAndLoad(),800);
+}
+
+/* ══ 파일 내용 뷰어 ══ */
+let _fvSlug='',_fvName='',_fvSha='',_fvEditable=false;
+async function openFileView(slug,fileName,isText,isImg,editable){
+  _fvSlug=slug;_fvName=fileName;_fvEditable=!!editable;
+  const modal=document.getElementById('file-view-modal');
+  const nameEl=document.getElementById('fv-name');
+  const body=document.getElementById('fv-body');
+  const saveBtn=document.getElementById('fv-save-btn');
+  const info=document.getElementById('fv-info');
+  if(nameEl)nameEl.textContent=fileName;
+  if(saveBtn)saveBtn.style.display=editable?'block':'none';
+  if(info)info.textContent='불러오는 중...';
+  body.innerHTML='<div style="padding:20px;color:var(--t2);font-size:12px">⏳ 불러오는 중...</div>';
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+  try{
+    const r=await GH('pages/'+slug+'/'+fileName);
+    if(!r.ok)throw new Error('파일 로드 실패');
+    const j=await r.json();
+    _fvSha=j.sha;
+    const rawContent=j.content.replace(/\n/g,'');
+    if(isImg){
+      const ext=fileName.split('.').pop().toLowerCase();
+      const mime=ext==='jpg'||ext==='jpeg'?'image/jpeg':ext==='png'?'image/png':ext==='gif'?'image/gif':'image/webp';
+      body.innerHTML='<img src="data:'+mime+';base64,'+rawContent+'" style="max-width:100%;display:block;margin:16px auto;border-radius:8px">';
+      if(info)info.textContent=Math.round(j.size/1024)+'KB · '+fileName;
+    } else {
+      const text=decodeURIComponent(escape(atob(rawContent)));
+      if(editable){
+        body.innerHTML='<textarea id="fv-ta" spellcheck="false">'+escH(text)+'</textarea>';
+        body.querySelector('textarea')._raw=text;
+      } else {
+        // 읽기 전용 — pre 태그로 표시
+        body.innerHTML='<pre style="padding:16px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-all">'+escH(text)+'</pre>';
+      }
+      if(info)info.textContent=Math.round((j.size||text.length)/1024*10)/10+'KB · '+text.split('\n').length+'줄';
+    }
+  }catch(e){
+    body.innerHTML='<div style="padding:20px;color:var(--red);font-size:12px">⚠️ '+escH(e.message)+'</div>';
+  }
+}
+function closeFileView(){
+  const modal=document.getElementById('file-view-modal');
+  if(modal)modal.classList.remove('open');
+  document.body.style.overflow='';
+}
+async function saveFileView(){
+  const ta=document.getElementById('fv-ta');
+  if(!ta){showToast('편집 모드가 아닙니다','error');return;}
+  const content=ta.value;
+  showToast('💾 저장 중...','info');
+  try{
+    const b64=btoa(unescape(encodeURIComponent(content)));
+    const r=await GH('pages/'+_fvSlug+'/'+_fvName,{
+      method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:'[수정] '+_fvSlug+'/'+_fvName,content:b64,sha:_fvSha})
+    });
+    if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||r.status);}
+    const j=await r.json();_fvSha=j.content?.sha||_fvSha;
+    closeFileView();
+    showToast('✅ '+_fvName+' 저장 완료','success');
+  }catch(e){showToast('저장 실패: '+e.message,'error');}
+}
+async function delFileFromView(){
+  if(!confirm('"'+_fvName+'" 파일을 삭제하시겠습니까?'))return;
+  try{
+    const r=await GH('pages/'+_fvSlug+'/'+_fvName,{
+      method:'DELETE',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:'[삭제] '+_fvSlug+'/'+_fvName,sha:_fvSha})
+    });
+    if(!r.ok)throw new Error(r.status);
+    closeFileView();
+    showToast('🗑 '+_fvName+' 삭제 완료','success');
+    setTimeout(()=>diagAndLoad(),800);
+  }catch(e){showToast('삭제 실패: '+e.message,'error');}
+}
+
 /* ══ 통계 업데이트 ══ */
 function updateStats(){
   const total=ALL_ADS.length;
@@ -998,10 +2124,16 @@ function renderAds(){
   let ads=ALL_ADS.filter(a=>{
     if(q&&!a.slug.toLowerCase().includes(q))return false;
     if(FILTER==='today'&&a.updatedAt){
-      const d=new Date(a.updatedAt);return d.toDateString()===now.toDateString();
+      const d=new Date(a.updatedAt);if(d.toDateString()!==now.toDateString())return false;
     }
     if(FILTER==='week'&&a.updatedAt){
-      return new Date(a.updatedAt)>=weekAgo;
+      if(new Date(a.updatedAt)<weekAgo)return false;
+    }
+    // 통계 카드 필터
+    if(STAT_FILTER==='live'&&!a.hasIndex)return false;
+    if(STAT_FILTER==='today'){
+      if(!a.updatedAt)return false;
+      const d=new Date(a.updatedAt);if(d.toDateString()!==now.toDateString())return false;
     }
     return true;
   });
@@ -1174,18 +2306,15 @@ function adCard(a,idx){
       <div class="ad-row-badge ${isLive?'b-live':'b-check'}">${isLive?'🟢 라이브':'⏳ 미확인'}</div>
       <div class="ad-row-chevron" id="chv-${idx}">›</div>
     </div>
-    <div class="ad-row-detail" id="${detId}">
+    <div class="ad-row-detail" id="${detId}" data-slug="${a.slug}">
+      <!-- URL 바 -->
       <div class="detail-url">
         <div class="url-dot"></div>
         <div class="detail-url-txt">${a.url}</div>
         <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('${safeUrl}')">📋</button>
       </div>
-      <div class="detail-chips">
-        ${a.hasIndex?'<div class="meta-chip">📄 index.html</div>':''}
-        ${a.hasForm?'<div class="meta-chip">📋 form.html</div>':''}
-        <div class="meta-chip">📁 ${a.fileCount}개 파일</div>
-      </div>
-      <div class="detail-acts">
+      <!-- 액션 버튼 -->
+      <div class="detail-acts" style="margin-bottom:12px">
         <button class="ca ca-open" onclick="window.open('${safeUrl}','_blank')">
           <span class="cai">🌐</span>열기
         </button>
@@ -1196,8 +2325,13 @@ function adCard(a,idx){
           <span class="cai">📱</span>QR
         </button>
         <button class="ca ca-del" onclick="openDel('${safeSlug}')">
-          <span class="cai">🗑</span>삭제
+          <span class="cai">🗑</span>폴더삭제
         </button>
+      </div>
+      <!-- 파일 목록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
+      <div class="file-list" id="fl-${a.slug}" data-slug="${a.slug}">
+        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
       </div>
     </div>
   </div>`;
@@ -1208,10 +2342,16 @@ function toggleRow(detId,rowId){
   const chv=document.querySelectorAll(`#${rowId} .ad-row-chevron`)[0];
   if(!det)return;
   const isOpen=det.classList.contains('open');
-  // 다른 모두 닫기
   document.querySelectorAll('.ad-row-detail.open').forEach(el=>el.classList.remove('open'));
   document.querySelectorAll('.ad-row-chevron.open').forEach(el=>el.classList.remove('open'));
-  if(!isOpen){det.classList.add('open');if(chv)chv.classList.add('open');}
+  if(!isOpen){
+    det.classList.add('open');
+    if(chv)chv.classList.add('open');
+    // 파일 목록 동적 로드
+    const slug=det.dataset.slug;
+    const fl=document.getElementById('fl-'+slug);
+    if(fl&&fl.dataset.loaded!=='1') loadFileList(slug,fl);
+  }
 }
 
 /* ══ QR 모달 ══ */
@@ -1313,6 +2453,24 @@ function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
 /* ══ 시작 ══ */
 init();
 </script>
+
+<!-- 파일 내용 보기/수정 모달 -->
+<div class="file-view-modal" id="file-view-modal">
+  <div class="file-view-hd">
+    <button class="btn btn-ghost btn-sm" onclick="closeFileView()" style="padding:6px 10px">← 닫기</button>
+    <div class="file-view-name" id="fv-name"></div>
+    <button class="btn btn-primary btn-sm" id="fv-save-btn" onclick="saveFileView()" style="display:none">💾 저장</button>
+  </div>
+  <div class="file-view-body" id="fv-body">
+    <textarea id="fv-ta" spellcheck="false"></textarea>
+  </div>
+  <div class="file-view-foot">
+    <span style="font-size:11px;color:var(--t3)" id="fv-info"></span>
+    <div style="flex:1"></div>
+    <button class="btn btn-danger btn-sm" id="fv-del-btn" onclick="delFileFromView()">🗑 삭제</button>
+  </div>
+</div>
+
 
 
 </body></html>
