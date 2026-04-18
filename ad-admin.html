@@ -480,7 +480,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad">ad</div>
         <div class="ad-row-meta">
-          <span>🕐 37분 전</span>
+          <span>🕐 50분 전</span>
           <span>· 📁 13개</span>
         </div>
       </div>
@@ -617,9 +617,9 @@ body::before,body::after{display:none;}
         </div>
       </div>
       <div class="ad-row-badge b-live">🟢 라이브</div>
-      <div class="ad-row-chevron" id="chv-3">›</div>
+      <div class="ad-row-chevron open" id="chv-3">›</div>
     </div>
-    <div class="ad-row-detail" id="det-3" data-slug="apps/bh_v48.html">
+    <div class="ad-row-detail open" id="det-3" data-slug="apps/bh_v48.html">
       <!-- URL 바 -->
       <div class="detail-url">
         <div class="url-dot"></div>
@@ -643,9 +643,7 @@ body::before,body::after{display:none;}
       </div>
       <!-- 파일 목록 -->
       <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
-      <div class="file-list" id="fl-apps-bh-v48-html" data-slug="apps/bh_v48.html">
-        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
-      </div>
+      <div class="file-list" id="fl-apps-bh-v48-html" data-slug="apps/bh_v48.html" data-loaded="1"><div class="file-sel-bar" id="fsb-apps-bh-v48-html"><span id="fsb-cnt-apps-bh-v48-html">0개 선택</span><button class="file-btn fbtn-del" onclick="delSelectedFiles('apps/bh_v48.html')">🗑 선택 삭제</button></div><div class="file-row" style="background:var(--s2);border-color:var(--bd2)"><div class="file-cb" id="cb-all-apps-bh-v48-html" onclick="toggleAllFiles('apps-bh-v48-html','apps/bh_v48.html')"></div><div class="file-info"><div class="file-name" style="color:var(--t2)">전체 선택</div></div><div class="file-acts"><span style="font-size:10px;color:var(--t3)">1개 파일</span></div></div><div class="file-row" id="fr-apps-bh-v48-html-bh-v48-html"><div class="file-cb" onclick="toggleFileCheck('apps/bh_v48.html','bh_v48.html',this)"></div><span class="file-ico">📄</span><div class="file-info"><div class="file-name">bh_v48.html</div><div class="file-size">441KB</div></div><div class="file-acts"><button class="file-btn fbtn-view" onclick="openFileView('apps/bh_v48.html','bh_v48.html',true,false)">보기</button><button class="file-btn" style="background:rgba(34,197,94,.1);color:var(--green)" onclick="openFileView('apps/bh_v48.html','bh_v48.html',true,false,true)">수정</button><button class="file-btn fbtn-del" onclick="delFile('apps/bh_v48.html','bh_v48.html')">삭제</button></div></div></div>
     </div>
   </div><div class="ad-row" id="row-4" data-slug="apps/bee_Pro_m.html">
     <div class="ad-row-main" onclick="toggleRow('det-4','row-4')">  
@@ -1983,6 +1981,16 @@ function statFilter(type){
 }
 
 
+/* ══ 파일 경로 계산 ══ */
+function buildContentPath(slug,fileName=''){
+  if(slug&&slug.startsWith('apps/')){
+    if(!fileName) return slug;
+    const appName=slug.slice(5);
+    return fileName===appName?slug:`apps/${fileName}`;
+  }
+  return fileName?`pages/${slug}/${fileName}`:`pages/${slug}`;
+}
+
 /* ══ 파일 보기/수정/삭제 ══ */
 async function viewFile(slug,fileName,fid){
   const area=document.getElementById(fid);
@@ -2033,16 +2041,18 @@ async function saveFile(slug,fileName,fid){
 }
 
 async function delFile(slug,fileName){
-  if(!confirm(`"${fileName}" 파일을 삭제하시겠습니까?\n되돌릴 수 없습니다.`))return;
+  if(!confirm(`"${fileName}" 파일을 삭제하시겠습니까?
+되돌릴 수 없습니다.`))return;
   showToast('🗑 삭제 중...','info');
   try{
-    const r=await GH(`pages/${slug}/${fileName}`);
+    const filePath=buildContentPath(slug,fileName);
+    const r=await GH(filePath);
     if(!r.ok)throw new Error('파일 정보 조회 실패');
     const j=await r.json();
-    const dr=await GH(`pages/${slug}/${fileName}`,{
+    const dr=await GH(filePath,{
       method:'DELETE',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({message:`[삭제] ${slug}/${fileName}`,sha:j.sha})
+      body:JSON.stringify({message:`[삭제] ${filePath}`,sha:j.sha})
     });
     if(!dr.ok){const dj=await dr.json().catch(()=>({}));throw new Error(dj.message||dr.status);}
     showToast(`🗑 ${fileName} 삭제 완료`,'success');
@@ -2144,8 +2154,8 @@ function updateFileSelBar(safeSlug){
     if(bar)bar.classList.toggle('show',cbs.length>0);
     return;
   }
-  const cbs=fl.querySelectorAll('.file-row .file-cb.checked');
-  const total=fl.querySelectorAll('.file-row .file-cb:not([id^="cb-all"])').length;
+  const cbs=fl.querySelectorAll(`.file-row .file-cb.checked:not(#cb-all-${safeSlug})`);
+  const total=fl.querySelectorAll(`.file-row .file-cb:not(#cb-all-${safeSlug})`).length;
   const cnt=cbs.length;
   if(bar)bar.classList.toggle('show',cnt>0);
   if(cntEl)cntEl.textContent=cnt+'개 선택';
@@ -2154,16 +2164,14 @@ function updateFileSelBar(safeSlug){
 async function delSelectedFiles(slug){
   const safeId=slug.replace(/[^a-z0-9]/g,'-');
   const fl=document.getElementById('fl-'+safeId);
-  const cbs=fl?[...fl.querySelectorAll('.file-row .file-cb.checked')]:[];
+  const cbs=fl?[...fl.querySelectorAll(`.file-row .file-cb.checked:not(#cb-all-${safeId})`)]:[];
   if(!cbs.length){showToast('파일을 선택하십시오','error');return;}
   const names=cbs.map(cb=>cb.closest('.file-row').querySelector('.file-name')?.textContent).filter(Boolean);
   if(!confirm('선택한 '+names.length+'개 파일을 삭제하시겠습니까?\n'+names.join('\n')+'\n\n되돌릴 수 없습니다.'))return;
-  // apps/ 타입은 경로가 다름
-  const basePath=slug.startsWith('apps/')?slug:'pages/'+slug;
   let ok=0;
   for(const name of names){
     try{
-      const filePath=basePath+'/'+name;
+      const filePath=buildContentPath(slug,name);
       const r=await GH(filePath);
       if(!r.ok)continue;
       const j=await r.json();
@@ -2242,9 +2250,10 @@ async function saveFileView(){
 async function delFileFromView(){
   if(!confirm('"'+_fvName+'" 파일을 삭제하시겠습니까?'))return;
   try{
-    const r=await GH('pages/'+_fvSlug+'/'+_fvName,{
+    const filePath=buildContentPath(_fvSlug,_fvName);
+    const r=await GH(filePath,{
       method:'DELETE',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({message:'[삭제] '+_fvSlug+'/'+_fvName,sha:_fvSha})
+      body:JSON.stringify({message:'[삭제] '+filePath,sha:_fvSha})
     });
     if(!r.ok)throw new Error(r.status);
     closeFileView();
@@ -2580,7 +2589,7 @@ async function confirmDel(){
 
   try{
     // ① 폴더 내 파일 전체 목록 조회
-    const basePath=slug.startsWith('apps/')?slug:'pages/'+slug;
+    const basePath=buildContentPath(slug);
     const listR=await GH(basePath);
     let filesToDel=[];
     if(listR.ok){
@@ -2596,16 +2605,17 @@ async function confirmDel(){
     let deleted=0,failed=0;
     for(const f of filesToDel){
       try{
+        const filePath=buildContentPath(slug,f.name);
         let sha=f.sha;
         if(!sha){
-          const infoR=await GH(basePath+'/'+f.name);
+          const infoR=await GH(filePath);
           if(!infoR.ok)continue;
           sha=(await infoR.json()).sha;
         }
-        const dr=await GH(basePath+'/'+f.name,{
+        const dr=await GH(filePath,{
           method:'DELETE',
           headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({message:`[삭제] ${basePath}/${f.name}`,sha})
+          body:JSON.stringify({message:`[삭제] ${filePath}`,sha})
         });
         if(dr.ok)deleted++;else failed++;
       }catch(_){failed++;}
