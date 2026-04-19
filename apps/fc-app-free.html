@@ -2772,7 +2772,7 @@ function adCard(fc,selectedInline=false,homeReadOnly=false){
   </div>`;
 }
 function getLatestDeployedFc(list){
-  const depList=(list||APP.fcList||[]).filter(f=>f&&f.depURL);
+  const depList=(list||APP.fcList||[]).filter(f=>f&&f.depURL&&getDeployedFileType(f).key==='ad');
   if(!depList.length) return null;
   const remembered=APP.lastDeployedId?depList.find(f=>f.id===APP.lastDeployedId):null;
   if(remembered) return remembered;
@@ -2799,7 +2799,7 @@ function getDeployedFileType(fc){
   return {key:isProgram?'program':'ad',label:isProgram?'프로그램파일':'광고파일'};
 }
 function renderDeployedListHtml(scope){
-  const dep=(APP.fcList||[]).filter(f=>f&&f.depURL&&deployedSearchMatch(f));
+  const dep=(APP.fcList||[]).filter(f=>f&&f.depURL&&getDeployedFileType(f).key==='ad'&&deployedSearchMatch(f));
   if(APP.selectedDepId&&!dep.some(f=>f.id===APP.selectedDepId)) APP.selectedDepId=null;
   if(!dep.length){
     return `<div class="empty-state"><div class="es-ico">🔗</div><div class="es-title">배포된 파일 없음</div><div class="es-sub">배포된 파일이 없거나 검색 결과가 없습니다</div></div>`;
