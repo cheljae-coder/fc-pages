@@ -1636,9 +1636,8 @@ ${jsonSchema}`;
     fc.aiData=aiData;fc.prodName=aiData.productName||fc.prod||'상품';
     sp(62,'AI 이미지 생성 중...','');
     const seed=Math.floor(Math.random()*999999);
-    // 연령대 보정 — 타겟·카테고리·설명 분석 후 이미지 프롬프트 강제 수정
-    const rawPrompt=aiData.imagePrompt||'';
-    const imgPrompt=fixAgeInPrompt(rawPrompt, fc.cat||'', fc.desc||'', fc.req||'', aiData.target||'');
+    // AI 프롬프트 무시 — 카테고리 기반 오브젝트 전용 프롬프트 사용
+    const imgPrompt=buildObjectPrompt(fc.cat||'', fc.prod||'', fc.desc||'');
     fc.imgURL=`https://image.pollinations.ai/prompt/${encodeURIComponent(imgPrompt)}?width=800&height=600&nologo=true&safe=true&seed=${seed}`;
     sp(72,'광고 페이지 HTML 생성 중...','');
     const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''};
@@ -2308,6 +2307,38 @@ async function downloadFC(fcId){
 
 /* EVENT DELEGATION */
 
+
+/* ══ 상품 오브젝트 이미지 프롬프트 생성 ══
+   AI 프롬프트를 사용하지 않고 카테고리별 고정 오브젝트 프롬프트 생성
+   → Pollinations에 사람 이미지 생성 여지를 완전히 차단
+═══════════════════════════════════════ */
+function buildObjectPrompt(cat, prod, desc){
+  const all=(cat+' '+prod+' '+desc).toLowerCase();
+
+  // 카테고리별 오브젝트 프롬프트
+  const prompts={
+    치매:   'glowing blue brain with protective shield, medical document, pill bottle, stethoscope, soft light background, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+    암:     'red ribbon cancer awareness, medical cross symbol, DNA helix, hospital document, protection shield glow, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+    건강:   'golden shield with medical cross, heartbeat line, stethoscope, health document, green leaf, soft gradient background, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+    실손:   'medical receipt and coins, hospital building icon, protection umbrella, health card, blue gradient background, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+    종신:   'family home with golden umbrella protection, coins stack, tree of life, blue sky background, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+    연금:   'gold coins stack, piggy bank, retirement savings jar, clock with coins, warm golden background, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+    자동차: 'luxury car with glowing shield bubble protection, road, keys, insurance document, clean studio background, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+    화재:   'house with protective dome shield, fire extinguisher, insurance document, safe box, calm blue background, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+    여행:   'airplane with globe, passport, luggage with protection shield, map, sunny sky, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+    어린이: 'colorful toy blocks, school bag, apple, pencil, child bicycle with helmet, protection shield, bright cheerful background, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+    펫:     'pet paw print, dog collar, veterinary cross, heart shape, soft background, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner',
+  };
+
+  // 카테고리 매칭
+  for(const [key,prompt] of Object.entries(prompts)){
+    if(all.includes(key)) return prompt;
+  }
+
+  // 기본: 범용 보험 오브젝트
+  return 'golden protection shield with umbrella, stack of coins, official document scroll, checkmark, soft blue gradient background, symbolic insurance concept art, no people, professional photorealistic product composition, vertical banner';
+}
+
 /* ─── 연령대 보정 함수 ───
    카테고리·설명·요구사항·타겟 분석 → 이미지 프롬프트의 연령대 강제 수정
    예) 치매보험 → elderly Korean person (60s~70s) 강제 삽입
@@ -2342,32 +2373,30 @@ function fixAgeInPrompt(prompt, cat, desc, req, target){
   const youngKw=['20대','30대','청년','사회초년생','대학생','신입','스타트업'];
   const isYoung=youngKw.some(k=>all.includes(k));
 
-  // ── 기존 프롬프트에서 나이/연령 표현 제거 ──
+  // 사람·인물·국적 관련 단어 모두 완전 제거
   let base=prompt
-    .replace(/\b(young|youth|teenager|child|baby|toddler|elderly|senior|old|middle[- ]aged|aged)\b/gi,'')
+    // 복합 표현 먼저 제거
+    .replace(/Korean[\s\w]*/gi,'')           // Korean으로 시작하는 모든 표현
+    .replace(/East Asian[\s\w]*/gi,'')        // East Asian으로 시작하는 모든 표현
+    .replace(/MUST include[^,.;]*/gi,'')      // MUST include 구문
+    .replace(/include[^,.;]*Korean[^,.;]*/gi,'')  // include...Korean 구문
+    .replace(/NO people[^,.;]*/gi,'')         // 기존 NO people 구문 제거 후 재추가
+    // 개별 단어 제거
+    .replace(/\b(Korean|Japanese|Chinese|Asian|Western|European|American)\b/gi,'')
+    .replace(/\b(elderly|senior|young|youth|middle[- ]aged|aged|adult|child|baby|toddler)\b/gi,'')
     .replace(/\b(20s|30s|40s|50s|60s|70s|80s)\b/gi,'')
-    .replace(/Korean (man|woman|person|people|couple)/gi,'')
-    .replace(/East Asian (man|woman|face|person)/gi,'')
-    .trim();
-  if(!base) base='professional advertisement, no text, vertical banner, photorealistic, high quality';
+    .replace(/\b(person|people|man|woman|men|women|boy|girl|face|faces|portrait|human|character|individual|couple|family|grandmother|grandfather|parent|mother|father)\b/gi,'')
+    .replace(/\b(smile|smiling|expression|appearance|hair|silver hair|warm|dignified)\b/gi,'')
+    .replace(/\b(photorealistic(?!\s*(?:still|object|product|concept)))\b/gi,'')
+    // 정리
+    .replace(/,\s*,+/g,',').replace(/^[,\s]+|[,\s]+$/g,'').replace(/\s{2,}/g,' ').trim();
 
-  // ── 연령대별 프롬프트 조립 ──
-  let agePart='';
-  if(isElderly){
-    agePart='elderly Korean couple or senior Korean person aged 65 to 75, silver hair, warm smile, dignified appearance, East Asian face';
-  } else if(isChild){
-    agePart='Korean child aged 5 to 12, bright smile, healthy appearance, East Asian face';
-  } else if(isMiddle){
-    agePart='Korean middle-aged person aged 40 to 55, professional appearance, East Asian face, confident smile';
-  } else if(isYoung){
-    agePart='Korean young adult aged 25 to 35, energetic, professional, East Asian face, natural smile';
-  } else {
-    // 기본: 한국인 성인 (연령대 미지정)
-    agePart='Korean adult person, East Asian face, natural smile, professional';
+  if(!base||base.length<10){
+    base='insurance protection concept, symbolic shield and umbrella, coins and documents, clean background, vertical mobile banner';
   }
 
-  // 이미지는 상품 상징 오브젝트로 — 사람 삽입 금지
-  return `${base}, no text overlay, photorealistic, high quality`;
+  // 사람 이미지 완전 금지
+  return `${base}, NO people, NO faces, NO human figures, no text overlay, product concept art, photorealistic, high quality`;
 }
 
 
