@@ -1364,6 +1364,7 @@ function goNav(tab){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(`sc-${tab}`)?.classList.add('active');
   if(tab==='manage') renderManage();
+  if(tab==='home'){syncRemoteDeployedAds(true).finally(()=>{updateStats();renderHome();});return;}
   if(tab==='urls'){syncRemoteDeployedAds(true).finally(()=>renderURLs());return;}
 }
 
@@ -2690,7 +2691,7 @@ async function ghPut(path,content,tok,owner,repo,msg){
 }
 
 /* SEARCH / FILTER */
-function setFilter(f,el){APP_FILTER=f;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));el.classList.add('active');if(f==='deployed'){syncRemoteDeployedAds(true).finally(()=>{updateStats();renderHome();});return;}renderHome();}
+function setFilter(f,el){APP_FILTER=f;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));el.classList.add('active');if(f==='deployed'||f==='all'){syncRemoteDeployedAds(true).finally(()=>{updateStats();renderHome();});return;}renderHome();}
 function onSearch(inp){APP_SEARCH=inp.value.trim().toLowerCase();const clr=document.getElementById('srch-clr');if(clr)clr.classList.toggle('show',APP_SEARCH.length>0);renderHome();}
 function clearSearch(){const inp=document.getElementById('srch');if(inp)inp.value='';APP_SEARCH='';const clr=document.getElementById('srch-clr');if(clr)clr.classList.remove('show');renderHome();}
 function getFiltered(){
@@ -2791,8 +2792,10 @@ function deployedSearchMatch(fc){
   return [fc.name,fc.co,fc.prod,fc.prodName,fc.cat,fc.deploySlug,fileLabel].some(v=>String(v||'').toLowerCase().includes(q));
 }
 function getDeployedFileType(fc){
-  const raw=[fc&&fc.deploySlug,fc&&fc.prodName,fc&&fc.prod,fc&&fc.name,fc&&fc.cat].filter(Boolean).join(' ').toLowerCase();
-  const isProgram=/(프로그램|program|app|앱|site|사이트)/.test(raw)&&!/^ad[\s_-]?\d/.test(String(fc&&fc.deploySlug||'').toLowerCase());
+  if(fc&&fc.fileType==='program') return {key:'program',label:'프로그램파일'};
+  if(fc&&fc.fileType==='ad') return {key:'ad',label:'광고파일'};
+  const raw=[fc&&fc.remotePath,fc&&fc.deploySlug,fc&&fc.prodName,fc&&fc.prod,fc&&fc.name,fc&&fc.cat].filter(Boolean).join(' ').toLowerCase();
+  const isProgram=!!(fc&&fc.remotePath&&!String(fc.remotePath).startsWith('pages/'))||(/(프로그램|program|app|앱|site|사이트)/.test(raw)&&!/^ad[\s_-]?\d/.test(String(fc&&fc.deploySlug||'').toLowerCase()));
   return {key:isProgram?'program':'ad',label:isProgram?'프로그램파일':'광고파일'};
 }
 function renderDeployedListHtml(scope){
@@ -2905,6 +2908,34 @@ async function ghGetContent(path){
   if(lastErr) throw lastErr;
   return null;
 }
+async function ghGetRootContentsAtRef(ref='main'){
+  const qs=ref?`?ref=${encodeURIComponent(ref)}`:'';
+  const url=`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents${qs}`;
+  const r=await fetch(url,{headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
+  if(r.status===404) return null;
+  if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||`HTTP ${r.status}`);}
+  return r.json();
+}
+async function ghGetRootContents(){
+  let lastErr=null;
+  for(const ref of ['main','master','']){
+    try{
+      const hit=await ghGetRootContentsAtRef(ref);
+      if(hit) return hit;
+    }catch(err){lastErr=err;}
+  }
+  if(lastErr) throw lastErr;
+  return null;
+}
+function remoteProgramUrlFromPath(path){
+  const clean=String(path||'').replace(/^\/+/, '');
+  if(!clean) return `https://${APP.ghOwner}.github.io/${APP.ghRepo}/`;
+  if(/^index\.html?$/i.test(clean)) return `https://${APP.ghOwner}.github.io/${APP.ghRepo}/`;
+  return `https://${APP.ghOwner}.github.io/${APP.ghRepo}/${clean}`;
+}
+function remoteProgramIdFromPath(path){
+  return `gh_prog_${String(path||'').replace(/[^a-zA-Z0-9_-]+/g,'_')}`;
+}
 async function ghDeleteFile(path,message){
   const meta=await ghGetContent(path);
   if(!meta||Array.isArray(meta)) return true;
@@ -2942,9 +2973,10 @@ function jsdelivrGitHubUrl(path,branch='main'){
 }
 async function fetchDeployedHtmlFile(fc,fileName){
   if(!fc) return '';
+  const isProgram=getDeployedFileType(fc).key==='program' && fc.remotePath;
   const slug=getDeploySlugFromFC(fc);
-  const relPath=`pages/${slug}/${fileName}`;
-  if(APP.ghOwner&&APP.ghRepo&&APP.ghToken){
+  const relPath=isProgram?String(fc.remotePath||''): `pages/${slug}/${fileName}`;
+  if(APP.ghOwner&&APP.ghRepo&&APP.ghToken&&relPath){
     try{
       const meta=await ghGetContent(relPath);
       if(meta&&meta.content){
@@ -2954,18 +2986,28 @@ async function fetchDeployedHtmlFile(fc,fileName){
     }catch(_){ }
   }
   const candidates=[];
-  if(fc.depURL){
-    if(fileName==='index.html'){
-      candidates.push(fc.depURL);
-      candidates.push(fc.depURL.replace(/\/?$/,'/')+'index.html');
-    }else{
-      candidates.push(fc.depURL.replace(/\/?$/,'/')+fileName);
+  if(isProgram){
+    if(fc.depURL) candidates.push(fc.depURL);
+    if(APP.ghOwner&&APP.ghRepo){
+      for(const branch of ['main','master']){
+        candidates.push(rawGitHubUrl(relPath,branch));
+        candidates.push(jsdelivrGitHubUrl(relPath,branch));
+      }
     }
-  }
-  if(APP.ghOwner&&APP.ghRepo){
-    for(const branch of ['main','master']){
-      candidates.push(rawGitHubUrl(relPath,branch));
-      candidates.push(jsdelivrGitHubUrl(relPath,branch));
+  }else{
+    if(fc.depURL){
+      if(fileName==='index.html'){
+        candidates.push(fc.depURL);
+        candidates.push(fc.depURL.replace(/\/?$/,'/')+'index.html');
+      }else{
+        candidates.push(fc.depURL.replace(/\/?$/,'/')+fileName);
+      }
+    }
+    if(APP.ghOwner&&APP.ghRepo){
+      for(const branch of ['main','master']){
+        candidates.push(rawGitHubUrl(relPath,branch));
+        candidates.push(jsdelivrGitHubUrl(relPath,branch));
+      }
     }
   }
   const seen=new Set();
@@ -3003,6 +3045,7 @@ async function ensureDeployedContentLoaded(fcId){
   const fc=APP.fcList.find(f=>f.id===fcId&&f.depURL);
   if(!fc) return null;
   const slug=getDeploySlugFromFC(fc);
+  const isProgram=getDeployedFileType(fc).key==='program' && fc.remotePath;
   let changed=false;
 
   if(!fc.landHTML){
@@ -3012,7 +3055,7 @@ async function ensureDeployedContentLoaded(fcId){
       changed=true;
     }
   }
-  if(fc.formHTML===undefined||fc.formHTML===null||fc.formHTML===''){
+  if(!isProgram && (fc.formHTML===undefined||fc.formHTML===null||fc.formHTML==='')){
     const formHTML=await fetchDeployedHtmlFile(fc,'form.html');
     if(looksLikeHtml(formHTML)){
       fc.formHTML=formHTML;
@@ -3020,7 +3063,7 @@ async function ensureDeployedContentLoaded(fcId){
     }
   }
 
-  if(!fc.deploySlug&&slug){fc.deploySlug=slug;changed=true;}
+  if(!fc.deploySlug&&slug&&!isProgram){fc.deploySlug=slug;changed=true;}
   if(changed) saveData();
   return fc;
 }
@@ -3038,8 +3081,59 @@ async function syncRemoteDeployedAds(force=false){
   APP.remoteDeploySyncing=true;
   let changed=0;
   try{
-    const pages=await ghGetContent('pages');
-    const dirs=(Array.isArray(pages)?pages:[]).filter(v=>v&&v.type==='dir'&&v.name);
+    const now=Date.now();
+
+    // 1) 루트의 프로그램 HTML 파일 동기화
+    const rootItemsRaw=await ghGetRootContents().catch(()=>[]);
+    const rootItems=Array.isArray(rootItemsRaw)?rootItemsRaw:[];
+    const rootHtmlFiles=rootItems.filter(v=>v&&v.type==='file'&&/\.html?$/i.test(String(v.name||'')));
+    for(const item of rootHtmlFiles){
+      const path=String(item.path||item.name||'').replace(/^\/+/, '');
+      const depURL=remoteProgramUrlFromPath(path);
+      let fc=APP.fcList.find(f=>String(f.remotePath||'')===path||((f.depURL||'').split('?')[0]===depURL));
+      let htmlText='';
+      try{
+        const meta=await ghGetContent(path);
+        if(meta&&meta.content) htmlText=ghDecodeText(meta.content);
+      }catch(_){ }
+      if(fc){
+        if(fc.depURL!==depURL){fc.depURL=depURL;changed++;}
+        if(fc.remotePath!==path){fc.remotePath=path;changed++;}
+        if(fc.fileType!=='program'){fc.fileType='program';changed++;}
+        if(htmlText&&fc.landHTML!==htmlText){fc.landHTML=htmlText;changed++;}
+        if(!fc.remoteImported){fc.remoteImported=true;changed++;}
+      }else{
+        const baseName=String(item.name||path).replace(/\.html?$/i,'')||'프로그램';
+        APP.fcList.unshift({
+          id:remoteProgramIdFromPath(path),
+          createdAt:now,
+          name:'GitHub 프로그램파일',
+          co:APP.ghRepo,
+          phone:'',hot:'',email:'',kakao:'',smsnum:'',
+          cat:'GitHub 프로그램파일',
+          prod:baseName,
+          prodName:baseName,
+          desc:'',req:'',url:'',
+          tpl:'A',col:'blue',ai:APP.globalAI||'claude',
+          files:[],adAssets:[],mediaPayload:null,
+          landHTML:htmlText||null,
+          formHTML:null,
+          depURL:depURL,
+          deploySlug:'',
+          remotePath:path,
+          fileType:'program',
+          imgURL:null,logoDataURL:null,aiData:null,expiresAt:null,
+          generating:false,genMsg:'',genSub:'',genPct:0,
+          remoteImported:true
+        });
+        changed++;
+      }
+    }
+
+    // 2) /pages 아래 광고 폴더 전체 동기화
+    const pages=await ghGetContent('pages').catch(()=>[]);
+    const pageItems=(Array.isArray(pages)?pages:[]);
+    const dirs=pageItems.filter(v=>v&&v.type==='dir'&&v.name);
     for(const dir of dirs){
       const slug=dir.name;
       const depURL=deployedUrlForSlug(slug);
@@ -3055,14 +3149,16 @@ async function syncRemoteDeployedAds(force=false){
       }catch(_){ }
       if(fc){
         if(fc.depURL!==depURL){fc.depURL=depURL;changed++;}
-        if(!fc.deploySlug){fc.deploySlug=slug;changed++;}
-        if(idxHtml&&!fc.landHTML){fc.landHTML=idxHtml;changed++;}
-        if(formHtml&&!fc.formHTML){fc.formHTML=formHtml;changed++;}
+        if(fc.deploySlug!==slug){fc.deploySlug=slug;changed++;}
+        if(fc.fileType!=='ad'){fc.fileType='ad';changed++;}
+        if(idxHtml&&fc.landHTML!==idxHtml){fc.landHTML=idxHtml;changed++;}
+        if(formHtml&&fc.formHTML!==formHtml){fc.formHTML=formHtml;changed++;}
+        if(!fc.remoteImported){fc.remoteImported=true;changed++;}
       }else{
         const title=labelFromSlug(slug);
         APP.fcList.unshift({
           id:`gh_${slug}`,
-          createdAt:Date.now(),
+          createdAt:now,
           name:'GitHub 배포광고',
           co:APP.ghRepo,
           phone:'',hot:'',email:'',kakao:'',smsnum:'',
@@ -3076,6 +3172,8 @@ async function syncRemoteDeployedAds(force=false){
           formHTML:formHtml||null,
           depURL:depURL,
           deploySlug:slug,
+          remotePath:`pages/${slug}/index.html`,
+          fileType:'ad',
           imgURL:null,logoDataURL:null,aiData:null,expiresAt:null,
           generating:false,genMsg:'',genSub:'',genPct:0,
           remoteImported:true
@@ -3083,6 +3181,7 @@ async function syncRemoteDeployedAds(force=false){
         changed++;
       }
     }
+
     APP.remoteDeploySynced=true;
     if(changed) saveData();
     return changed;
