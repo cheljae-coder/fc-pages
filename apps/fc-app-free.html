@@ -1416,7 +1416,7 @@ async function runGen(fcId,inline=false){
     {"q": "자주 묻는 질문 1", "a": "명확하고 상세한 답변"},
     {"q": "자주 묻는 질문 2", "a": "명확한 답변"}
   ],
-  "imagePrompt": "English Pollinations image prompt — MUST include Korean people (Korean man or Korean woman, East Asian face, natural expression), matching the product/service category, professional, no text overlay, vertical mobile banner, photorealistic, high quality",
+  "imagePrompt": "English Pollinations image prompt — NO people or faces. Focus on symbolic objects/concepts representing the product/service (e.g. insurance → shield, umbrella, family home, coins, document; health insurance → medical cross, heartbeat, hospital; car insurance → car, road, protection; travel → airplane, passport, globe). Professional, clean background, conceptual illustration or photorealistic still life, vertical mobile banner, high quality, no text overlay",
   "ctaPhone": "전화 상담 버튼 텍스트",
   "ctaForm": "온라인 신청 버튼 텍스트",
   "notice": "하단 법적 안내/주의사항"
@@ -1473,7 +1473,7 @@ ${content.length>1?'※ 첨부된 자료를 꼼꼼히 분석하여 정확한 정
 3. features, coverage, faq의 상품 상세 정보는 제공된 자료에 있는 내용만 사용
 4. 상품과 무관한 내용은 절대 포함 금지
 5. testimonial은 자료에 실제 후기 없으면 null
-6. imagePrompt는 반드시 한국인(Korean person, East Asian face) 포함
+6. imagePrompt는 사람 얼굴 없이 상품을 상징하는 오브젝트/개념 이미지로 작성
 7. 모든 내용은 한국어로 작성
 8. 서술형으로 작성하되 간결하고 임팩트 있게
 9. ⚠️ 광고주 필수 반영 요구사항이 있으면 이를 최우선으로 반영
@@ -2366,7 +2366,8 @@ function fixAgeInPrompt(prompt, cat, desc, req, target){
     agePart='Korean adult person, East Asian face, natural smile, professional';
   }
 
-  return `${agePart}, ${base}, no text overlay, photorealistic`;
+  // 이미지는 상품 상징 오브젝트로 — 사람 삽입 금지
+  return `${base}, no text overlay, photorealistic, high quality`;
 }
 
 
