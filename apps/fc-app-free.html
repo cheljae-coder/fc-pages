@@ -2709,7 +2709,7 @@ function updateStats(){
   const t=APP.fcList.length,dep=APP.fcList.filter(f=>f.depURL).length,pg=APP.fcList.filter(f=>f.landHTML).length;
   document.getElementById('st-fc').textContent=t;document.getElementById('st-dep').textContent=dep;document.getElementById('st-pg').textContent=pg;document.getElementById('st-pend').textContent=Math.max(0,pg-dep);
 }
-function adCard(fc,selectedInline=false){
+function adCard(fc,selectedInline=false,homeReadOnly=false){
   const sc=fc.generating?'generating':fc.depURL?'deployed':'';
   const bc=fc.depURL?'ban-green':fc.landHTML?'ban-blue':'ban-amber';
   const dot=fc.generating?'dot-gen':fc.depURL?'dot-ok':'dot-n';
@@ -2722,25 +2722,8 @@ function adCard(fc,selectedInline=false){
     ?`<div class="ad-url-chip"><span class="url-ico">🌐</span><span class="url-txt">${fc.depURL}</span><button class="url-cpy" onclick="cpyTxt('${safeUrl}')">복사</button><button class="url-share" onclick="shareURL('${safeUrl}')">공유</button></div>`
     :`<div class="ad-url-chip" style="opacity:.4"><span class="url-ico">🌐</span><span class="url-txt" style="color:var(--t3)">배포 후 URL 생성</span></div>`;
   const prog=fc.generating?`<div class="ad-prog"><div class="prog-bar"><div class="prog-fill" id="gpb-${fc.id}" style="width:${fc.genPct||0}%"></div></div><div class="prog-msg" id="gpm-${fc.id}">${fc.genMsg||'생성 중...'}</div></div>`:'';
-  return`<div class="ad-c ${sc}" id="card-${fc.id}" data-fcid="${fc.id}">
-    <div class="ad-banner ${bc}"></div>
-    <div class="ad-body">
-      <div class="ad-top">
-        <div class="ad-av">🎯<div class="ad-sdot ${dot}"></div></div>
-        <div class="ad-info">
-          <div class="ad-nm">${escHtml(fc.prodName||fc.prod||'—')}</div>
-          <div class="ad-meta">🏢 ${escHtml(fc.co)} · 👤 ${escHtml(fc.name)}</div>
-          ${expChip(fc.expiresAt)}
-        </div>
-        <div class="ad-badge ${badge}">${badgeTxt}</div>
-      </div>
-      <div class="ad-prod">
-        <div class="ad-prod-cat">${escHtml(fc.cat||'카테고리 미지정')}</div>
-        <div class="ad-prod-nm">${escHtml(fc.prodName||fc.prod||'—')}</div>
-      </div>
-      ${urlSection}${prog}
-      ${expBanner(fc)}
-      <div class="ad-acts" style="grid-template-columns:repeat(4,1fr)">
+  const readOnlyExp=homeReadOnly?'':expBanner(fc);
+  const actionSection=homeReadOnly?'':`<div class="ad-acts" style="grid-template-columns:repeat(4,1fr)">
         <button class="fca fca-gen" data-action="gen" data-id="${actionId}" data-real-id="${realId}" ${fc.generating?'disabled':''}>
           <span class="fca-ico">${fc.landHTML?'🔄':'✦'}</span>${fc.landHTML?'재생성':'AI생성'}
         </button>
@@ -2764,7 +2747,26 @@ function adCard(fc,selectedInline=false){
         <button class="fca fca-del" data-action="del" data-id="${actionId}" data-real-id="${realId}" data-name="${escHtml(fc.prodName||fc.prod||fc.name)}">
           <span class="fca-ico">🗑</span>삭제
         </button>
+      </div>`;
+  return`<div class="ad-c ${sc}" id="card-${fc.id}" data-fcid="${fc.id}">
+    <div class="ad-banner ${bc}"></div>
+    <div class="ad-body">
+      <div class="ad-top">
+        <div class="ad-av">🎯<div class="ad-sdot ${dot}"></div></div>
+        <div class="ad-info">
+          <div class="ad-nm">${escHtml(fc.prodName||fc.prod||'—')}</div>
+          <div class="ad-meta">🏢 ${escHtml(fc.co)} · 👤 ${escHtml(fc.name)}</div>
+          ${expChip(fc.expiresAt)}
+        </div>
+        <div class="ad-badge ${badge}">${badgeTxt}</div>
       </div>
+      <div class="ad-prod">
+        <div class="ad-prod-cat">${escHtml(fc.cat||'카테고리 미지정')}</div>
+        <div class="ad-prod-nm">${escHtml(fc.prodName||fc.prod||'—')}</div>
+      </div>
+      ${urlSection}${prog}
+      ${readOnlyExp}
+      ${actionSection}
     </div>
   </div>`;
 }
@@ -2782,17 +2784,64 @@ function getLatestDeployedFc(list){
   return picked||null;
 }
 
+function deployedSearchMatch(fc){
+  if(!APP_SEARCH) return true;
+  const q=APP_SEARCH;
+  const fileLabel=getDeployedFileType(fc).label;
+  return [fc.name,fc.co,fc.prod,fc.prodName,fc.cat,fc.deploySlug,fileLabel].some(v=>String(v||'').toLowerCase().includes(q));
+}
+function getDeployedFileType(fc){
+  const raw=[fc&&fc.deploySlug,fc&&fc.prodName,fc&&fc.prod,fc&&fc.name,fc&&fc.cat].filter(Boolean).join(' ').toLowerCase();
+  const isProgram=/(프로그램|program|app|앱|site|사이트)/.test(raw)&&!/^ad[\s_-]?\d/.test(String(fc&&fc.deploySlug||'').toLowerCase());
+  return {key:isProgram?'program':'ad',label:isProgram?'프로그램파일':'광고파일'};
+}
+function renderDeployedListHtml(scope){
+  const dep=(APP.fcList||[]).filter(f=>f&&f.depURL&&deployedSearchMatch(f));
+  if(APP.selectedDepId&&!dep.some(f=>f.id===APP.selectedDepId)) APP.selectedDepId=null;
+  if(!dep.length){
+    return `<div class="empty-state"><div class="es-ico">🔗</div><div class="es-title">배포된 파일 없음</div><div class="es-sub">배포된 파일이 없거나 검색 결과가 없습니다</div></div>`;
+  }
+  return dep.map(fc=>{
+    const safeUrl=(fc.depURL||'').replace(/'/g,"\'");
+    const selected=APP.selectedDepId===fc.id;
+    const type=getDeployedFileType(fc);
+    const typeColor=type.key==='program'?'#f59e0b':'#22c55e';
+    return `<div class="url-mgr-card${selected?' sel':''}" onclick="selectDeployedAd('${fc.id}')">
+      <div class="url-mgr-topline" style="display:flex;align-items:flex-start;gap:10px">
+        <label style="display:flex;align-items:center;justify-content:center;padding-top:2px;cursor:pointer" onclick="event.stopPropagation()">
+          <input type="checkbox" ${selected?'checked':''} onchange="selectDeployedAd('${fc.id}',this.checked)" style="width:18px;height:18px;accent-color:#4a7ef8;cursor:pointer">
+        </label>
+        <div style="flex:1;min-width:0">
+          <div class="url-mgr-top" style="margin-bottom:8px"><div class="url-mgr-av">🎯</div><div><div class="url-mgr-nm">${escHtml(fc.prodName||fc.prod||'—')}</div><div class="url-mgr-co">🏢 ${escHtml(fc.co)} · 👤 ${escHtml(fc.name)}</div></div></div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid ${typeColor}33;background:${typeColor}14;color:${typeColor};font-size:11px;font-weight:800">${type.label}</span>
+            <span style="font-size:11px;color:var(--t3)">파일구분 표시</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="url-mgr-url" style="flex:1;min-width:0;margin:0">${fc.depURL}</div>
+            <button class="uma uma-shr" onclick="event.stopPropagation();shareURL('${safeUrl}')">공유</button>
+          </div>
+        </div>
+        <div class="url-sel-chip">${selected?'선택됨':'미선택'}</div>
+      </div>
+    </div>${selected?`<div style="margin:-2px 0 14px 30px"><div class="sec-title">🛠 선택 파일 관리</div>${adCard(fc,true)}</div>`:''}`;
+  }).join('');
+}
 function renderHome(){
   const list=document.getElementById('fc-list');if(!list)return;
-  const filtered=getFiltered();
   if(!APP.fcList.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">🎯</div><div class="es-title">광고를 만들어 보십시오</div><div class="es-sub">보험·부동산·쇼핑·서비스 등<br>어떤 상품이든 AI가 광고 페이지를 자동 제작합니다<br><br>카카오톡·SNS 링크 공유 즉시 가능!</div><button class="es-btn" onclick="openAddSheet()">＋ 첫 번째 광고 만들기</button></div>`;return;}
+  if(APP_FILTER==='all'){
+    list.innerHTML=renderDeployedListHtml('home');
+    return;
+  }
+  const filtered=getFiltered();
   if(!filtered.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">🔍</div><div class="es-title">검색 결과 없음</div><div class="es-sub">다른 검색어나 필터를 사용하십시오</div></div>`;return;}
   if(APP_FILTER==='deployed'){
     const focus=getLatestDeployedFc(filtered);
-    list.innerHTML=focus?adCard(focus):'';
+    list.innerHTML=focus?adCard(focus,false,true):'';
     return;
   }
-  list.innerHTML=filtered.map(adCard).join('');
+  list.innerHTML=filtered.map(fc=>fc&&fc.depURL?adCard(fc,false,true):adCard(fc)).join('');
 }
 function renderManage(){
   const list=document.getElementById('manage-list');if(!list)return;
@@ -2802,33 +2851,7 @@ function renderManage(){
 }
 function renderURLs(){
   const list=document.getElementById('url-mgr-list');if(!list)return;
-  const dep=APP.fcList.filter(f=>f.depURL);
-  if(APP.selectedDepId&&!dep.some(f=>f.id===APP.selectedDepId)) APP.selectedDepId=null;
-  if(!dep.length){
-    list.innerHTML=`<div class="empty-state"><div class="es-ico">🔗</div><div class="es-title">배포된 광고 없음</div><div class="es-sub">광고를 생성하고 배포하면<br>여기서 배포 광고를 선택 관리할 수 있습니다</div></div>`;
-    renderSelectedDeployedPanel();
-    updateDeployedSelectionBar();
-    return;
-  }
-  list.innerHTML=dep.map(fc=>{
-    const safeUrl=(fc.depURL||'').replace(/'/g,"\'");
-    const selected=APP.selectedDepId===fc.id;
-    return `<div class="url-mgr-card${selected?' sel':''}" onclick="selectDeployedAd('${fc.id}')">
-      <div class="url-mgr-topline" style="display:flex;align-items:flex-start;gap:10px">
-        <label style="display:flex;align-items:center;justify-content:center;padding-top:2px;cursor:pointer" onclick="event.stopPropagation()">
-          <input type="checkbox" ${selected?'checked':''} onchange="selectDeployedAd('${fc.id}',this.checked)" style="width:18px;height:18px;accent-color:#4a7ef8;cursor:pointer">
-        </label>
-        <div style="flex:1;min-width:0">
-          <div class="url-mgr-top" style="margin-bottom:8px"><div class="url-mgr-av">🎯</div><div><div class="url-mgr-nm">${escHtml(fc.prodName||fc.prod||'—')}</div><div class="url-mgr-co">🏢 ${escHtml(fc.co)} · 👤 ${escHtml(fc.name)}</div></div></div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="url-mgr-url" style="flex:1;min-width:0;margin:0">${fc.depURL}</div>
-            <button class="uma uma-shr" onclick="event.stopPropagation();shareURL('${safeUrl}')">공유</button>
-          </div>
-        </div>
-        <div class="url-sel-chip">${selected?'선택됨':'미선택'}</div>
-      </div>
-    </div>${selected?`<div style="margin:-2px 0 14px 30px"><div class="sec-title">🛠 선택 광고 관리</div>${adCard(fc,true)}</div>`:''}`;
-  }).join('');
+  list.innerHTML=renderDeployedListHtml('urls');
   renderSelectedDeployedPanel();
   updateDeployedSelectionBar();
 }
@@ -2846,7 +2869,7 @@ function selectDeployedAd(fcId,forceState){
   APP.selectedDepId=next?fcId:null;
   updateDeployedSelectionBar();
   renderURLs();
-  if(APP_FILTER==='deployed') renderHome();
+  if(APP_FILTER==='deployed'||APP_FILTER==='all') renderHome();
 }
 function updateDeployedSelectionBar(){
   const meta=document.getElementById('url-sel-meta');
