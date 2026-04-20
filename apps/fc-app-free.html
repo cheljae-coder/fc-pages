@@ -3827,6 +3827,96 @@ function buildDeploySlug(fc,dt){
   const nameBase=String(fc&&fc.name||'광고주').trim().replace(/\s+/g,'-').replace(/[^0-9a-zA-Z가-힣_-]/g,'').replace(/-+/g,'-').replace(/^-|-$/g,'').slice(0,20);
   return 'ad-'+(nameBase||'광고주')+'-'+ymd+'-'+hms;
 }
+
+function inferGitHubRepoFromLocation(){
+  try{
+    const host=(location.hostname||'').toLowerCase();
+    if(!/\.github\.io$/.test(host)) return null;
+    const owner=host.split('.github.io')[0]||'';
+    const segs=(location.pathname||'/').split('/').filter(Boolean);
+    const repo=segs[0]||APP.ghRepo||'fc-pages';
+    if(!owner||!repo) return null;
+    return {owner,repo};
+  }catch(_){return null;}
+}
+function rawGitHubURL(owner,repo,path){
+  return `https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`;
+}
+async function fetchGitHubJSON(url,headers){
+  const r=await fetch(url,{headers:headers||{Accept:'application/vnd.github+json'}});
+  if(!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+function parseDeployedReadme(txt,slug,owner,repo){
+  const depURL=buildDeployPublicURL(slug,owner,repo);
+  const pick=(label)=>{
+    const m=txt.match(new RegExp(label+'\\s*:\\s*(.+)'));
+    return m?m[1].trim():'';
+  };
+  return {
+    id:'gh-'+slug,
+    createdAt:new Date().toISOString(),
+    name:pick('광고주')||'광고주',
+    co:pick('브랜드')||'',
+    prod:pick('상품')||slug,
+    prodName:pick('상품')||slug,
+    cat:pick('카테고리')||'',
+    depURL,
+    landHTML:'github-synced',
+    formHTML:'',
+    generating:false,
+    genMsg:'',genSub:'',genPct:0,
+    tpl:'A',col:'blue',ai:'claude'
+  };
+}
+async function syncDeployedAdsFromGitHub(){
+  try{
+    let owner=APP.ghOwner||'';
+    let repo=APP.ghRepo||'';
+    if(!owner||!repo){
+      const inf=inferGitHubRepoFromLocation();
+      if(inf){
+        owner=owner||inf.owner;
+        repo=repo||inf.repo;
+        APP.ghOwner=owner;
+        APP.ghRepo=repo;
+        const own=document.getElementById('gh-own'); if(own&&!own.value) own.value=owner;
+        const rep=document.getElementById('gh-repo'); if(rep&&!rep.value) rep.value=repo;
+        updateGHStatus();
+      }
+    }
+    if(!owner||!repo) return;
+
+    const api=`https://api.github.com/repos/${owner}/${repo}/contents/pages`;
+    const headers=APP.ghToken?{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github+json'}:{Accept:'application/vnd.github+json'};
+    const items=await fetchGitHubJSON(api,headers).catch(()=>null);
+    if(!Array.isArray(items)||!items.length) return;
+
+    let changed=false;
+    for(const it of items){
+      if(!it||it.type!=='dir'||!it.name) continue;
+      const slug=it.name;
+      const depURL=buildDeployPublicURL(slug,owner,repo);
+      let fc=APP.fcList.find(f=>f.depURL===depURL||f.id===('gh-'+slug));
+      if(fc&&fc.name&&fc.prodName&&fc.co) continue;
+      try{
+        const readme=await fetch(rawGitHubURL(owner,repo,`pages/${encodeURIComponent(slug)}/README.txt`).replace(/%2F/g,'/')).then(r=>r.ok?r.text():'');
+        if(!readme) continue;
+        const parsed=parseDeployedReadme(readme,slug,owner,repo);
+        if(fc){
+          Object.assign(fc,parsed,{
+            id:fc.id||parsed.id,
+            createdAt:fc.createdAt||parsed.createdAt
+          });
+        }else{
+          APP.fcList.push(parsed);
+        }
+        changed=true;
+      }catch(_){ }
+    }
+    if(changed){saveData();render();}
+  }catch(_){ }
+}
 function fmtSz(b){return b>1048576?`${(b/1048576).toFixed(1)}MB`:`${Math.round(b/1024)}KB`;}
 function b64s(s){return btoa(unescape(encodeURIComponent(s)));}
 function cpyTxt(txt){
@@ -3857,6 +3947,7 @@ function showToast(msg,type='success'){const t=document.getElementById('toast');
 
 /* START */
 loadData();render();setTimeout(checkExpiry,500);updatePinDesc();updateAuthBanner();
+syncDeployedAdsFromGitHub();
 if(APP.globalKakaoKey) initKakaoSDK(APP.globalKakaoKey);
 
 // PWA manifest
