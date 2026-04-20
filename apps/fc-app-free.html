@@ -2324,7 +2324,7 @@ function getFiltered(){
 }
 
 /* RENDER */
-function render(){updateStats();renderHome();renderManage();}
+function render(){updateStats();renderHome();renderManage();renderURLs();}
 function updateStats(){
   const t=APP.fcList.length,dep=APP.fcList.filter(f=>f.depURL).length,pg=APP.fcList.filter(f=>f.landHTML).length;
   document.getElementById('st-fc').textContent=t;document.getElementById('st-dep').textContent=dep;document.getElementById('st-pg').textContent=pg;document.getElementById('st-pend').textContent=Math.max(0,pg-dep);
