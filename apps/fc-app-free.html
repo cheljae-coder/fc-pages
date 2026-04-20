@@ -586,21 +586,6 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
         </div>
         <input type="file" id="m-logo-file" accept="image/*" style="display:none" onchange="onLogoFile(this.files[0])">
       </div>
-      <div class="fg" style="margin-bottom:14px">
-        <label>상단 광고 이미지 <span style="color:var(--green);font-size:9px">선택 — 업로드하면 해당 이미지가 상단에 표시됩니다</span></label>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
-          <div id="hero-preview-wrap" style="width:92px;height:64px;border-radius:12px;background:var(--s3);border:2px dashed var(--bd2);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;cursor:pointer" onclick="document.getElementById('m-hero-file').click()">
-            <img id="hero-preview-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover">
-            <span id="hero-preview-ico" style="font-size:22px;color:var(--t3)">🖼</span>
-          </div>
-          <div style="flex:1">
-            <button class="btn btn-g" type="button" onclick="document.getElementById('m-hero-file').click()" style="margin-bottom:6px;width:100%;padding:11px 12px">🖼 광고 이미지 선택</button>
-            <button class="btn btn-g" type="button" id="hero-del-btn" onclick="delHeroImg()" style="width:100%;display:none;color:var(--red);padding:11px 12px">🗑 광고 이미지 삭제</button>
-            <div style="font-size:10px;color:var(--t3);margin-top:4px">JPG · PNG · WEBP · 최대 5MB / 미업로드 시 AI 자동 생성</div>
-          </div>
-        </div>
-        <input type="file" id="m-hero-file" accept="image/*" style="display:none" onchange="onHeroImgFile(this.files[0])">
-      </div>
       <div class="r2">
         <div class="fg"><label>광고주 / 담당자명 *</label><input id="m-name" placeholder="홍길동"></div>
         <div class="fg"><label>회사 / 브랜드명 *</label><input id="m-co" placeholder="삼성생명, OO쇼핑몰"></div>
@@ -1273,17 +1258,71 @@ let APP={
   prevFCId:null,prevPage:'land',
   depFCId:null,
   ghOwner:'',ghRepo:'fc-pages',ghToken:'',
-  globalAI:'claude',globalOAIKey:'',globalClaudeKey:'',globalKakaoKey:'',mLogoDataURL:null,mHeroDataURL:null,
+  globalAI:'claude',globalOAIKey:'',globalClaudeKey:'',globalKakaoKey:'',mLogoDataURL:null,
 };
 let APP_FILTER='all', APP_SEARCH='';
 
 /* INIT / SAVE */
+function normalizeFC(fc){
+  if(!fc||typeof fc!=='object') return null;
+  if(fc.baseFC&&typeof fc.baseFC==='object') fc={id:fc.id||uid(),createdAt:fc.createdAt||Date.now(),...fc.baseFC};
+  if(!fc.id) fc.id=uid();
+  if(!fc.createdAt) fc.createdAt=Date.now();
+  return fc;
+}
+function inferGitHubContext(){
+  if(APP.ghOwner&&APP.ghRepo) return {owner:APP.ghOwner,repo:APP.ghRepo};
+  try{
+    const host=(location.hostname||'').toLowerCase();
+    const parts=(location.pathname||'/').split('/').filter(Boolean);
+    if(host.endsWith('github.io')){
+      const owner=host.replace(/\.github\.io$/,'');
+      const repo=parts[0]||'';
+      if(owner&&repo) return {owner,repo};
+    }
+  }catch(_){ }
+  return null;
+}
+async function restoreGitHubDeployedAds(){
+  const ctx=inferGitHubContext();
+  if(!ctx) return;
+  try{
+    const headers={Accept:'application/vnd.github.v3+json'};
+    if(APP.ghToken) headers.Authorization=`token ${APP.ghToken}`;
+    const res=await fetch(`https://api.github.com/repos/${ctx.owner}/${ctx.repo}/contents/pages`,{headers});
+    if(!res.ok) return;
+    const items=await res.json();
+    const dirs=(Array.isArray(items)?items:[]).filter(it=>it&&it.type==='dir');
+    let changed=false;
+    for(const dir of dirs){
+      const depURL=`https://${ctx.owner}.github.io/${ctx.repo}/pages/${dir.name}/`;
+      if(APP.fcList.some(f=>f&&f.depURL===depURL)) continue;
+      let fc={id:uid(),createdAt:Date.now(),name:'',co:'',phone:'',hot:'',email:'',url:'',kakao:'',smsnum:'',cat:'',prod:dir.name,desc:'',req:'',tpl:'A',col:'blue',ai:'claude',prodName:dir.name,imgURL:null,depURL,expiresAt:null,files:[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0};
+      try{
+        const rr=await fetch(`https://api.github.com/repos/${ctx.owner}/${ctx.repo}/contents/pages/${encodeURIComponent(dir.name)}/README.txt`,{headers});
+        if(rr.ok){
+          const rj=await rr.json();
+          const raw=decodeURIComponent(escape(atob((rj.content||'').replace(/\n/g,''))));
+          const pick=(label)=>{const m=raw.match(new RegExp(label+'\\s*:\\s*(.+)'));return m?m[1].trim():'';};
+          fc.name=pick('광고주')||fc.name;
+          fc.co=pick('브랜드')||fc.co;
+          fc.prodName=pick('상품')||fc.prodName;
+          fc.prod=fc.prodName||fc.prod;
+          fc.cat=pick('카테고리')||fc.cat;
+        }
+      }catch(_){ }
+      APP.fcList.push(fc);
+      changed=true;
+    }
+    if(changed) saveData();
+  }catch(_){ }
+}
 function loadData(){
   try{
     const d=localStorage.getItem(STORE_KEY);
     if(d){
       const p=JSON.parse(d);
-      APP.fcList=p.fcList||[];
+      APP.fcList=(p.fcList||[]).map(normalizeFC).filter(Boolean);
       APP.ghOwner=p.ghOwner||''; APP.ghRepo=p.ghRepo||'fc-pages'; APP.ghToken=p.ghToken||'';
       APP.globalAI=p.globalAI||'claude'; APP.globalOAIKey=p.globalOAIKey||''; APP.globalClaudeKey=p.globalClaudeKey||''; APP.globalKakaoKey=p.globalKakaoKey||'';
     }
@@ -1299,14 +1338,14 @@ function loadData(){
 }
 function saveData(){
   try{
-    const data={fcList:APP.fcList.map(({filesInMem,...r})=>r),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
+    const data={fcList:APP.fcList.map(fc=>{const {filesInMem,...r}=normalizeFC(fc)||{};return r;}),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
     localStorage.setItem(STORE_KEY,JSON.stringify(data));
   }catch(e1){
     try{
-      const data={fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey};
+      const data={fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,expiresAt:fc.expiresAt||null,files:[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey};
       localStorage.setItem(STORE_KEY,JSON.stringify(data));
       showToast('⚠ 저장공간 부족 — 기본정보만 저장됨','error');
-    }catch(_){}
+    }catch(_){ }
   }
 }
 function clearAllData(){if(!confirm('모든 광고 데이터를 삭제하시겠습니까?'))return;APP.fcList=[];saveData();render();showToast('🗑️ 초기화 완료','success');}
@@ -1355,7 +1394,7 @@ let curStep=1;
 function resetForm(){
   curStep=1;APP.mFiles=[];APP.mTpl='A';APP.mCol='blue';
   APP.mAI=APP.globalAI||'claude';APP.editingId=null;APP.currentGenFC=null;
-  APP.mLogoDataURL=null;APP.mHeroDataURL=null;delLogo();delHeroImg(false);
+  APP.mLogoDataURL=null;delLogo();
   ['m-name','m-co','m-phone','m-hot','m-email','m-url','m-kakao','m-smsnum','m-prod','m-desc','m-req'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
   document.getElementById('m-cat').value='';
   document.getElementById('m-flist').innerHTML='';
@@ -1407,7 +1446,7 @@ function goToGenStep(){if(!v4())return;goStep(5);setTimeout(()=>startGen(),80);}
 async function startGen(){
   const name=g('m-name'),co=g('m-co'),phone=g('m-phone');
   const filesToSave=APP.mFiles.map(f=>({name:f.name,size:f.size,mimeType:f.mimeType,b64:f.b64,dataURL:f.dataURL||null,isImg:!!f.isImg,isPDF:!!f.isPDF,isText:!!f.isText,textContent:f.isText?(f.textContent||null):null}));
-  const baseFC={name,co,phone,hot:g('m-hot'),logoDataURL:APP.mLogoDataURL||null,customHeroDataURL:APP.mHeroDataURL||null,email:g('m-email'),url:g('m-url'),kakao:g('m-kakao'),smsnum:g('m-smsnum'),cat:g('m-cat'),prod:g('m-prod'),desc:g('m-desc'),req:g('m-req'),tpl:APP.mTpl,col:APP.mCol,ai:APP.mAI,oaiKey:g('m-oai'),claudeKey:g('m-cai')||APP.globalClaudeKey,files:filesToSave,landHTML:null,formHTML:null,depURL:null,aiData:null,imgURL:null,prodName:null,expiresAt:null,generating:false,genMsg:'',genSub:'',genPct:0};
+  const baseFC={name,co,phone,hot:g('m-hot'),logoDataURL:APP.mLogoDataURL||null,email:g('m-email'),url:g('m-url'),kakao:g('m-kakao'),smsnum:g('m-smsnum'),cat:g('m-cat'),prod:g('m-prod'),desc:g('m-desc'),req:g('m-req'),tpl:APP.mTpl,col:APP.mCol,ai:APP.mAI,oaiKey:g('m-oai'),claudeKey:g('m-cai')||APP.globalClaudeKey,files:filesToSave,landHTML:null,formHTML:null,depURL:null,aiData:null,imgURL:null,prodName:null,expiresAt:null,generating:false,genMsg:'',genSub:'',genPct:0};
   let targetFC;
   if(APP.editingId){const idx=APP.fcList.findIndex(f=>f.id===APP.editingId);if(idx>=0){Object.assign(APP.fcList[idx],baseFC);targetFC=APP.fcList[idx];}else{targetFC={id:uid(),createdAt:Date.now(),...baseFC};APP.fcList.unshift(targetFC);}}
   else{targetFC={id:uid(),createdAt:Date.now(),...baseFC};APP.fcList.unshift(targetFC);}
@@ -1706,13 +1745,12 @@ ${jsonSchema}`;
     if(!aiData.notice) aiData.notice=`${fc.co} · 상담 안내용 · 자세한 사항은 담당자에게 문의하십시오.`;
     
     fc.aiData=aiData;fc.prodName=aiData.productName||fc.prod||'상품';
-    sp(62,fc.customHeroDataURL?'업로드 이미지 적용 중...':'AI 이미지 생성 중...','');
+    sp(62,'AI 이미지 생성 중...','');
     const seed=Math.floor(Math.random()*999999);
     // 연령대 보정 — 타겟·카테고리·설명 분석 후 이미지 프롬프트 강제 수정
     const rawPrompt=aiData.imagePrompt||'';
     const imgPrompt=fixAgeInPrompt(rawPrompt, fc.cat||'', fc.desc||'', fc.req||'', aiData.target||'');
-    const aiImgURL=`https://image.pollinations.ai/prompt/${encodeURIComponent(imgPrompt)}?width=800&height=600&nologo=true&safe=true&seed=${seed}`;
-    fc.imgURL=fc.customHeroDataURL||aiImgURL;
+    fc.imgURL=`https://image.pollinations.ai/prompt/${encodeURIComponent(imgPrompt)}?width=800&height=600&nologo=true&safe=true&seed=${seed}`;
     sp(72,'광고 페이지 HTML 생성 중...','');
     const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''};
     fc.landHTML=buildLand(fcI,aiData,fc.imgURL,fc.tpl||'A',fc.col||'blue');
@@ -1796,8 +1834,8 @@ function openDep(fcId){
   const fsN=document.getElementById('formsubmit-notice');
   const fsE=document.getElementById('fs-email-show');
   if(fsN){fsN.style.display=fc.email?'block':'none';if(fsE&&fc.email)fsE.textContent=fc.email;}
-  const sl=buildDeploySlug(fc,new Date());
-  document.getElementById('dep-url-prev').value=buildDeployPublicURL(sl,APP.ghOwner||'[계정]',APP.ghRepo);
+  const sl=slg(fc.prodName||fc.prod||fc.name);
+  document.getElementById('dep-url-prev').value=`https://${APP.ghOwner||'[계정]'}.github.io/${APP.ghRepo}/pages/${sl}/`;
   document.getElementById('dep-err').classList.remove('show');document.getElementById('dep-err').innerHTML='';
   document.getElementById('dep-dl').classList.remove('show');
   document.getElementById('dep-res').classList.remove('show');
@@ -1905,9 +1943,13 @@ async function runDeploy(){
        '발급 시 권한: 콘텐츠(Contents) → 읽기 및 쓰기로 설정하십시오.']);
     return;
   }
-  // 광고주 이름 + 날짜시간을 GitHub 저장 경로명에 반영
+  // 폴더명: ad-YYYYMMDD-HHMMSS (날짜+시간+초로 완전 고유)
   const _now=new Date();
-  const sl=buildDeploySlug(fc,_now);
+  const _ymd=_now.getFullYear()+('0'+(_now.getMonth()+1)).slice(-2)+('0'+_now.getDate()).slice(-2);
+  const _hms=('0'+_now.getHours()).slice(-2)+('0'+_now.getMinutes()).slice(-2)+('0'+_now.getSeconds()).slice(-2);
+  // 상품명 앞 6자(영숫자만) + 날짜시간
+  const _base=slg(fc.prodName||fc.prod||fc.name).replace(/^ad-?/,'').slice(0,6)||'';
+  const sl='ad-'+(_base?_base+'-':'')+_ymd+'-'+_hms;
   const dl=document.getElementById('dep-dl'),btn=document.getElementById('dep-run-btn'),res=document.getElementById('dep-res');
   dl.classList.add('show');btn.disabled=true;
   try{
@@ -1922,11 +1964,9 @@ async function runDeploy(){
       if(rc===403) throw new Error('TOKEN_NO_PERM');
       throw new Error(`REPO_ERR_${rc}`);
     }
-    const repoData=await repoCheck.json();
-    const repoDefaultBranch=repoData.default_branch||'main';
     // ② .nojekyll 생성 — Jekyll이 파일을 차단하는 것을 방지 (404 원인 1)
     document.getElementById('dep-dl-msg').textContent='② Jekyll 차단 파일 생성 중...';
-    await ghPut('.nojekyll',b64s('\n'),APP.ghToken,APP.ghOwner,APP.ghRepo);
+    await ghPut('.nojekyll','',APP.ghToken,APP.ghOwner,APP.ghRepo);
     // ③ 광고 페이지 업로드
     // ③ 광고 이미지 GitHub에 저장 (카카오톡 OG 이미지용)
     document.getElementById('dep-dl-msg').textContent='③ 광고 이미지 저장 중...';
@@ -1956,7 +1996,7 @@ async function runDeploy(){
         const ogImgTs=Date.now();
         const ogImgName=`og-${ogImgTs}.jpg`;
         await ghPut(`pages/${sl}/${ogImgName}`,ogImgB64,APP.ghToken,APP.ghOwner,APP.ghRepo);
-        ogImgGHUrl=buildDeployPublicURL(sl,APP.ghOwner,APP.ghRepo,ogImgName);
+        ogImgGHUrl=`https://${APP.ghOwner}.github.io/${APP.ghRepo}/pages/${sl}/${ogImgName}`;
         fc._ogImgUrl=ogImgGHUrl;
         const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',_ogImgUrl:ogImgGHUrl,logoDataURL:fc.logoDataURL||''};
         fc.landHTML=buildLand(fcI,fc.aiData,fc.imgURL,fc.tpl||'A',fc.col||'blue');
@@ -1969,6 +2009,9 @@ async function runDeploy(){
     // ④ 상담폼 업로드
     document.getElementById('dep-dl-msg').textContent='⑤ 상담 폼 업로드 중...';
     if(fc.formHTML) await ghPut(`pages/${sl}/form.html`,b64s(fc.formHTML),APP.ghToken,APP.ghOwner,APP.ghRepo,`[${depTs}] update form`);
+    // ④ 배포 정보 README 업로드
+    const readme=`AI 광고 Pro — 광고 페이지 파일\n\n광고주: ${fc.name||''}\n브랜드: ${fc.co||''}\n상품: ${fc.prodName||fc.prod||''}\n카테고리: ${fc.cat||''}\n생성일: ${new Date().toLocaleDateString('ko-KR')}\n배포URL: https://${APP.ghOwner}.github.io/${APP.ghRepo}/pages/${sl}/\n`;
+    await ghPut(`pages/${sl}/README.txt`,b64s(readme),APP.ghToken,APP.ghOwner,APP.ghRepo,`[${depTs}] update readme`);
     // ⑤ GitHub Pages 활성화 확인 및 설정
     document.getElementById('dep-dl-msg').textContent='⑤ GitHub Pages 설정 중...';
     let pagesActive=false;
@@ -1979,11 +2022,11 @@ async function runDeploy(){
         const pgData=await pgCheck.json();
         pagesActive=(pgData.status==='built'||pgData.status==='building'||pgData.url);
         // source가 main/root 아니면 업데이트
-        if(pgData.source?.branch!==repoDefaultBranch||pgData.source?.path!=='/'){
+        if(pgData.source?.branch!=='main'){
           await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/pages`,{
             method:'PUT',
             headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github+json','Content-Type':'application/json'},
-            body:JSON.stringify({source:{branch:repoDefaultBranch,path:'/'}})
+            body:JSON.stringify({source:{branch:'main',path:'/'}})
           });
         }
       } else {
@@ -1991,13 +2034,13 @@ async function runDeploy(){
         const pgCreate=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/pages`,{
           method:'POST',
           headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github+json','Content-Type':'application/json'},
-          body:JSON.stringify({source:{branch:repoDefaultBranch,path:'/'}})
+          body:JSON.stringify({source:{branch:'main',path:'/'}})
         });
         pagesActive=pgCreate.ok;
       }
     }catch(_){}
 
-    curDepURL=buildDeployPublicURL(sl,APP.ghOwner,APP.ghRepo);
+    curDepURL=`https://${APP.ghOwner}.github.io/${APP.ghRepo}/pages/${sl}/`;
     fc.depURL=curDepURL;saveData();render();
     document.getElementById('dep-url-txt').textContent=curDepURL;
     res.classList.add('show');
@@ -2282,10 +2325,9 @@ function shareURL(url,text){
 }
 async function ghPut(path,content,tok,owner,repo,msg){
   let sha=null;
-  const apiPath=path.split('/').map(seg=>encodeURIComponent(seg)).join('/');
   // 기존 파일 sha 조회 (업데이트 시 필요)
   try{
-    const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${apiPath}`,
+    const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,
       {headers:{Authorization:`token ${tok}`,Accept:'application/vnd.github.v3+json'}});
     if(r.ok){const j=await r.json();sha=j.sha;}
     else if(r.status===401) throw new Error('TOKEN_INVALID');
@@ -2293,7 +2335,7 @@ async function ghPut(path,content,tok,owner,repo,msg){
   }catch(e){if(e.message.startsWith('TOKEN'))throw e;}
   const body={message:msg||`AI 광고 Pro: update ${path}`,content};
   if(sha) body.sha=sha;
-  const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${apiPath}`,{
+  const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{
     method:'PUT',
     headers:{Authorization:`token ${tok}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
     body:JSON.stringify(body)
@@ -2426,7 +2468,6 @@ function quickGen(fcId){
   resetForm();APP.editingId=fcId;document.getElementById('sh-add-title').textContent='광고 다시 만들기';
   const setV=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
   APP.mLogoDataURL=fc.logoDataURL||null;syncLogoPreview();
-  APP.mHeroDataURL=fc.customHeroDataURL||null;syncHeroImgPreview();
   setV('m-name',fc.name);setV('m-co',fc.co);setV('m-phone',fc.phone);setV('m-hot',fc.hot);setV('m-email',fc.email);setV('m-url',fc.url);setV('m-kakao',fc.kakao);setV('m-smsnum',fc.smsnum);setV('m-cat',fc.cat);setV('m-prod',fc.prod);setV('m-desc',fc.desc);setV('m-req',fc.req);
   if(fc.files&&fc.files.length>0){APP.mFiles=[...fc.files];rF();showToast(`📂 저장된 파일 ${fc.files.length}개 불러옴`,'success');}
   const tplMap={A:'m-ta',B:'m-tb',C:'m-tc',D:'m-td'},colMap={blue:'m-cb',green:'m-cg',gold:'m-cgld',rose:'m-cr',violet:'m-cv',slate:'m-cs'};
@@ -3070,44 +3111,6 @@ function syncLogoPreview(){
   if(ico)ico.style.display="none";
   if(del)del.style.display="block";
 }
-async function onHeroImgFile(file){
-  if(!file)return;
-  if(file.size>5*1024*1024){showToast("⚠ 광고 이미지 파일이 5MB를 초과합니다","error");return;}
-  const reader=new FileReader();
-  reader.onload=async function(e){
-    const compressed=await compressImg(e.target.result,1600,.9);
-    APP.mHeroDataURL=compressed;
-    syncHeroImgPreview();
-    showToast("✅ 광고 이미지 업로드 완료","success");
-  };
-  reader.readAsDataURL(file);
-}
-function delHeroImg(showMsg=true){
-  APP.mHeroDataURL=null;
-  const img=document.getElementById("hero-preview-img");
-  const ico=document.getElementById("hero-preview-ico");
-  const del=document.getElementById("hero-del-btn");
-  const fi=document.getElementById("m-hero-file");
-  if(img){img.src="";img.style.display="none";}
-  if(ico)ico.style.display="block";
-  if(del)del.style.display="none";
-  if(fi)fi.value="";
-  if(showMsg)showToast("🗑 광고 이미지가 삭제되었습니다","success");
-}
-function syncHeroImgPreview(){
-  const img=document.getElementById("hero-preview-img");
-  const ico=document.getElementById("hero-preview-ico");
-  const del=document.getElementById("hero-del-btn");
-  if(!APP.mHeroDataURL){
-    if(img){img.src="";img.style.display="none";}
-    if(ico)ico.style.display="block";
-    if(del)del.style.display="none";
-    return;
-  }
-  if(img){img.src=APP.mHeroDataURL;img.style.display="block";}
-  if(ico)ico.style.display="none";
-  if(del)del.style.display="block";
-}
 function escHtml(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 document.addEventListener('click',function(e){
   const btn=e.target.closest('[data-action]');if(!btn)return;
@@ -3245,7 +3248,7 @@ ${ai.urgency?`<div class="urgency">⏰ ${escHtml(ai.urgency)}</div>`:''}
 .ft{text-align:center;padding:10px 12px 20px;font-size:10px;color:#bbb;}
 </style></head><body>
 <div class="top">${fc.logoDataURL?`<img src="${fc.logoDataURL}" class="logo-img" style="width:32px;height:32px" alt="logo">`:''}<span class="co">${escHtml(fc.co)}</span><span class="tagline">${escHtml(ai.tagline||ai.badge||'추천')}</span></div>
-<div class="hero"><div id="_ad_img_wrap" data-src="${imgURL}" style="position:relative;width:100%;min-height:160px;background:linear-gradient(135deg,${th.p},${th.a});overflow:hidden;"><div class="_sp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:_imgSpin 1s linear infinite;"></div><p style="font-size:11px;color:rgba(255,255,255,.7);font-family:sans-serif;margin:0;">이미지 생성 중...</p></div></div><style>@keyframes _imgSpin{to{transform:rotate(360deg)}}</style><script>(function(){var w=document.getElementById("_ad_img_wrap");if(!w)return;var src=w.getAttribute("data-src")||"";var isData=src.indexOf("data:image/")===0;var tries=0;function load(){var i=new Image();i.onload=function(){w.style.background="none";var e=w.querySelector("img");if(e)w.removeChild(e);i.style.cssText="width:100%;display:block;object-fit:cover;";w.appendChild(i);var s=w.querySelector("._sp");if(s)s.style.display="none";};i.onerror=function(){if(isData){var s=w.querySelector("._sp");if(s)s.style.display="none";return;}if(tries++<4){setTimeout(load,6000);}else{var s=w.querySelector("._sp");if(s)s.style.display="none";}};i.src=isData?src:(src+"&_r="+tries);}load();})();<\/script></div>
+<div class="hero"><div id="_ad_img_wrap" data-src="${imgURL}" style="position:relative;width:100%;min-height:160px;background:linear-gradient(135deg,${th.p},${th.a});overflow:hidden;"><div class="_sp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:_imgSpin 1s linear infinite;"></div><p style="font-size:11px;color:rgba(255,255,255,.7);font-family:sans-serif;margin:0;">이미지 생성 중...</p></div></div><style>@keyframes _imgSpin{to{transform:rotate(360deg)}}</style><script>(function(){var w=document.getElementById("_ad_img_wrap");if(!w)return;var src=w.getAttribute("data-src");var tries=0;function load(){var i=new Image();i.onload=function(){w.style.background="none";var e=w.querySelector("img");if(e)w.removeChild(e);i.style.cssText="width:100%;display:block;object-fit:cover;";w.appendChild(i);var s=w.querySelector("._sp");if(s)s.style.display="none";};i.onerror=function(){if(tries++<4){setTimeout(load,6000);}else{var s=w.querySelector("._sp");if(s)s.style.display="none";}};i.src=src+"&_r="+tries;}load();})();<\/script></div>
 <div class="info"><div class="badge">⭐ ${escHtml(ai.badge||'추천')}</div><div class="hl">${escHtml(ai.headline||'')}</div><div class="sub">${escHtml(ai.subheadline||'')}</div></div>
 ${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}${whyPoints.length?`<div class="card"><div class="sec-t">왜 선택해야 하는가</div><div class="why-list">${whyPoints.map((p,i)=>`<div class="why-item"><div class="why-dot">${i+1}</div><span>${escHtml(p)}</span></div>`).join('')}</div></div>`:''}
 ${features.length?`<div class="card"><div class="sec-t">핵심 특징</div><div class="feat-list">${features.map(b=>`<div class="feat-c"><div class="feat-ico">${b.icon}</div><div><div class="feat-tit">${escHtml(b.title)}</div><div class="feat-desc">${escHtml(b.desc)}</div></div></div>`).join('')}</div></div>`:''}
@@ -3287,7 +3290,7 @@ ${ai.urgency?`<div class="urgency">⏰ ${escHtml(ai.urgency)}</div>`:''}
 .ft{text-align:center;padding:12px 18px 24px;font-size:10px;color:rgba(255,255,255,.2);}
 </style></head><body>
 <div class="top">${fc.logoDataURL?`<img src="${fc.logoDataURL}" class="logo-img" style="width:32px;height:32px" alt="logo">`:''}<span class="co">${escHtml(fc.co)}</span><span class="badge">${escHtml(ai.badge||'추천')}</span></div>
-<div class="hero"><div id="_ad_img_wrap" data-src="${imgURL}" style="position:relative;width:100%;min-height:200px;background:linear-gradient(135deg,${th.p},${th.a});overflow:hidden;"><div class="_sp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:_imgSpin 1s linear infinite;"></div><p style="font-size:11px;color:rgba(255,255,255,.7);font-family:sans-serif;margin:0;">이미지 생성 중...</p></div></div><style>@keyframes _imgSpin{to{transform:rotate(360deg)}}</style><script>(function(){var w=document.getElementById("_ad_img_wrap");if(!w)return;var src=w.getAttribute("data-src")||"";var isData=src.indexOf("data:image/")===0;var tries=0;function load(){var i=new Image();i.onload=function(){w.style.background="none";var e=w.querySelector("img");if(e)w.removeChild(e);i.style.cssText="width:100%;display:block;object-fit:cover;";w.appendChild(i);var s=w.querySelector("._sp");if(s)s.style.display="none";};i.onerror=function(){if(isData){var s=w.querySelector("._sp");if(s)s.style.display="none";return;}if(tries++<4){setTimeout(load,6000);}else{var s=w.querySelector("._sp");if(s)s.style.display="none";}};i.src=isData?src:(src+"&_r="+tries);}load();})();<\/script><div class="hg"></div></div>
+<div class="hero"><div id="_ad_img_wrap" data-src="${imgURL}" style="position:relative;width:100%;min-height:200px;background:linear-gradient(135deg,${th.p},${th.a});overflow:hidden;"><div class="_sp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:_imgSpin 1s linear infinite;"></div><p style="font-size:11px;color:rgba(255,255,255,.7);font-family:sans-serif;margin:0;">이미지 생성 중...</p></div></div><style>@keyframes _imgSpin{to{transform:rotate(360deg)}}</style><script>(function(){var w=document.getElementById("_ad_img_wrap");if(!w)return;var src=w.getAttribute("data-src");var tries=0;function load(){var i=new Image();i.onload=function(){w.style.background="none";var e=w.querySelector("img");if(e)w.removeChild(e);i.style.cssText="width:100%;display:block;object-fit:cover;";w.appendChild(i);var s=w.querySelector("._sp");if(s)s.style.display="none";};i.onerror=function(){if(tries++<4){setTimeout(load,6000);}else{var s=w.querySelector("._sp");if(s)s.style.display="none";}};i.src=src+"&_r="+tries;}load();})();<\/script><div class="hg"></div></div>
 <div class="cnt">
 <div class="hl">${escHtml(ai.headline||'')}</div><div class="sub">${escHtml(ai.subheadline||'')}</div>
 ${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}${whyPoints.length?`<div class="sec"><div class="sec-t">왜 선택해야 하는가</div>${whyPoints.map((p,i)=>`<div class="why-item"><div class="why-num">${i+1}</div><span>${escHtml(p)}</span></div>`).join('')}</div>`:''}
@@ -3337,7 +3340,7 @@ ${ai.urgency?`<div class="urgency">⏰ ${escHtml(ai.urgency)}</div>`:''}
 <div class="header"><div class="h-badge">✦ ${escHtml(ai.badge||'추천')}</div><div class="h-title">${escHtml(ai.headline||'')}</div><div class="h-sub">${escHtml(ai.subheadline||'')}</div></div>
 <div class="float-card">
 <div class="fc-row">${fc.logoDataURL?`<img src="${fc.logoDataURL}" class="logo-img" alt="logo">`:`<div class="fc-dot">🎯</div>`}<div><div class="fc-nm">${escHtml(fc.name)} 담당자</div><div class="fc-co">🏢 ${escHtml(fc.co)} · 📞 ${escHtml(fc.phone)}</div></div></div>
-<div id="_ad_img_wrap" data-src="${imgURL}" style="position:relative;width:100%;min-height:160px;background:linear-gradient(135deg,${th.p},${th.a});overflow:hidden;"><div class="_sp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:_imgSpin 1s linear infinite;"></div><p style="font-size:11px;color:rgba(255,255,255,.7);font-family:sans-serif;margin:0;">이미지 생성 중...</p></div></div><style>@keyframes _imgSpin{to{transform:rotate(360deg)}}</style><script>(function(){var w=document.getElementById("_ad_img_wrap");if(!w)return;var src=w.getAttribute("data-src")||"";var isData=src.indexOf("data:image/")===0;var tries=0;function load(){var i=new Image();i.onload=function(){w.style.background="none";var e=w.querySelector("img");if(e)w.removeChild(e);i.style.cssText="width:100%;display:block;object-fit:cover;";w.appendChild(i);var s=w.querySelector("._sp");if(s)s.style.display="none";};i.onerror=function(){if(isData){var s=w.querySelector("._sp");if(s)s.style.display="none";return;}if(tries++<4){setTimeout(load,6000);}else{var s=w.querySelector("._sp");if(s)s.style.display="none";}};i.src=isData?src:(src+"&_r="+tries);}load();})();<\/script>
+<div id="_ad_img_wrap" data-src="${imgURL}" style="position:relative;width:100%;min-height:160px;background:linear-gradient(135deg,${th.p},${th.a});overflow:hidden;"><div class="_sp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:_imgSpin 1s linear infinite;"></div><p style="font-size:11px;color:rgba(255,255,255,.7);font-family:sans-serif;margin:0;">이미지 생성 중...</p></div></div><style>@keyframes _imgSpin{to{transform:rotate(360deg)}}</style><script>(function(){var w=document.getElementById("_ad_img_wrap");if(!w)return;var src=w.getAttribute("data-src");var tries=0;function load(){var i=new Image();i.onload=function(){w.style.background="none";var e=w.querySelector("img");if(e)w.removeChild(e);i.style.cssText="width:100%;display:block;object-fit:cover;";w.appendChild(i);var s=w.querySelector("._sp");if(s)s.style.display="none";};i.onerror=function(){if(tries++<4){setTimeout(load,6000);}else{var s=w.querySelector("._sp");if(s)s.style.display="none";}};i.src=src+"&_r="+tries;}load();})();<\/script>
 ${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}${whyPoints.length?`<div class="sec-t">왜 선택해야 하는가</div>${whyPoints.map((p,i)=>`<div class="why-item"><div class="why-dot">${i+1}</div><span>${escHtml(p)}</span></div>`).join('')}<div style="height:12px"></div>`:''}
 ${features.length?`<div class="sec-t">핵심 특징</div><div class="feat-list">${features.map(b=>`<div class="feat-c"><div class="feat-ico">${b.icon}</div><div><div class="feat-hl">${escHtml(b.highlight||'')}</div><div class="feat-tit">${escHtml(b.title)}</div><div class="feat-desc">${escHtml(b.desc)}</div></div></div>`).join('')}</div><div style="height:12px"></div>`:''}
 ${coverage.length?`<div class="sec-t">보장 / 조건 / 스펙</div>${coverage.map(c=>`<div class="cov-row"><span class="cov-label">${escHtml(c.label)}</span><span class="cov-val">${escHtml(c.value)}</span></div>`).join('')}<div style="height:12px"></div>`:''}
@@ -3813,110 +3816,6 @@ function g(id){const el=document.getElementById(id);return el?el.value.trim():''
 function tv(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'보기':'숨기기';}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 function slg(n){return('ad-'+(n||'page')).toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'').slice(0,50);}
-function buildDeployPublicURL(sl,owner,repo,fileName=''){
-  const safeOwner=owner||APP.ghOwner||'[계정]';
-  const safeRepo=repo||APP.ghRepo||'fc-pages';
-  const parts=['https://'+safeOwner+'.github.io',safeRepo,'pages',encodeURIComponent(sl)];
-  if(fileName) parts.push(encodeURIComponent(fileName));
-  return parts.join('/')+(fileName?'':'/');
-}
-function buildDeploySlug(fc,dt){
-  const d=dt instanceof Date?dt:new Date();
-  const ymd=d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2);
-  const hms=('0'+d.getHours()).slice(-2)+('0'+d.getMinutes()).slice(-2)+('0'+d.getSeconds()).slice(-2);
-  const nameBase=String(fc&&fc.name||'광고주').trim().replace(/\s+/g,'-').replace(/[^0-9a-zA-Z가-힣_-]/g,'').replace(/-+/g,'-').replace(/^-|-$/g,'').slice(0,20);
-  return 'ad-'+(nameBase||'광고주')+'-'+ymd+'-'+hms;
-}
-
-function inferGitHubRepoFromLocation(){
-  try{
-    const host=(location.hostname||'').toLowerCase();
-    if(!/\.github\.io$/.test(host)) return null;
-    const owner=host.split('.github.io')[0]||'';
-    const segs=(location.pathname||'/').split('/').filter(Boolean);
-    const repo=segs[0]||APP.ghRepo||'fc-pages';
-    if(!owner||!repo) return null;
-    return {owner,repo};
-  }catch(_){return null;}
-}
-function rawGitHubURL(owner,repo,path){
-  return `https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`;
-}
-async function fetchGitHubJSON(url,headers){
-  const r=await fetch(url,{headers:headers||{Accept:'application/vnd.github+json'}});
-  if(!r.ok) throw new Error(`HTTP ${r.status}`);
-  return r.json();
-}
-function parseDeployedReadme(txt,slug,owner,repo){
-  const depURL=buildDeployPublicURL(slug,owner,repo);
-  const pick=(label)=>{
-    const m=txt.match(new RegExp(label+'\\s*:\\s*(.+)'));
-    return m?m[1].trim():'';
-  };
-  return {
-    id:'gh-'+slug,
-    createdAt:new Date().toISOString(),
-    name:pick('광고주')||'광고주',
-    co:pick('브랜드')||'',
-    prod:pick('상품')||slug,
-    prodName:pick('상품')||slug,
-    cat:pick('카테고리')||'',
-    depURL,
-    landHTML:'github-synced',
-    formHTML:'',
-    generating:false,
-    genMsg:'',genSub:'',genPct:0,
-    tpl:'A',col:'blue',ai:'claude'
-  };
-}
-async function syncDeployedAdsFromGitHub(){
-  try{
-    let owner=APP.ghOwner||'';
-    let repo=APP.ghRepo||'';
-    if(!owner||!repo){
-      const inf=inferGitHubRepoFromLocation();
-      if(inf){
-        owner=owner||inf.owner;
-        repo=repo||inf.repo;
-        APP.ghOwner=owner;
-        APP.ghRepo=repo;
-        const own=document.getElementById('gh-own'); if(own&&!own.value) own.value=owner;
-        const rep=document.getElementById('gh-repo'); if(rep&&!rep.value) rep.value=repo;
-        updateGHStatus();
-      }
-    }
-    if(!owner||!repo) return;
-
-    const api=`https://api.github.com/repos/${owner}/${repo}/contents/pages`;
-    const headers=APP.ghToken?{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github+json'}:{Accept:'application/vnd.github+json'};
-    const items=await fetchGitHubJSON(api,headers).catch(()=>null);
-    if(!Array.isArray(items)||!items.length) return;
-
-    let changed=false;
-    for(const it of items){
-      if(!it||it.type!=='dir'||!it.name) continue;
-      const slug=it.name;
-      const depURL=buildDeployPublicURL(slug,owner,repo);
-      let fc=APP.fcList.find(f=>f.depURL===depURL||f.id===('gh-'+slug));
-      if(fc&&fc.name&&fc.prodName&&fc.co) continue;
-      try{
-        const readme=await fetch(rawGitHubURL(owner,repo,`pages/${encodeURIComponent(slug)}/README.txt`).replace(/%2F/g,'/')).then(r=>r.ok?r.text():'');
-        if(!readme) continue;
-        const parsed=parseDeployedReadme(readme,slug,owner,repo);
-        if(fc){
-          Object.assign(fc,parsed,{
-            id:fc.id||parsed.id,
-            createdAt:fc.createdAt||parsed.createdAt
-          });
-        }else{
-          APP.fcList.push(parsed);
-        }
-        changed=true;
-      }catch(_){ }
-    }
-    if(changed){saveData();render();}
-  }catch(_){ }
-}
 function fmtSz(b){return b>1048576?`${(b/1048576).toFixed(1)}MB`:`${Math.round(b/1024)}KB`;}
 function b64s(s){return btoa(unescape(encodeURIComponent(s)));}
 function cpyTxt(txt){
@@ -3946,8 +3845,7 @@ let toastTimer;
 function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type}`;void t.offsetWidth;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
 
 /* START */
-loadData();render();setTimeout(checkExpiry,500);updatePinDesc();updateAuthBanner();
-syncDeployedAdsFromGitHub();
+loadData();restoreGitHubDeployedAds().finally(()=>{render();setTimeout(checkExpiry,500);updatePinDesc();updateAuthBanner();});
 if(APP.globalKakaoKey) initKakaoSDK(APP.globalKakaoKey);
 
 // PWA manifest
