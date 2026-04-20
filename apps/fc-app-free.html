@@ -912,7 +912,7 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
 <div class="sheet-bg" id="sh-edit-bg" onclick="closeSheet('sh-edit')"></div>
 <div class="sheet" id="sh-edit">
   <div class="sheet-handle"></div>
-  <div class="sheet-hd"><div class="sheet-title">✏️ 광고 정보 수정</div><button class="sheet-close" onclick="closeSheet('sh-edit')">✕</button></div>
+  <div class="sheet-hd"><div class="sheet-title" id="sh-edit-title">✏️ 광고 정보 수정</div><button class="sheet-close" onclick="closeSheet('sh-edit')">✕</button></div>
   <div class="sheet-body">
     <div class="edit-chip">⚡ 재생성 없이 정보만 즉시 변경</div>
     <div class="r2">
@@ -1010,7 +1010,7 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
   <!-- sticky 헤더 영역: 제목 + 닫기 + 탭 -->
   <div class="ec-sticky-hd">
     <div class="ec-sticky-top">
-      <div class="sheet-title">📝 광고 내용 수정</div>
+      <div class="sheet-title" id="ec-sheet-title">📝 광고 내용 수정</div>
       <button class="sheet-close" onclick="closeSheet('sh-ec')">✕</button>
     </div>
     <div class="ec-tabs">
@@ -1989,7 +1989,8 @@ function openDep(fcId){
   const fsE=document.getElementById('fs-email-show');
   if(fsN){fsN.style.display=fc.email?'block':'none';if(fsE&&fc.email)fsE.textContent=fc.email;}
   const sl=slg(fc.prodName||fc.prod||fc.name);
-  document.getElementById('dep-url-prev').value=`https://${APP.ghOwner||'[계정]'}.github.io/${APP.ghRepo}/pages/${sl}/`;
+  const baseUrl=getPagesBaseUrl(APP.ghOwner||'[계정]',APP.ghRepo||'');
+  document.getElementById('dep-url-prev').value=`${baseUrl}/pages/${sl}/`;
   document.getElementById('dep-err').classList.remove('show');document.getElementById('dep-err').innerHTML='';
   document.getElementById('dep-dl').classList.remove('show');
   document.getElementById('dep-res').classList.remove('show');
@@ -2002,11 +2003,11 @@ function openDep(fcId){
   if(ownerEl) ownerEl.textContent=APP.ghOwner||'계정명';
   openSheet('sh-dep');
   // Pages 상태 자동 확인
-  if(APP.ghOwner&&APP.ghToken) checkPagesStatus();
+  if(APP.ghOwner&&APP.ghRepo&&APP.ghToken) checkPagesStatus();
 }
 
 async function checkPagesStatus(){
-  if(!APP.ghOwner||!APP.ghToken) return;
+  if(!APP.ghOwner||!APP.ghRepo||!APP.ghToken) return;
   const box=document.getElementById('pages-status-box');
   const guide=document.getElementById('pages-guide');
   const btn=document.getElementById('dep-run-btn');
@@ -2017,7 +2018,7 @@ async function checkPagesStatus(){
   box.innerHTML='🔍 GitHub Pages 상태 확인 중...';
   try{
     const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/pages`,
-      {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
+      {headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}});
     if(r.status===404){
       // Pages 미활성화 → 가이드 표시
       box.style.background='rgba(239,68,68,.07)';
@@ -2071,21 +2072,65 @@ async function checkPagesStatus(){
     box.innerHTML='⚠️ 네트워크 오류로 Pages 상태를 확인하지 못했습니다';
   }
 }
+async function ensureDeployableFiles(fc){
+  if(!fc) return false;
+  if(fc.landHTML&&fc.formHTML) return true;
+  if(!fc.aiData&&isGeneratedReady(fc)) ensureEditableAIData(fc);
+  if(!fc.landHTML&&fc.aiData){
+    rebuildAdFiles(fc);
+  }
+  if(!fc.landHTML&&fc.depURL){
+    try{
+      const slug=getDepSlug(fc.depURL);
+      if(slug){
+        const importedLand=await ghReadTextFileByPath(`pages/${slug}/index.html`);
+        let importedForm='';
+        try{ importedForm=await ghReadTextFileByPath(`pages/${slug}/form.html`); }catch(_){}
+        if(importedLand){
+          fc.landHTML=importedLand;
+          if(importedForm) fc.formHTML=importedForm;
+          if(!fc.aiData||!Object.keys(fc.aiData||{}).length){
+            try{
+              const parsed=parseImportedAdHTML(importedLand);
+              if(parsed?.aiData) fc.aiData=parsed.aiData;
+              if(parsed?.imgURL&&!fc.imgURL) fc.imgURL=parsed.imgURL;
+              if(parsed?.logoDataURL&&!fc.logoDataURL) fc.logoDataURL=parsed.logoDataURL;
+              normalizeImportedFCData(fc);
+            }catch(_){}
+          }
+        }
+      }
+    }catch(_){}
+  }
+  if(!fc.formHTML){
+    if(!fc.aiData&&isGeneratedReady(fc)) ensureEditableAIData(fc);
+    if(fc.aiData){
+      const fcI={
+        name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',
+        kakao:fc.kakao||'',smsnum:fc.smsnum||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''
+      };
+      fc.formHTML=buildForm(fcI,fc.aiData);
+    }
+  }
+  return !!fc.landHTML;
+}
 async function runDeploy(){
   const fc=APP.fcList.find(f=>f.id===APP.depFCId);if(!fc)return;
   const e=document.getElementById('dep-err');e.classList.remove('show');e.innerHTML='';
 
   // ── 사전 검증 ──
-  if(!APP.ghOwner||!APP.ghToken){
+  if(!APP.ghOwner||!APP.ghRepo||!APP.ghToken){
     showDepErr('GitHub 설정 미입력','사용자명과 토큰이 입력되지 않았습니다.',
       ['설정 탭 → ⚙️ GitHub Pages 설정을 탭하십시오.',
        'GitHub 사용자명, 레포지토리명, 토큰을 모두 입력하십시오.',
        '저장 버튼을 탭한 후 다시 배포를 시도하십시오.']);
     return;
   }
+  await ensureDeployableFiles(fc);
   if(!fc.landHTML){
     showDepErr('광고 페이지 없음','배포할 광고 페이지가 생성되지 않았습니다.',
       ['홈 화면에서 해당 광고의 ✦ AI생성 버튼을 탭하십시오.',
+       'URL 메뉴에서 불러온 광고라면 정보 또는 내용편집 후 다시 배포하십시오.',
        '생성 완료 후 다시 배포를 시도하십시오.']);
     return;
   }
@@ -2109,15 +2154,8 @@ async function runDeploy(){
   try{
     document.getElementById('dep-dl-msg').textContent='① 레포지토리 확인 중...';
     // 레포지토리 존재 여부 확인
-    const repoCheck=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}`,
-      {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
-    if(!repoCheck.ok){
-      const rc=repoCheck.status;
-      if(rc===404) throw new Error('REPO_NOT_FOUND');
-      if(rc===401) throw new Error('TOKEN_INVALID');
-      if(rc===403) throw new Error('TOKEN_NO_PERM');
-      throw new Error(`REPO_ERR_${rc}`);
-    }
+    const repoMeta=await ghGetRepoMeta(APP.ghOwner,APP.ghRepo,APP.ghToken);
+    const repoDefaultBranch=repoMeta.default_branch||'main';
     // ② .nojekyll 생성 — Jekyll이 파일을 차단하는 것을 방지 (404 원인 1)
     document.getElementById('dep-dl-msg').textContent='② Jekyll 차단 파일 생성 중...';
     await ghPut('.nojekyll','',APP.ghToken,APP.ghOwner,APP.ghRepo);
@@ -2150,7 +2188,7 @@ async function runDeploy(){
         const ogImgTs=Date.now();
         const ogImgName=`og-${ogImgTs}.jpg`;
         await ghPut(`pages/${sl}/${ogImgName}`,ogImgB64,APP.ghToken,APP.ghOwner,APP.ghRepo);
-        ogImgGHUrl=`https://${APP.ghOwner}.github.io/${APP.ghRepo}/pages/${sl}/${ogImgName}`;
+        ogImgGHUrl=`${getPagesBaseUrl(APP.ghOwner,APP.ghRepo)}/pages/${sl}/${ogImgName}`;
         fc._ogImgUrl=ogImgGHUrl;
         const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',_ogImgUrl:ogImgGHUrl,logoDataURL:fc.logoDataURL||''};
         fc.landHTML=buildLand(fcI,fc.aiData,fc.imgURL,fc.tpl||'A',fc.col||'blue');
@@ -2168,37 +2206,49 @@ async function runDeploy(){
     let pagesActive=false;
     try{
       const pgCheck=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/pages`,
-        {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github+json'}});
+        {headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}});
       if(pgCheck.ok){
         const pgData=await pgCheck.json();
         pagesActive=(pgData.status==='built'||pgData.status==='building'||pgData.url);
-        // source가 main/root 아니면 업데이트
-        if(pgData.source?.branch!=='main'){
+        // source가 기본 브랜치/root 아니면 업데이트
+        if(pgData.source?.branch!==repoDefaultBranch || pgData.source?.path!=='/'){
           await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/pages`,{
             method:'PUT',
-            headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github+json','Content-Type':'application/json'},
-            body:JSON.stringify({source:{branch:'main',path:'/'}})
+            headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
+            body:JSON.stringify({source:{branch:repoDefaultBranch,path:'/'}})
           });
         }
       } else {
         // Pages 미활성화 → 활성화 시도
         const pgCreate=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/pages`,{
           method:'POST',
-          headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github+json','Content-Type':'application/json'},
-          body:JSON.stringify({source:{branch:'main',path:'/'}})
+          headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
+          body:JSON.stringify({source:{branch:repoDefaultBranch,path:'/'}})
         });
         pagesActive=pgCreate.ok;
       }
     }catch(_){}
 
-    curDepURL=`https://${APP.ghOwner}.github.io/${APP.ghRepo}/pages/${sl}/`;
+    curDepURL=`${getPagesBaseUrl(APP.ghOwner,APP.ghRepo)}/pages/${sl}/`;
     fc.depURL=curDepURL;saveData();render();
     document.getElementById('dep-url-txt').textContent=curDepURL;
     res.classList.add('show');
 
     // QR 생성
     const qd=document.getElementById('dep-qr');qd.innerHTML='';
-    if(typeof QRCode!=='undefined'){new QRCode(qd,{text:curDepURL,width:160,height:160,colorDark:'#1a1a2e',colorLight:'#ffffff'});}
+    const qrTargetURL=getPublicOpenURL(curDepURL);
+    try{
+      if(typeof QRCode!=='undefined'){
+        new QRCode(qd,{text:qrTargetURL,width:160,height:160,colorDark:'#1a1a2e',colorLight:'#ffffff'});
+      }else{
+        throw new Error('QRCODE_LIB_MISSING');
+      }
+    }catch(qrErr){
+      qd.innerHTML=`<img alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(qrTargetURL)}" style="width:160px;height:160px;display:block">`;
+      console.warn('QR 생성 실패, 이미지 방식으로 대체:',qrErr);
+    }
+
+    const publicReady=await isPublicPageReady(curDepURL);
 
     // Pages 상태에 따라 안내 표시
     const ckBox=document.getElementById('pages-checklist');
@@ -2207,13 +2257,15 @@ async function runDeploy(){
       ckBox.style.display='block';
       showPagesChecklist(curDepURL);
       showToast('⚠️ GitHub Pages 수동 활성화 필요 — 아래 안내를 확인하십시오','error');
+    } else if(!publicReady){
+      if(ckBox)ckBox.style.display='none';
+      showToast('⏳ 파일 업로드 완료. GitHub Pages 반영 후 열기가 가능합니다.','info');
     } else {
       // Pages 활성화됨 → 안내 숨기기
       if(ckBox)ckBox.style.display='none';
-      showToast('🚀 배포 완료! 1~2분 후 🌐 열기를 탭하십시오','success');
+      showToast('🚀 배포 완료! 지금 바로 열 수 있습니다.','success');
     }
     if(navigator.vibrate)navigator.vibrate([50,30,50,30,100]);
-    showToast('🌐 파일 업로드 완료! 아래 안내를 확인하십시오.','success');
   }catch(err){
     interpretDepErr(err.message);
   }finally{dl.classList.remove('show');btn.disabled=false;}
@@ -2308,7 +2360,47 @@ function showDepErr(title,desc,steps){
 function cpyURL(){cpyTxt(curDepURL);}
 // Pages 폴링 타이머
 function cpyURL(){cpyTxt(curDepURL);}
-function opnURL(){window.open(curDepURL,'_blank');}
+function getPublicOpenURL(depURL){
+  const raw=String(depURL||'').trim();
+  if(!raw) return '';
+  try{
+    const u=new URL(raw);
+    const parts=u.pathname.split('/').filter(Boolean).map(s=>encodeURIComponent(decodeURIComponent(s)));
+    const last=parts[parts.length-1]||'';
+    if(!/\.html?$/i.test(last)) parts.push('index.html');
+    u.pathname='/' + parts.join('/');
+    return u.toString();
+  }catch(_){
+    const clean=raw.replace(/\/+$/,'');
+    return /\.html?$/i.test(clean) ? encodeURI(clean) : encodeURI(clean + '/index.html');
+  }
+}
+async function isPublicPageReady(url){
+  const target=getPublicOpenURL(url);
+  if(!target) return false;
+  for(let i=0;i<3;i++){
+    try{
+      const sep=target.includes('?')?'&':'?';
+      const r=await fetch(target + sep + 'v=' + Date.now(),{cache:'no-store'});
+      if(r.ok) return true;
+      if(r.status!==404) return true;
+    }catch(_){
+      return true;
+    }
+    await new Promise(res=>setTimeout(res,1200));
+  }
+  return false;
+}
+async function opnURL(){
+  const openURL=getPublicOpenURL(curDepURL);
+  if(!openURL) return;
+  const ready=await isPublicPageReady(curDepURL);
+  if(!ready){
+    showToast('⏳ 아직 GitHub Pages 반영 중입니다. 잠시 후 다시 열어보십시오.','info');
+    return;
+  }
+  window.open(openURL,'_blank');
+}
 
 /* ══ 보내기 ══ */
 let _sendFC=null;
@@ -2480,7 +2572,7 @@ async function ghPut(path,content,tok,owner,repo,msg){
   let sha=null;
   try{
     const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodedPath}`,
-      {headers:{Authorization:`token ${tok}`,Accept:'application/vnd.github.v3+json'}});
+      {headers:{Authorization:ghAuth(tok),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}});
     if(r.ok){const j=await r.json();sha=j.sha;}
     else if(r.status===401) throw new Error('TOKEN_INVALID');
     else if(r.status===403) throw new Error('TOKEN_NO_PERM');
@@ -2489,7 +2581,7 @@ async function ghPut(path,content,tok,owner,repo,msg){
   if(sha) body.sha=sha;
   const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodedPath}`,{
     method:'PUT',
-    headers:{Authorization:`token ${tok}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+    headers:{Authorization:ghAuth(tok),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
     body:JSON.stringify(body)
   });
   if(!r.ok){
@@ -2622,7 +2714,14 @@ function renderHome(){
   if(depList)depList.innerHTML='';
   if(at)at.style.display='block';
   if(!APP.fcList.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">🎯</div><div class="es-title">광고를 만들어 보십시오</div><div class="es-sub">보험·부동산·쇼핑·서비스 등<br>어떤 상품이든 AI가 광고 페이지를 자동 제작합니다<br><br>카카오톡·SNS 링크 공유 즉시 가능!</div><button class="es-btn" onclick="openAddSheet()">＋ 첫 번째 광고 만들기</button></div>`;return;}
-  const homeList=getFiltered().filter(f=>(!f.depURL || f.homeVisibleFromURL) && (f.generating || isGeneratedReady(f)));
+  const homeList=APP.fcList.filter(f=>{
+    if(APP_SEARCH){
+      const q=APP_SEARCH;
+      const matched=((f.name||'').toLowerCase().includes(q)||(f.co||'').toLowerCase().includes(q)||(f.prod||'').toLowerCase().includes(q)||(f.prodName||'').toLowerCase().includes(q));
+      if(!matched) return false;
+    }
+    return (!f.depURL || f.homeVisibleFromURL) && (f.generating || isGeneratedReady(f));
+  });
   if(!homeList.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">📝</div><div class="es-title">홈 화면에 표시할 광고가 없습니다</div><div class="es-sub">홈 화면에는 생성중이거나 생성완료 후 아직 배포하지 않은 광고, 그리고 URL 메뉴에서 홈으로 보낸 광고가 표시됩니다<br><br>표시된 광고는 정보와 내용편집으로 다시 수정할 수 있습니다</div></div>`;return;}
   list.innerHTML=homeList.map(adCard).join('');
 }
@@ -2659,7 +2758,7 @@ async function fmLoad(){
   try{
     const enc=s=>encodeURIComponent(s);
     const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(_fmSlug)}`,
-      {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
+      {headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}});
     if(!r.ok){
       const j=await r.json().catch(()=>({}));
       st.textContent='❌ '+(j.message||'불러오기 실패 ('+r.status+')');
@@ -2712,7 +2811,7 @@ async function fmEditFile(idx){
   try{
     const enc=s=>encodeURIComponent(s);
     const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(_fmSlug)}/${enc(f.name)}`,
-      {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
+      {headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}});
     if(!r.ok)throw new Error('파일 조회 실패: '+r.status);
     const j=await r.json();
     // base64 디코딩
@@ -2745,7 +2844,7 @@ async function fmEditSave(){
     const b64=btoa(unescape(encodeURIComponent(content)));
     const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(_fmSlug)}/${enc(f.name)}`,{
       method:'PUT',
-      headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
       body:JSON.stringify({message:`[수정] pages/${_fmSlug}/${f.name}`,content:b64,sha:_fmEditSha})
     });
     if(r.ok){
@@ -2777,7 +2876,7 @@ async function fmDelFile(idx){
     const enc=s=>encodeURIComponent(s);
     const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(_fmSlug)}/${enc(f.name)}`,{
       method:'DELETE',
-      headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
       body:JSON.stringify({message:`[삭제] pages/${_fmSlug}/${f.name}`,sha:f.sha})
     });
     if(r.ok){
@@ -2801,7 +2900,7 @@ async function fmDelAll(){
       const enc=s=>encodeURIComponent(s);
       const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(_fmSlug)}/${enc(f.name)}`,{
         method:'DELETE',
-        headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+        headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
         body:JSON.stringify({message:`[삭제] pages/${_fmSlug}/${f.name}`,sha:f.sha})
       });
       if(r.ok)ok++;
@@ -2836,7 +2935,7 @@ async function loadGHAds(){
     // pages/ 폴더 목록 조회
     const enc=p=>p.split('/').map(s=>encodeURIComponent(s)).join('/');
     const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages`,
-      {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
+      {headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}});
     if(!r.ok){
       const j=await r.json().catch(()=>({}));
       if(r.status===404){st.textContent='📂 배포된 광고 없음 (pages 폴더가 없습니다)';list.innerHTML='';}
@@ -2849,9 +2948,9 @@ async function loadGHAds(){
     // 각 폴더 파일 목록 병렬 조회
     _ghAds=await Promise.all(dirs.map(async d=>{
       const fr=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${encodeURIComponent(d.name)}`,
-        {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
+        {headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}});
       const files=fr.ok?await fr.json():[];
-      return{slug:d.name,files:Array.isArray(files)?files:[],url:`https://${APP.ghOwner}.github.io/${APP.ghRepo}/pages/${d.name}/`};
+      return{slug:d.name,files:Array.isArray(files)?files:[],url:`${getPagesBaseUrl(APP.ghOwner,APP.ghRepo)}/pages/${d.name}/`};
     }));
 
     st.textContent=`✅ 배포 광고 ${_ghAds.length}개`;
@@ -2873,13 +2972,37 @@ function getFCByDepURL(depURL){
   return APP.fcList.find(f=>String(f.depURL||'').replace(/\/$/,'')===clean)||null;
 }
 
+function getPagesBaseUrl(owner,repo){
+  const o=String(owner||'').trim();
+  const r=String(repo||'').trim();
+  if(!o) return '';
+  if(!r) return `https://${o}.github.io`;
+  return r.toLowerCase()===`${o.toLowerCase()}.github.io`
+    ? `https://${o}.github.io`
+    : `https://${o}.github.io/${r}`;
+}
+function ghAuth(tok){
+  return tok&&tok.startsWith('github_pat_') ? `Bearer ${tok}` : `token ${tok}`;
+}
+async function ghGetRepoMeta(owner,repo,tok){
+  const r=await fetch(`https://api.github.com/repos/${owner}/${repo}`,{
+    headers:{Authorization:ghAuth(tok),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+  });
+  if(!r.ok){
+    if(r.status===401) throw new Error('TOKEN_INVALID');
+    if(r.status===403) throw new Error('TOKEN_NO_PERM');
+    if(r.status===404) throw new Error('REPO_NOT_FOUND');
+    throw new Error(`REPO_ERR_${r.status}`);
+  }
+  return r.json();
+}
 function ghEncPath(path){
   return String(path||'').split('/').map(s=>encodeURIComponent(s)).join('/');
 }
 async function ghReadTextFileByPath(path){
   if(!APP.ghOwner||!APP.ghRepo||!APP.ghToken) throw new Error('GitHub 설정이 없습니다');
   const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/${ghEncPath(path)}`,{
-    headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}
+    headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
   });
   if(!r.ok){
     const j=await r.json().catch(()=>({}));
@@ -3027,6 +3150,38 @@ function normalizeImportedFCData(fc){
   fc.prod=fc.prod||ai.productName||'상품';
   fc.prodName=ai.productName||fc.prod||'상품';
 }
+function hasImportedBodyContent(ai){
+  if(!ai) return false;
+  const hasText=v=>String(v||'').replace(/\s+/g,'').length>0;
+  if(hasText(ai.intro?.body)||hasText(ai.riskSection?.body)||hasText(ai.costSection?.body)||hasText(ai.solutionIntro)) return true;
+  if(Array.isArray(ai.whyChoose?.points)&&ai.whyChoose.points.some(hasText)) return true;
+  if(Array.isArray(ai.features)&&ai.features.some(f=>hasText(f?.title)||hasText(f?.desc)||hasText(f?.highlight))) return true;
+  if(Array.isArray(ai.coverage)&&ai.coverage.some(c=>hasText(c?.label)||hasText(c?.value))) return true;
+  if(Array.isArray(ai.faq)&&ai.faq.some(f=>hasText(f?.q)||hasText(f?.a))) return true;
+  if(hasText(ai.testimonial?.text)||hasText(ai.testimonial?.name)) return true;
+  return false;
+}
+async function hydrateDeployedFCIfNeeded(fc){
+  if(!fc||!fc.depURL) return fc;
+  if(fc.landHTML&&hasImportedBodyContent(fc.aiData)) return fc;
+  const slug=getDepSlug(fc.depURL);
+  if(!slug) return fc;
+  const landHTML=await ghReadTextFileByPath(`pages/${slug}/index.html`);
+  let formHTML='';
+  try{ formHTML=await ghReadTextFileByPath(`pages/${slug}/form.html`); }catch(_){ }
+  const parsed=parseImportedAdHTML(landHTML);
+  fc.landHTML=landHTML;
+  if(formHTML) fc.formHTML=formHTML;
+  if(parsed.name) fc.name=parsed.name;
+  if(parsed.co) fc.co=parsed.co;
+  if(parsed.phone) fc.phone=parsed.phone;
+  if(parsed.logoDataURL) fc.logoDataURL=parsed.logoDataURL;
+  if(parsed.imgURL) fc.imgURL=parsed.imgURL;
+  if(parsed.aiData) fc.aiData=parsed.aiData;
+  normalizeImportedFCData(fc);
+  saveData();
+  return fc;
+}
 async function importGHAdToLocal(ad){
   let fc=getFCByDepSlug(ad.slug)||getFCByDepURL(ad.url);
   if(fc)return fc;
@@ -3081,6 +3236,8 @@ async function openGHAdQuickMenu(adIdx){
     if(!fc){
       showToast('배포 광고를 불러오는 중입니다','info');
       fc=await importGHAdToLocal(ad);
+    }else{
+      fc=await hydrateDeployedFCIfNeeded(fc);
     }
     openHomeQuickMenu(fc.id);
   }catch(e){
@@ -3166,13 +3323,6 @@ function renderGHAds(){
           <div class="gh-ad-slug">${escHtml(linkedFC?.prodName||linkedFC?.prod||ad.slug)}</div>
           <div style="font-size:10px;color:var(--t3)">${linkedFC?`앱 연결됨 · ${ad.files.length}개 파일`:`${ad.files.length}개 파일`}</div>
         </div>
-        <div class="gh-ad-chevron" id="ghchv-${idx}" onclick="event.stopPropagation();toggleGHAd(${idx})">›</div>
-      </div>
-      <div class="gh-ad-body" id="ghbody-${idx}">
-        <div class="gh-ad-url">${escHtml(ad.url)}</div>
-        <div style="font-size:11px;color:var(--t2);margin-bottom:8px;line-height:1.6">이 목록을 누르면 광고 편집 메뉴가 열립니다.</div>
-        <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">📁 파일 목록</div>
-        <div class="gh-file-list">${fileRows||'<div style="font-size:11px;color:var(--t3)">파일 없음</div>'}</div>
       </div>
     </div>`;
   };
@@ -3189,12 +3339,6 @@ function renderGHAds(){
           <div class="gh-ad-slug">${escHtml(fc.prodName||fc.prod||'—')}</div>
           <div style="font-size:10px;color:var(--t3)">앱 배포 광고</div>
         </div>
-        <div class="gh-ad-chevron" id="ghchv-${i}" onclick="event.stopPropagation();toggleGHAd('${i}')">›</div>
-      </div>
-      <div class="gh-ad-body" id="ghbody-${i}">
-        <div class="gh-ad-url">${escHtml(fc.depURL||'')}</div>
-        <div style="font-size:11px;color:var(--t2);margin-bottom:8px;line-height:1.6">이 목록을 누르면 광고 편집 메뉴가 열립니다.</div>
-        <div class="gh-file-list"><div class="gh-file-row" onclick="openHomeQuickMenu('${fc.id}')" style="cursor:pointer"><span>📝</span><span class="gh-file-nm">광고 편집 메뉴 열기</span><span class="gh-file-sz">바로가기</span></div></div>
       </div>
     </div>`);
   });
@@ -3231,7 +3375,7 @@ async function ghDelFile(slug,fileName,sha,adIdx){
     const enc=p=>encodeURIComponent(p);
     const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(slug)}/${enc(fileName)}`,{
       method:'DELETE',
-      headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
       body:JSON.stringify({message:`[삭제] pages/${slug}/${fileName}`,sha})
     });
     if(r.ok){
@@ -3256,7 +3400,7 @@ async function ghDelAd(slug,adIdx){
       const enc=p=>encodeURIComponent(p);
       const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(slug)}/${enc(f.name)}`,{
         method:'DELETE',
-        headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+        headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
         body:JSON.stringify({message:`[삭제] pages/${slug}/${f.name}`,sha:f.sha})
       });
       if(r.ok)ok++;
@@ -3345,6 +3489,8 @@ function editInfo(fcId){
   const fc=APP.fcList.find(f=>f.id===fcId);if(!fc)return;editingInfoId=fcId;
   const setV=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
   setV('e-name',fc.name);setV('e-co',fc.co);setV('e-phone',fc.phone);setV('e-hot',fc.hot);setV('e-email',fc.email);setV('e-prod',fc.prod||fc.prodName);
+  const ttl=document.getElementById('sh-edit-title');
+  if(ttl) ttl.textContent=`✏️ 광고 정보 수정 · ${fc.prodName||fc.prod||fc.name||'광고'}`;
   document.getElementById('e-edit-err').classList.remove('show');openSheet('sh-edit');
 }
 function getDepSlug(depURL){
@@ -3507,13 +3653,18 @@ function ecTab(n,el){
   document.getElementById('ec-p'+n).classList.add('active');
 }
 
-function openEditContent(fcId){
+async function openEditContent(fcId){
   const fc=APP.fcList.find(f=>f.id===fcId);
   if(!fc){showToast('광고를 찾을 수 없습니다','error');return;}
+  if(fc.depURL){
+    try{ await hydrateDeployedFCIfNeeded(fc); }catch(_){ }
+  }
   const ai=ensureEditableAIData(fc);
   if(!ai){showToast('먼저 AI 광고를 생성하십시오','error');return;}
   if(!fc.landHTML) rebuildAdFiles(fc);
   _ecFcId=fcId;
+  const ecTitle=document.getElementById('ec-sheet-title');
+  if(ecTitle) ecTitle.textContent=`📝 광고 내용 수정 · ${fc.prodName||fc.prod||fc.name||'광고'}`;
   const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
   // 탭0
   sv('ec-pn',ai.productName);sv('ec-hl',ai.headline);sv('ec-shl',ai.subheadline);
