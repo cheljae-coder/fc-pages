@@ -86,7 +86,7 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
 
 /* ══ AD CARD ══ */
 .ad-list{display:flex;flex-direction:column;gap:10px;}
-.ad-c{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;transition:all .2s;animation:cardIn .25s ease both;}
+.ad-c{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;transition:all .2s;animation:cardIn .25s ease both;cursor:pointer;}
 @keyframes cardIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 .ad-c.deployed{border-color:rgba(34,197,94,.25);}
 .ad-c.generating{border-color:rgba(74,126,248,.35);}
@@ -304,6 +304,24 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
 
 /* ══ URL MANAGER ══ */
 .url-mgr-list{display:flex;flex-direction:column;gap:10px;}
+.gh-ad-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:10px;}
+.gh-ad-hd{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;}
+.gh-ad-hd:active{background:var(--s2);}
+.gh-ad-slug{font-size:12px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.gh-ad-chevron{font-size:18px;color:var(--t3);transition:transform .2s;flex-shrink:0;}
+.gh-ad-body{display:none;padding:0 14px 14px;border-top:1px solid var(--bd);}
+.gh-ad-body.open{display:block;}
+.gh-ad-url{font-size:10px;color:var(--blue2);font-family:monospace;word-break:break-all;background:var(--s2);border-radius:7px;padding:8px;margin:10px 0;}
+.gh-file-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.gh-file-row{display:flex;align-items:center;gap:8px;background:var(--s2);border-radius:8px;padding:8px 10px;}
+.gh-file-nm{font-size:11px;flex:1;color:var(--text);}
+.gh-file-sz{font-size:10px;color:var(--t3);flex-shrink:0;}
+.gh-file-btn{font-size:10px;padding:3px 8px;border:none;border-radius:5px;cursor:pointer;font-weight:700;}
+.gh-fbtn-del{background:rgba(239,68,68,.1);color:#ef4444;}
+.gh-fbtn-open{background:rgba(34,197,94,.1);color:var(--green);}
+.gh-fbtn-edit{background:rgba(74,126,248,.12);color:var(--blue2);}
+.gh-mgr-acts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+
 .url-mgr-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:9px;}
 .url-mgr-top{display:flex;align-items:center;gap:10px;}
 .url-mgr-av{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
@@ -478,16 +496,15 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
     <div class="ad-list" id="fc-list"></div>
   </div>
 
-  <!-- URL 관리 -->
+  <!-- GitHub 배포 관리 -->
   <div class="screen" id="sc-urls">
-    <div class="web-info" style="margin-bottom:14px">
-      <div class="wi-ico">🔗</div>
-      <div>
-        <div class="wi-title">배포된 광고 페이지 URL 관리</div>
-        <div class="wi-sub">모든 URL을 한 화면에서 복사·공유·열기</div>
-      </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="sec-title" style="margin:0">🔗 배포 광고 목록</div>
+      <button class="btn btn-p btn-sm" onclick="loadGHAds()" id="gh-load-btn">🔄 불러오기</button>
     </div>
-    <div class="url-mgr-list" id="url-mgr-list"></div>
+    <div id="gh-ads-status" style="font-size:11px;color:var(--t3);margin-bottom:8px"></div>
+    <div id="gh-ads-list"></div>
+    <div class="url-mgr-list" id="url-mgr-list" style="display:none"></div>
   </div>
 
   <!-- 관리 -->
@@ -1207,6 +1224,64 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
   </div>
 </div>
 
+
+<!-- 파일관리 시트 -->
+<div class="sheet-bg" id="sh-filemgr-bg" onclick="closeSheet('sh-filemgr')"></div>
+<div class="sheet" id="sh-filemgr" style="height:80vh">
+  <div class="sheet-hd">
+    <div class="sheet-title">📁 파일 관리</div>
+    <button class="sheet-close" onclick="closeSheet('sh-filemgr')">✕</button>
+  </div>
+  <div class="sheet-body" style="display:flex;flex-direction:column;gap:10px;height:calc(80vh - 60px);overflow:hidden">
+    <div id="fm-info" style="background:var(--s2);border-radius:9px;padding:10px 12px">
+      <div id="fm-slug" style="font-size:11px;font-weight:700;color:var(--blue2);margin-bottom:3px"></div>
+      <div id="fm-url" style="font-size:10px;color:var(--t3);word-break:break-all"></div>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0">
+      <button class="btn btn-gr btn-sm" style="flex:1" onclick="window.open(_fmURL,'_blank')">🌐 열기</button>
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="cpyTxt(_fmURL)">🔗 URL 복사</button>
+      <button class="btn btn-sm" style="flex:1;background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)" onclick="fmDelAll()">🗑 전체삭제</button>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--t2);flex-shrink:0">📂 배포 파일 목록</div>
+    <div id="fm-status" style="font-size:11px;color:var(--t3)"></div>
+    <div id="fm-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px"></div>
+  </div>
+</div>
+
+
+<!-- 파일 편집 시트 -->
+<div class="sheet-bg" id="sh-fmedit-bg" onclick="fmEditCancel()"></div>
+<div class="sheet" id="sh-fmedit" style="height:92vh">
+  <div class="sheet-hd">
+    <div class="sheet-title" id="fmedit-title">파일 편집</div>
+    <button class="sheet-close" onclick="fmEditCancel()">✕</button>
+  </div>
+  <div class="sheet-body" style="display:flex;flex-direction:column;gap:8px;height:calc(92vh - 60px);overflow:hidden">
+    <div style="font-size:10px;color:var(--t3);flex-shrink:0" id="fmedit-info"></div>
+    <div id="fmedit-loading" style="font-size:12px;color:var(--blue2);flex-shrink:0;display:none">⏳ 파일 내용 불러오는 중...</div>
+    <textarea id="fmedit-ta" style="flex:1;border:1px solid var(--bd2);border-radius:10px;padding:12px;background:var(--s2);color:var(--text);font-family:monospace;font-size:11px;line-height:1.6;resize:none;outline:none;overflow-y:auto"></textarea>
+    <div style="display:flex;gap:8px;flex-shrink:0">
+      <button class="btn btn-ghost" style="flex:1" onclick="fmEditCancel()">취소</button>
+      <button class="btn btn-p" style="flex:1" id="fmedit-save-btn" onclick="fmEditSave()">💾 저장 (GitHub 반영)</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- 홈 바로가기 메뉴 -->
+<div class="sheet-bg" id="sh-homequick-bg" onclick="closeSheet('sh-homequick')"></div>
+<div class="sheet" id="sh-homequick">
+  <div class="sheet-handle"></div>
+  <div class="sheet-hd">
+    <div class="sheet-title" id="homequick-title">광고 메뉴</div>
+    <button class="sheet-close" onclick="closeSheet('sh-homequick')">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div id="homequick-sub" style="font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:12px"></div>
+    <div class="ad-acts" id="homequick-actions" style="grid-template-columns:repeat(4,1fr)"></div>
+  </div>
+</div>
+
 <!-- 미리보기 -->
 <div class="prev-overlay" id="prev-overlay">
   <div class="po-bar">
@@ -1276,6 +1351,9 @@ const COLORS={
   slate:{p:'#1e293b',a:'#64748b',l:'#f1f5f9'}
 };
 const STORE_KEY='adgen_data_v1';
+const DB_NAME='adgen_device_store';
+const DB_STORE='kv';
+let _dbPromise=null;
 let APP={
   fcList:[],
   mFiles:[],mTpl:'A',mCol:'blue',mAI:'claude',
@@ -1287,45 +1365,126 @@ let APP={
 };
 let APP_FILTER='all', APP_SEARCH='';
 
-/* INIT / SAVE */
-function loadData(){
-  try{
-    const d=localStorage.getItem(STORE_KEY);
-    if(d){
-      const p=JSON.parse(d);
-      APP.fcList=p.fcList||[];
-      APP.ghOwner=p.ghOwner||''; APP.ghRepo=p.ghRepo||'fc-pages'; APP.ghToken=p.ghToken||'';
-      APP.globalAI=p.globalAI||'claude'; APP.globalOAIKey=p.globalOAIKey||''; APP.globalClaudeKey=p.globalClaudeKey||''; APP.globalKakaoKey=p.globalKakaoKey||'';
-    }
-    if(APP.ghOwner) document.getElementById('gh-own').value=APP.ghOwner;
-    if(APP.ghRepo)  document.getElementById('gh-repo').value=APP.ghRepo;
-    if(APP.ghToken) document.getElementById('gh-tok').value=APP.ghToken;
-    const ck=document.getElementById('g-claude-key-inp');
-    if(ck&&APP.globalClaudeKey) ck.value=APP.globalClaudeKey;
-    const kk=document.getElementById('g-kakao-key-inp');
-    if(kk&&APP.globalKakaoKey) kk.value=APP.globalKakaoKey;
-    updateGHStatus(); updateAIStatus();
-  }catch(_){}
-}
-function saveData(){
-  try{
-    const data={fcList:APP.fcList.map(({filesInMem,...r})=>r),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
-    localStorage.setItem(STORE_KEY,JSON.stringify(data));
-  }catch(e1){
+function getDB(){
+  if(_dbPromise) return _dbPromise;
+  _dbPromise=new Promise((resolve,reject)=>{
     try{
-      // landHTML·formHTML 제거 후 files는 보존 시도
-      const data={fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:fc.files||[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey};
-      try{localStorage.setItem(STORE_KEY,JSON.stringify(data));showToast('⚠ 저장공간 부족 — 광고 HTML 제외 저장됨','error');}
-      catch(e2){
-        // files도 제거 후 최소 저장
-        const data2={fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,expiresAt:fc.expiresAt||null,files:[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey};
-        localStorage.setItem(STORE_KEY,JSON.stringify(data2));
-        showToast('⚠ 저장공간 심각한 부족 — 기본정보만 저장됨','error');
+      if(!window.indexedDB) return reject(new Error('indexedDB unavailable'));
+      const req=indexedDB.open(DB_NAME,1);
+      req.onupgradeneeded=()=>{
+        const db=req.result;
+        if(!db.objectStoreNames.contains(DB_STORE)) db.createObjectStore(DB_STORE);
+      };
+      req.onsuccess=()=>resolve(req.result);
+      req.onerror=()=>reject(req.error||new Error('indexedDB open failed'));
+    }catch(err){reject(err);}
+  });
+  return _dbPromise;
+}
+async function idbGet(key){
+  const db=await getDB();
+  return await new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readonly');
+    const st=tx.objectStore(DB_STORE);
+    const req=st.get(key);
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error||new Error('indexedDB get failed'));
+  });
+}
+async function idbSet(key,val){
+  const db=await getDB();
+  return await new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readwrite');
+    const st=tx.objectStore(DB_STORE);
+    st.put(val,key);
+    tx.oncomplete=()=>resolve(true);
+    tx.onerror=()=>reject(tx.error||new Error('indexedDB write failed'));
+    tx.onabort=()=>reject(tx.error||new Error('indexedDB write aborted'));
+  });
+}
+async function idbDel(key){
+  const db=await getDB();
+  return await new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readwrite');
+    const st=tx.objectStore(DB_STORE);
+    st.delete(key);
+    tx.oncomplete=()=>resolve(true);
+    tx.onerror=()=>reject(tx.error||new Error('indexedDB delete failed'));
+    tx.onabort=()=>reject(tx.error||new Error('indexedDB delete aborted'));
+  });
+}
+function syncSettingsUI(){
+  if(APP.ghOwner) document.getElementById('gh-own').value=APP.ghOwner;
+  if(APP.ghRepo)  document.getElementById('gh-repo').value=APP.ghRepo;
+  if(APP.ghToken) document.getElementById('gh-tok').value=APP.ghToken;
+  const ck=document.getElementById('g-claude-key-inp');
+  if(ck&&APP.globalClaudeKey) ck.value=APP.globalClaudeKey;
+  const kk=document.getElementById('g-kakao-key-inp');
+  if(kk&&APP.globalKakaoKey) kk.value=APP.globalKakaoKey;
+  updateGHStatus(); updateAIStatus();
+}
+function applyLoadedData(p){
+  APP.fcList=p.fcList||[];
+  APP.ghOwner=p.ghOwner||''; APP.ghRepo=p.ghRepo||'fc-pages'; APP.ghToken=p.ghToken||'';
+  APP.globalAI=p.globalAI||'claude'; APP.globalOAIKey=p.globalOAIKey||''; APP.globalClaudeKey=p.globalClaudeKey||''; APP.globalKakaoKey=p.globalKakaoKey||'';
+}
+function buildStoreData(level=0){
+  if(level===0){
+    return {fcList:APP.fcList.map(({filesInMem,...r})=>r),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
+  }
+  if(level===1){
+    return {fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:fc.files||[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
+  }
+  return {fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
+}
+
+/* INIT / SAVE */
+async function loadData(){
+  try{
+    let raw=await idbGet(STORE_KEY);
+    if(!raw){
+      const legacy=localStorage.getItem(STORE_KEY);
+      if(legacy){
+        raw=legacy;
+        try{await idbSet(STORE_KEY,legacy);localStorage.removeItem(STORE_KEY);}catch(_){ }
       }
-    }catch(_){}
+    }
+    if(raw){
+      const p=JSON.parse(raw);
+      applyLoadedData(p||{});
+    }
+    if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+    syncSettingsUI();
+  }catch(_){
+    try{
+      const d=localStorage.getItem(STORE_KEY);
+      if(d) applyLoadedData(JSON.parse(d)||{});
+      syncSettingsUI();
+    }catch(__){}
   }
 }
-function clearAllData(){if(!confirm('모든 광고 데이터를 삭제하시겠습니까?'))return;APP.fcList=[];saveData();render();showToast('🗑️ 초기화 완료','success');}
+async function saveDataAsync(){
+  try{
+    await idbSet(STORE_KEY,JSON.stringify(buildStoreData(0)));
+    return;
+  }catch(e1){
+    try{
+      await idbSet(STORE_KEY,JSON.stringify(buildStoreData(1)));
+      showToast('⚠ 저장공간 부족 — 광고 HTML 제외 저장됨','error');
+      return;
+    }catch(e2){
+      try{
+        await idbSet(STORE_KEY,JSON.stringify(buildStoreData(2)));
+        showToast('⚠ 저장공간 심각한 부족 — 기본정보만 저장됨','error');
+        return;
+      }catch(e3){
+        try{localStorage.setItem(STORE_KEY,JSON.stringify(buildStoreData(2)));showToast('⚠ 기기 저장공간이 매우 부족하여 최소 정보만 저장됨','error');}catch(_){showToast('⚠ 저장 실패 — 기기 저장공간을 확인하십시오','error');}
+      }
+    }
+  }
+}
+function saveData(){ void saveDataAsync(); }
+function clearAllData(){if(!confirm('모든 광고 데이터를 삭제하시겠습니까?'))return;APP.fcList=[];saveData();try{localStorage.removeItem(STORE_KEY);}catch(_){}render();showToast('🗑️ 초기화 완료','success');}
 
 /* NAVIGATION */
 function goNav(tab){
@@ -1335,7 +1494,7 @@ function goNav(tab){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(`sc-${tab}`)?.classList.add('active');
   if(tab==='manage') renderManage();
-  if(tab==='urls') renderURLs();
+  if(tab==='urls'){renderURLs();loadGHAds();}
 }
 
 /* SHEETS */
@@ -1759,7 +1918,24 @@ function previewForm(){
   document.getElementById('po-tf').classList.add('active');
   poRender();
 }
-function previewCurrent(){if(!APP.prevFCId)return;const fc=APP.fcList.find(f=>f.id===APP.prevFCId);if(!fc||!fc.landHTML)return;APP.prevPage='land';document.getElementById('po-tl').classList.add('active');document.getElementById('po-tf').classList.remove('active');document.getElementById('prev-overlay').classList.add('open');document.body.style.overflow='hidden';poRender();}
+function previewCurrent(){
+  if(!APP.prevFCId)return;
+  const fc=APP.fcList.find(f=>f.id===APP.prevFCId);
+  if(!fc)return;
+  if(!fc.landHTML){
+    if(ensureEditableAIData(fc)){
+      rebuildAdFiles(fc);
+      saveData();
+    }
+  }
+  if(!fc.landHTML)return;
+  APP.prevPage='land';
+  document.getElementById('po-tl').classList.add('active');
+  document.getElementById('po-tf').classList.remove('active');
+  document.getElementById('prev-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  poRender();
+}
 function closePrev(){document.getElementById('prev-overlay').classList.remove('open');document.body.style.overflow='';APP.prevPage='land';document.getElementById('po-tl').classList.add('active');document.getElementById('po-tf').classList.remove('active');}
 function poSwPage(p,el){APP.prevPage=p;document.querySelectorAll('.po-tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');poRender();}
 function poRender(){
@@ -2331,11 +2507,42 @@ async function ghPut(path,content,tok,owner,repo,msg){
 function setFilter(f,el){APP_FILTER=f;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderHome();}
 function onSearch(inp){APP_SEARCH=inp.value.trim().toLowerCase();const clr=document.getElementById('srch-clr');if(clr)clr.classList.toggle('show',APP_SEARCH.length>0);renderHome();}
 function clearSearch(){const inp=document.getElementById('srch');if(inp)inp.value='';APP_SEARCH='';const clr=document.getElementById('srch-clr');if(clr)clr.classList.remove('show');renderHome();}
+function isGeneratedReady(fc){
+  return !!(fc&&(fc.landHTML||fc.formHTML||fc.aiData||fc.imgURL||fc.prodName));
+}
+function ensureEditableAIData(fc){
+  if(!fc) return null;
+  if(fc.aiData) return fc.aiData;
+  const prod=fc.prodName||fc.prod||'상품';
+  const headline=(fc.desc||'').trim()||`${fc.co||fc.name||''} ${prod}`.trim();
+  fc.aiData={
+    productName:prod,
+    headline:headline||prod,
+    subheadline:'',
+    badge:'전문 상담',
+    tagline:prod,
+    urgency:'지금 바로 상담을 신청하십시오.',
+    ctaPhone:'전화 상담받기',
+    ctaForm:'온라인 신청하기',
+    notice:`${fc.co||fc.name||''} · 상담 안내`.trim(),
+    intro:{title:`${prod} 안내`,body:fc.desc||''},
+    riskSection:{title:'안내',body:'',stats:[]},
+    costSection:{title:'상담 안내',body:''},
+    solutionIntro:'',
+    whyChoose:{title:'선택 포인트',points:[]},
+    features:[{icon:'✅',title:'핵심 내용',desc:fc.desc||'상세 내용을 입력하십시오.',highlight:''}],
+    coverage:[{label:'문의',value:fc.phone||fc.hot||fc.email||''}].filter(v=>v.value),
+    testimonial:null,
+    faq:[{q:'상담은 어떻게 진행되나요?',a:'전화 또는 신청폼으로 문의해 주십시오.'}]
+  };
+  return fc.aiData;
+}
 function getFiltered(){
   return APP.fcList.filter(fc=>{
+    const ready=isGeneratedReady(fc);
     if(APP_FILTER==='deployed'&&!fc.depURL) return false;
-    if(APP_FILTER==='ready'&&(!fc.landHTML||fc.depURL)) return false;
-    if(APP_FILTER==='none'&&fc.landHTML) return false;
+    if(APP_FILTER==='ready'&&(!ready||fc.depURL)) return false;
+    if(APP_FILTER==='none'&&ready) return false;
     if(APP_SEARCH){const q=APP_SEARCH;return(fc.name||'').toLowerCase().includes(q)||(fc.co||'').toLowerCase().includes(q)||(fc.prod||'').toLowerCase().includes(q)||(fc.prodName||'').toLowerCase().includes(q);}
     return true;
   });
@@ -2344,15 +2551,16 @@ function getFiltered(){
 /* RENDER */
 function render(){updateStats();renderHome();renderManage();}
 function updateStats(){
-  const t=APP.fcList.length,dep=APP.fcList.filter(f=>f.depURL).length,pg=APP.fcList.filter(f=>f.landHTML).length;
+  const t=APP.fcList.length,dep=APP.fcList.filter(f=>f.depURL).length,pg=APP.fcList.filter(f=>isGeneratedReady(f)).length;
   document.getElementById('st-fc').textContent=t;document.getElementById('st-dep').textContent=dep;document.getElementById('st-pg').textContent=pg;document.getElementById('st-pend').textContent=Math.max(0,pg-dep);
 }
 function adCard(fc){
+  const ready=isGeneratedReady(fc);
   const sc=fc.generating?'generating':fc.depURL?'deployed':'';
-  const bc=fc.depURL?'ban-green':fc.landHTML?'ban-blue':'ban-amber';
+  const bc=fc.depURL?'ban-green':ready?'ban-blue':'ban-amber';
   const dot=fc.generating?'dot-gen':fc.depURL?'dot-ok':'dot-n';
   const badge=fc.generating?'b-gen':fc.depURL?'b-ok':'b-none';
-  const badgeTxt=fc.generating?'⚡생성중':fc.depURL?'🌐배포됨':fc.landHTML?'✅생성완료':'⏳미생성';
+  const badgeTxt=fc.generating?'⚡생성중':fc.depURL?'🌐배포됨':ready?'✅생성완료':'⏳미생성';
   const safeUrl=fc.depURL?(fc.depURL.replace(/'/g,'%27')):'';
   const urlSection=fc.depURL
     ?`<div class="ad-url-chip"><span class="url-ico">🌐</span><span class="url-txt">${fc.depURL}</span><button class="url-cpy" onclick="cpyTxt('${safeUrl}')">복사</button><button class="url-share" onclick="shareURL('${safeUrl}')">공유</button></div>`
@@ -2378,7 +2586,7 @@ function adCard(fc){
       ${expBanner(fc)}
       <div class="ad-acts" style="grid-template-columns:repeat(4,1fr)">
         <button class="fca fca-gen" data-action="gen" data-id="${fc.id}" ${fc.generating?'disabled':''}>
-          <span class="fca-ico">${fc.landHTML?'🔄':'✦'}</span>${fc.landHTML?'재생성':'AI생성'}
+          <span class="fca-ico">${ready?'🔄':'✦'}</span>${ready?'재생성':'AI생성'}
         </button>
         <button class="fca fca-prev" data-action="prev" data-id="${fc.id}">
           <span class="fca-ico">👁</span>미리보기
@@ -2397,6 +2605,7 @@ function adCard(fc){
         </button>
         ${fc.depURL?`<button class="fca fca-shr" data-action="share" data-id="${fc.id}" data-url="${safeUrl}"><span class="fca-ico">📤</span>보내기</button>`:''}
         ${fc.depURL?`<button class="fca" style="background:rgba(96,165,250,.08);color:#60a5fa;border:1px solid rgba(96,165,250,.2)" data-action="expiry" data-id="${fc.id}"><span class="fca-ico">📅</span>${fc.expiresAt?'기간설정':'기간설정'}</button>`:''}
+        ${fc.depURL?`<button class="fca" style="background:rgba(34,197,94,.08);color:var(--green);border:1px solid rgba(34,197,94,.2)" data-action="filemgr" data-id="${fc.id}"><span class="fca-ico">📁</span>파일관리</button>`:''}
         <button class="fca fca-del" data-action="del" data-id="${fc.id}" data-name="${escHtml(fc.prodName||fc.prod||fc.name)}">
           <span class="fca-ico">🗑</span>삭제
         </button>
@@ -2406,47 +2615,728 @@ function adCard(fc){
 }
 function renderHome(){
   const list=document.getElementById('fc-list');if(!list)return;
-  const filtered=getFiltered();
-  if(!APP.fcList.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">🎯</div><div class="es-title">광고를 만들어 보십시오</div><div class="es-sub">보험·부동산·쇼핑·서비스 등<br>어떤 상품이든 AI가 광고 페이지를 자동 제작합니다<br><br>카카오톡·SNS 링크 공유 즉시 가능!</div><button class="es-btn" onclick="openAddSheet()">＋ 첫 번째 광고 만들기</button></div>`;
-    const ds=document.getElementById('dep-section');if(ds)ds.style.display='none';
-    const at=document.getElementById('all-section-title');if(at)at.style.display='block';
-    return;
-  }
-  // 배포된 광고 목록 (상단 별도 표시)
-  const deployed=APP.fcList.filter(f=>f.depURL);
   const ds=document.getElementById('dep-section');
   const depList=document.getElementById('dep-list');
   const at=document.getElementById('all-section-title');
-  if(deployed.length&&APP_FILTER==='all'&&!APP_SEARCH){
-    if(ds)ds.style.display='block';
-    if(depList)depList.innerHTML=deployed.map(adCard).join('');
-    // 미배포 광고만 fc-list에 표시 (ID 중복 방지)
-    const nonDep=APP.fcList.filter(f=>!f.depURL);
-    if(!nonDep.length){
-      // 미배포 없으면 전체목록 타이틀·fc-list 숨김
-      if(at)at.style.display='none';
-      list.innerHTML='';
-    } else {
-      if(at)at.style.display='block';
-      list.innerHTML=nonDep.map(adCard).join('');
-    }
-  } else {
-    if(ds)ds.style.display='none';
-    if(at)at.style.display='block';
-    if(!filtered.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">🔍</div><div class="es-title">검색 결과 없음</div><div class="es-sub">다른 검색어나 필터를 사용하십시오</div></div>`;return;}
-    list.innerHTML=filtered.map(adCard).join('');
-  }
+  if(ds)ds.style.display='none';
+  if(depList)depList.innerHTML='';
+  if(at)at.style.display='block';
+  if(!APP.fcList.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">🎯</div><div class="es-title">광고를 만들어 보십시오</div><div class="es-sub">보험·부동산·쇼핑·서비스 등<br>어떤 상품이든 AI가 광고 페이지를 자동 제작합니다<br><br>카카오톡·SNS 링크 공유 즉시 가능!</div><button class="es-btn" onclick="openAddSheet()">＋ 첫 번째 광고 만들기</button></div>`;return;}
+  const homeList=getFiltered().filter(f=>(!f.depURL || f.homeVisibleFromURL) && (f.generating || isGeneratedReady(f)));
+  if(!homeList.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">📝</div><div class="es-title">홈 화면에 표시할 광고가 없습니다</div><div class="es-sub">홈 화면에는 생성중이거나 생성완료 후 아직 배포하지 않은 광고, 그리고 URL 메뉴에서 홈으로 보낸 광고가 표시됩니다<br><br>표시된 광고는 정보와 내용편집으로 다시 수정할 수 있습니다</div></div>`;return;}
+  list.innerHTML=homeList.map(adCard).join('');
 }
 function renderManage(){
   const list=document.getElementById('manage-list');if(!list)return;
   if(!APP.fcList.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">📋</div><div class="es-title">광고가 없습니다</div><div class="es-sub">홈에서 광고를 추가하십시오</div></div>`;return;}
   list.innerHTML=APP.fcList.map(adCard).join('');
 }
+
+
+/* ══ 파일 관리 시트 ══ */
+let _fmFcId=null, _fmSlug='', _fmURL='', _fmFiles=[];
+
+async function openFileMgr(fcId){
+  const fc=APP.fcList.find(f=>f.id===fcId);
+  if(!fc||!fc.depURL){showToast('배포된 광고만 파일 관리가 가능합니다','error');return;}
+  _fmFcId=fcId;
+  _fmURL=fc.depURL;
+  // slug 추출: URL의 pages/{slug}/ 부분
+  const m=fc.depURL.match(/\/pages\/([^/]+)\//);
+  _fmSlug=m?m[1]:(fc.depURL.split('/pages/')[1]||'').replace(/\/$/,'');
+  document.getElementById('fm-slug').textContent='📁 '+_fmSlug;
+  document.getElementById('fm-url').textContent=fc.depURL;
+  document.getElementById('fm-status').textContent='⏳ 파일 목록 불러오는 중...';
+  document.getElementById('fm-list').innerHTML='';
+  openSheet('sh-filemgr');
+  await fmLoad();
+}
+
+async function fmLoad(){
+  const st=document.getElementById('fm-status');
+  const list=document.getElementById('fm-list');
+  if(!APP.ghToken){st.textContent='⚠ GitHub 토큰이 없습니다. 설정을 확인하십시오.';return;}
+  try{
+    const enc=s=>encodeURIComponent(s);
+    const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(_fmSlug)}`,
+      {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
+    if(!r.ok){
+      const j=await r.json().catch(()=>({}));
+      st.textContent='❌ '+(j.message||'불러오기 실패 ('+r.status+')');
+      return;
+    }
+    _fmFiles=await r.json();
+    if(!Array.isArray(_fmFiles)||!_fmFiles.length){st.textContent='📂 파일 없음';return;}
+    st.textContent=`✅ ${_fmFiles.length}개 파일`;
+    fmRender();
+  }catch(e){
+    st.textContent='❌ 오류: '+e.message;
+  }
+}
+
+function fmRender(){
+  const list=document.getElementById('fm-list');
+  if(!list)return;
+  list.innerHTML=_fmFiles.map((f,i)=>{
+    const ico=f.name.endsWith('.html')?'📄':f.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)?'🖼':'📎';
+    const sz=f.size>1024?Math.round(f.size/1024)+'KB':f.size+'B';
+    const fileUrl=_fmURL.replace(/\/$/,'')+'/'+f.name;
+    return `<div class="gh-file-row" id="fmrow-${i}">
+      <span style="font-size:16px">${ico}</span>
+      <div style="flex:1;min-width:0">
+        <div class="gh-file-nm">${escHtml(f.name)}</div>
+        <div class="gh-file-sz">${sz}</div>
+      </div>
+      <button class="gh-file-btn gh-fbtn-open" onclick="window.open('${escHtml(fileUrl)}','_blank')">열기</button>
+      ${/\.(html|js|css|txt)$/i.test(f.name)?`<button class="gh-file-btn gh-fbtn-edit" onclick="fmEditFile(${i})">수정</button>`:''}
+      <button class="gh-file-btn gh-fbtn-del" onclick="fmDelFile(${i})">삭제</button>
+    </div>`;
+  }).join('');
+}
+
+
+/* ══ 파일 내용 편집 ══ */
+let _fmEditIdx=-1, _fmEditSha='';
+
+async function fmEditFile(idx){
+  const f=_fmFiles[idx];
+  if(!f)return;
+  _fmEditIdx=idx;
+  _fmEditSha=f.sha;
+  document.getElementById('fmedit-title').textContent='✏️ '+f.name;
+  document.getElementById('fmedit-info').textContent='수정 후 저장하면 GitHub에 즉시 반영됩니다';
+  document.getElementById('fmedit-loading').style.display='block';
+  document.getElementById('fmedit-ta').value='';
+  document.getElementById('fmedit-save-btn').disabled=true;
+  openSheet('sh-fmedit');
+  try{
+    const enc=s=>encodeURIComponent(s);
+    const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(_fmSlug)}/${enc(f.name)}`,
+      {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
+    if(!r.ok)throw new Error('파일 조회 실패: '+r.status);
+    const j=await r.json();
+    // base64 디코딩
+    const content=decodeURIComponent(escape(atob(j.content.replace(/\n/g,''))));
+    _fmEditSha=j.sha;
+    document.getElementById('fmedit-ta').value=content;
+    document.getElementById('fmedit-save-btn').disabled=false;
+  }catch(e){
+    document.getElementById('fmedit-ta').value='❌ 불러오기 실패: '+e.message;
+  }finally{
+    document.getElementById('fmedit-loading').style.display='none';
+  }
+}
+
+async function ghEditFile(slug,url,name,sha){
+  _fmSlug=slug;
+  _fmURL=url;
+  _fmFiles=[{name,sha}];
+  await fmEditFile(0);
+}
+
+async function fmEditSave(){
+  const f=_fmFiles[_fmEditIdx];
+  if(!f){showToast('파일 정보 없음','error');return;}
+  const content=document.getElementById('fmedit-ta').value;
+  const btn=document.getElementById('fmedit-save-btn');
+  btn.disabled=true;btn.textContent='💾 저장 중...';
+  try{
+    const enc=s=>encodeURIComponent(s);
+    const b64=btoa(unescape(encodeURIComponent(content)));
+    const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(_fmSlug)}/${enc(f.name)}`,{
+      method:'PUT',
+      headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({message:`[수정] pages/${_fmSlug}/${f.name}`,content:b64,sha:_fmEditSha})
+    });
+    if(r.ok){
+      const j=await r.json();
+      // sha 업데이트
+      _fmFiles[_fmEditIdx].sha=j.content?.sha||_fmEditSha;
+      showToast(`✅ ${f.name} GitHub 반영 완료`,'success');
+      closeSheet('sh-fmedit');
+    } else {
+      const j=await r.json().catch(()=>({}));
+      throw new Error(j.message||r.status);
+    }
+  }catch(e){
+    showToast('❌ 저장 실패: '+e.message,'error');
+  }finally{
+    btn.disabled=false;btn.textContent='💾 저장 (GitHub 반영)';
+  }
+}
+
+function fmEditCancel(){
+  closeSheet('sh-fmedit');
+}
+
+async function fmDelFile(idx){
+  const f=_fmFiles[idx];
+  if(!f)return;
+  if(!confirm(`"${f.name}" 파일을 삭제하시겠습니까?`))return;
+  try{
+    const enc=s=>encodeURIComponent(s);
+    const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(_fmSlug)}/${enc(f.name)}`,{
+      method:'DELETE',
+      headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({message:`[삭제] pages/${_fmSlug}/${f.name}`,sha:f.sha})
+    });
+    if(r.ok){
+      _fmFiles.splice(idx,1);
+      document.getElementById('fm-status').textContent=`✅ ${_fmFiles.length}개 파일`;
+      fmRender();
+      showToast(`🗑 ${f.name} 삭제 완료`,'success');
+    } else {
+      const j=await r.json().catch(()=>({}));
+      showToast('❌ 삭제 실패: '+(j.message||r.status),'error');
+    }
+  }catch(e){showToast('❌ 오류: '+e.message,'error');}
+}
+
+async function fmDelAll(){
+  if(!_fmFiles.length)return;
+  if(!confirm(`"${_fmSlug}" 광고의 파일 ${_fmFiles.length}개를 모두 삭제하시겠습니까?\n\n되돌릴 수 없습니다.`))return;
+  let ok=0;
+  for(const f of [..._fmFiles]){
+    try{
+      const enc=s=>encodeURIComponent(s);
+      const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(_fmSlug)}/${enc(f.name)}`,{
+        method:'DELETE',
+        headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+        body:JSON.stringify({message:`[삭제] pages/${_fmSlug}/${f.name}`,sha:f.sha})
+      });
+      if(r.ok)ok++;
+    }catch(_){}
+  }
+  _fmFiles=[];
+  document.getElementById('fm-status').textContent=`🗑 ${ok}개 삭제 완료`;
+  document.getElementById('fm-list').innerHTML='';
+  showToast(`🗑 ${_fmSlug} 전체 삭제 완료 (${ok}개)`,'success');
+  // 앱 내 depURL도 제거
+  const fc=APP.fcList.find(f=>f.id===_fmFcId);
+  if(fc){fc.depURL=null;saveData();render();}
+  closeSheet('sh-filemgr');
+}
+
+/* ══ GitHub 배포 광고 목록 ══ */
+let _ghAds=[];
+
+async function loadGHAds(){
+  const btn=document.getElementById('gh-load-btn');
+  const st=document.getElementById('gh-ads-status');
+  const list=document.getElementById('gh-ads-list');
+  if(!APP.ghOwner||!APP.ghToken){
+    if(st)st.textContent='⚙️ GitHub 설정 후 사용 가능합니다';
+    if(list)list.innerHTML='';
+    return;
+  }
+  if(btn)btn.disabled=true;
+  if(st)st.textContent='⏳ GitHub에서 광고 목록 불러오는 중...';
+  if(list)list.innerHTML='';
+  try{
+    // pages/ 폴더 목록 조회
+    const enc=p=>p.split('/').map(s=>encodeURIComponent(s)).join('/');
+    const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages`,
+      {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
+    if(!r.ok){
+      const j=await r.json().catch(()=>({}));
+      if(r.status===404){st.textContent='📂 배포된 광고 없음 (pages 폴더가 없습니다)';list.innerHTML='';}
+      else st.textContent='❌ 불러오기 실패: '+( j.message||r.status);
+      return;
+    }
+    const dirs=(await r.json()).filter(d=>d.type==='dir');
+    if(!dirs.length){st.textContent='📂 배포된 광고 없음';list.innerHTML='';return;}
+
+    // 각 폴더 파일 목록 병렬 조회
+    _ghAds=await Promise.all(dirs.map(async d=>{
+      const fr=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${encodeURIComponent(d.name)}`,
+        {headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}});
+      const files=fr.ok?await fr.json():[];
+      return{slug:d.name,files:Array.isArray(files)?files:[],url:`https://${APP.ghOwner}.github.io/${APP.ghRepo}/pages/${d.name}/`};
+    }));
+
+    st.textContent=`✅ 배포 광고 ${_ghAds.length}개`;
+    renderGHAds();
+  }catch(e){
+    if(st)st.textContent='❌ 오류: '+e.message;
+  }finally{
+    if(btn)btn.disabled=false;
+  }
+}
+
+function getFCByDepSlug(slug){
+  if(!slug)return null;
+  return APP.fcList.find(f=>getDepSlug(f.depURL)===slug)||null;
+}
+function getFCByDepURL(depURL){
+  if(!depURL)return null;
+  const clean=String(depURL).replace(/\/$/,'');
+  return APP.fcList.find(f=>String(f.depURL||'').replace(/\/$/,'')===clean)||null;
+}
+
+function ghEncPath(path){
+  return String(path||'').split('/').map(s=>encodeURIComponent(s)).join('/');
+}
+async function ghReadTextFileByPath(path){
+  if(!APP.ghOwner||!APP.ghRepo||!APP.ghToken) throw new Error('GitHub 설정이 없습니다');
+  const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/${ghEncPath(path)}`,{
+    headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json'}
+  });
+  if(!r.ok){
+    const j=await r.json().catch(()=>({}));
+    throw new Error(j.message||('파일 조회 실패: '+r.status));
+  }
+  const j=await r.json();
+  return decodeURIComponent(escape(atob(String(j.content||'').replace(/\n/g,''))));
+}
+function inferTplFromImportedHTML(html){
+  const s=String(html||'');
+  if(/class="header"/.test(s)&&/class="h-title"/.test(s)) return 'D';
+  if(/id="_ad_img_wrap"/.test(s)) return 'C';
+  if(/class="top"/.test(s)&&/class="tagline"/.test(s)) return 'B';
+  return 'A';
+}
+function inferColorFromImportedHTML(html){
+  const s=String(html||'').toLowerCase();
+  if(s.includes('#10b981')) return 'green';
+  if(s.includes('#f59e0b')) return 'gold';
+  if(s.includes('#f43f5e')) return 'rose';
+  if(s.includes('#8b5cf6')) return 'violet';
+  if(s.includes('#64748b')) return 'slate';
+  return 'blue';
+}
+function parseImportedAdHTML(html){
+  const doc=new DOMParser().parseFromString(String(html||''),'text/html');
+  const clean=t=>String(t||'').replace(/\s+/g,' ').trim();
+  const txt=(sels,root)=>{
+    const base=root||doc;
+    for(const sel of sels){
+      const el=base.querySelector(sel);
+      if(el){
+        const v=clean(el.textContent);
+        if(v)return v;
+      }
+    }
+    return '';
+  };
+  const attr=(sels,name,root)=>{
+    const base=root||doc;
+    for(const sel of sels){
+      const el=base.querySelector(sel);
+      const v=el?.getAttribute?.(name)||'';
+      if(v)return v;
+    }
+    return '';
+  };
+  const parseLongSection=(sel)=>{
+    const sec=doc.querySelector(sel);
+    if(!sec)return null;
+    const title=clean(sec.querySelector('.long-title')?.textContent||'');
+    const body=[...sec.querySelectorAll('.long-body p')].map(p=>clean(p.textContent)).filter(Boolean).join('\n');
+    if(!title&&!body)return null;
+    return {title,body};
+  };
+  const productName=clean((doc.querySelector('title')?.textContent||'').split('|')[0]||'')||txt(['.hl','.h-title']);
+  const coMeta=clean(doc.querySelector('meta[property="og:site_name"]')?.getAttribute('content')||'');
+  const coText=txt(['.fc-co','.top .co']);
+  const co=clean(coMeta||coText.replace(/^🏢\s*/,'')||((doc.querySelector('title')?.textContent||'').split('|')[1]||''));
+  const name=clean(txt(['.fc-nm']).replace(/\s*담당자\s*$/,'')||'광고 담당자');
+  const phoneLink=attr(['a.ba[href^="tel:"]'],'href').replace(/^tel:/,'').trim();
+  const phoneFt=(txt(['.ft']).match(/📞\s*([0-9\-]+)/)||[])[1]||'';
+  const whyPoints=[...doc.querySelectorAll('.why-item')].map(item=>{
+    const span=item.querySelector('span:last-child');
+    return clean(span?span.textContent:item.textContent);
+  }).filter(Boolean).slice(0,3);
+  const features=[...doc.querySelectorAll('.feat-item')].map(item=>({
+    icon:clean(item.querySelector('.feat-ico')?.textContent||'✅')||'✅',
+    highlight:clean(item.querySelector('.feat-hl')?.textContent||''),
+    title:clean(item.querySelector('.feat-tit')?.textContent||''),
+    desc:clean(item.querySelector('.feat-desc')?.textContent||'')
+  })).filter(f=>f.title);
+  const coverage=[...doc.querySelectorAll('.cov-table tr')].map(tr=>{
+    const tds=tr.querySelectorAll('td');
+    return {label:clean(tds[0]?.textContent||''),value:clean(tds[1]?.textContent||'')};
+  }).filter(c=>c.label&&c.value);
+  if(!coverage.length){
+    coverage.push(...[...doc.querySelectorAll('.cov-row')].map(row=>({
+      label:clean(row.querySelector('.cov-label')?.textContent||''),
+      value:clean(row.querySelector('.cov-val')?.textContent||'')
+    })).filter(c=>c.label&&c.value));
+  }
+  const faq=[...doc.querySelectorAll('.faq-item')].map(item=>({
+    q:clean((item.querySelector('.faq-q')?.textContent||'').replace(/^Q\.\s*/,'')),
+    a:clean((item.querySelector('.faq-a')?.textContent||'').replace(/^A\.\s*/,''))
+  })).filter(f=>f.q&&f.a);
+  const testText=clean((doc.querySelector('.review-text')?.textContent||'').replace(/^"+|"+$/g,''));
+  const testName=clean((doc.querySelector('.review-name')?.textContent||'').replace(/^—\s*/,''));
+  const riskStats=[...doc.querySelectorAll('.risk-sec .stat-num')].map(el=>clean(el.textContent).replace(/^⚠️\s*/,'')).filter(Boolean);
+  const headline=txt(['.hl','.h-title'])||productName;
+  const subheadline=txt(['.sub','.h-sub'])||`${co||''} ${productName||''}`.trim();
+  const badge=txt(['.hero .badge','.top .badge','.h-badge','.badge'])||'추천';
+  const urgency=clean(txt(['.urgency']).replace(/^⏰\s*/,''));
+  const ctaPhone=txt(['a.ba'])||'전화 상담받기';
+  const ctaForm=txt(['a.bb'])||'온라인 신청하기';
+  const notice=txt(['.ft']);
+  const logoDataURL=attr(['img.logo-img'],'src');
+  const imgURL=attr(['.hero img'],'src')||attr(['#_ad_img_wrap'],'data-src');
+  const intro=parseLongSection('.intro-sec');
+  const riskSection=parseLongSection('.risk-sec');
+  if(riskSection) riskSection.stats=riskStats;
+  const costSection=parseLongSection('.cost-sec');
+  const solutionIntro=clean(txt(['.sol-bridge']).replace(/^💡\s*/,''));
+  return {
+    name,co,phone:(phoneLink||phoneFt),
+    logoDataURL,imgURL,
+    aiData:{
+      productName:productName||'상품',
+      headline:headline||productName||'상품 안내',
+      subheadline:subheadline||'자세한 내용을 확인하십시오.',
+      badge,
+      tagline:productName||'상품',
+      urgency,
+      ctaPhone,
+      ctaForm,
+      notice,
+      intro,
+      riskSection,
+      costSection,
+      solutionIntro,
+      whyChoose:{title:'선택해야 하는 이유',points:whyPoints},
+      features,
+      coverage,
+      testimonial:(testText||testName)?{name:testName||'고객',text:testText||''}:null,
+      faq
+    }
+  };
+}
+function normalizeImportedFCData(fc){
+  if(!fc.aiData) fc.aiData={};
+  const ai=fc.aiData;
+  if(!ai.productName) ai.productName=fc.prod||fc.prodName||'상품';
+  if(!ai.headline) ai.headline=ai.productName;
+  if(!ai.subheadline) ai.subheadline=`${fc.co||''} ${ai.productName||''}`.trim()||'자세한 내용을 확인하십시오.';
+  if(!ai.badge) ai.badge='추천';
+  if(!ai.tagline) ai.tagline=ai.productName;
+  if(!ai.whyChoose||!Array.isArray(ai.whyChoose.points)) ai.whyChoose={title:'선택해야 하는 이유',points:[]};
+  ai.whyChoose.points=(ai.whyChoose.points||[]).filter(Boolean).slice(0,3);
+  if(!ai.features) ai.features=[];
+  if(!ai.coverage) ai.coverage=fc.phone?[{label:'상담 문의',value:`📞 ${fc.phone}`}]:[];
+  if(!ai.faq) ai.faq=[];
+  if(!ai.ctaPhone) ai.ctaPhone='전화 상담받기';
+  if(!ai.ctaForm) ai.ctaForm='온라인 신청하기';
+  if(!ai.notice) ai.notice=`${fc.co||''} · 상담 안내용`.trim();
+  fc.prod=fc.prod||ai.productName||'상품';
+  fc.prodName=ai.productName||fc.prod||'상품';
+}
+async function importGHAdToLocal(ad){
+  let fc=getFCByDepSlug(ad.slug)||getFCByDepURL(ad.url);
+  if(fc)return fc;
+  const landHTML=await ghReadTextFileByPath(`pages/${ad.slug}/index.html`);
+  let formHTML='';
+  try{ formHTML=await ghReadTextFileByPath(`pages/${ad.slug}/form.html`); }catch(_){}
+  const parsed=parseImportedAdHTML(landHTML);
+  fc={
+    id:'imp-'+Date.now()+Math.random().toString(36).slice(2,8),
+    createdAt:new Date().toISOString(),
+    name:parsed.name||'광고 담당자',
+    co:parsed.co||'브랜드',
+    phone:parsed.phone||'',
+    hot:'',
+    email:'',
+    kakao:'',
+    smsnum:'',
+    cat:'',
+    prod:parsed.aiData?.productName||ad.slug,
+    desc:parsed.aiData?.headline||'',
+    req:'',
+    url:'',
+    tpl:inferTplFromImportedHTML(landHTML),
+    col:inferColorFromImportedHTML(landHTML),
+    ai:'claude',
+    prodName:parsed.aiData?.productName||ad.slug,
+    imgURL:parsed.imgURL||'',
+    depURL:ad.url,
+    logoDataURL:parsed.logoDataURL||null,
+    customHeroDataURL:null,
+    expiresAt:null,
+    files:[],
+    landHTML,
+    formHTML:formHTML||null,
+    aiData:parsed.aiData||{},
+    generating:false,
+    genMsg:'',
+    genSub:'',
+    genPct:0
+  };
+  normalizeImportedFCData(fc);
+  APP.fcList.unshift(fc);
+  saveData();
+  render();
+  return fc;
+}
+async function openGHAdQuickMenu(adIdx){
+  const ad=_ghAds[adIdx];
+  if(!ad){showToast('광고 정보를 찾을 수 없습니다','error');return;}
+  try{
+    let fc=getFCByDepSlug(ad.slug)||getFCByDepURL(ad.url);
+    if(!fc){
+      showToast('배포 광고를 불러오는 중입니다','info');
+      fc=await importGHAdToLocal(ad);
+    }
+    openHomeQuickMenu(fc.id);
+  }catch(e){
+    showToast('❌ 광고 불러오기 실패: '+e.message,'error');
+  }
+}
+function sendDepToHome(fcId){
+  const fc=APP.fcList.find(f=>f.id===fcId);
+  if(!fc){showToast('광고 정보를 찾을 수 없습니다','error');return;}
+  fc.homeVisibleFromURL=true;
+  fc.generating=true;
+  fc.genMsg='홈에서 재편집 중...';
+  fc.genSub='URL 메뉴에서 불러온 배포 광고';
+  fc.genPct=100;
+  APP_FILTER='all';
+  APP_SEARCH='';
+  const srch=document.getElementById('srch');
+  if(srch)srch.value='';
+  const clr=document.getElementById('srch-clr');
+  if(clr)clr.classList.remove('show');
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
+  const allBtn=document.getElementById('fb-all');
+  if(allBtn)allBtn.classList.add('active');
+  saveData();
+  render();
+  goNav('home');
+  showToast('🏠 홈 화면으로 보냈습니다. 생성중 광고에서 다시 편집할 수 있습니다','success');
+}
+
+async function redeployFC(fcId){
+  const fc=APP.fcList.find(f=>f.id===fcId);
+  if(!fc){showToast('광고 정보를 찾을 수 없습니다','error');return;}
+  if(!fc.depURL){showToast('배포된 광고만 재배포할 수 있습니다','error');return;}
+  if(!fc.landHTML&&fc.aiData)rebuildAdFiles(fc);
+  if(!fc.landHTML){showToast('재배포할 광고 HTML이 없습니다. 먼저 광고를 다시 생성하십시오','error');return;}
+  try{
+    await syncDeployedFiles(fc);
+    saveData();
+    render();
+    if(document.getElementById('sc-urls')?.classList.contains('active')) renderURLs();
+    showToast('✅ 재배포 완료','success');
+  }catch(e){
+    showToast('❌ 재배포 실패: '+e.message,'error');
+  }
+}
+function openFileMgrBySlug(slug,url){
+  if(!slug||!url){showToast('배포 정보를 찾을 수 없습니다','error');return;}
+  _fmFcId=null;
+  _fmSlug=slug;
+  _fmURL=url;
+  document.getElementById('fm-slug').textContent='📁 '+_fmSlug;
+  document.getElementById('fm-url').textContent=url;
+  document.getElementById('fm-status').textContent='⏳ 파일 목록 불러오는 중...';
+  document.getElementById('fm-list').innerHTML='';
+  openSheet('sh-filemgr');
+  fmLoad();
+}
+function renderGHAds(){
+  const list=document.getElementById('gh-ads-list');
+  const st=document.getElementById('gh-ads-status');
+  if(!list)return;
+
+  const localDep=APP.fcList.filter(f=>f.depURL);
+  const renderedSlugs=new Set();
+  const cards=[];
+
+  const buildGHCard=(ad,idx)=>{
+    const linkedFC=getFCByDepSlug(ad.slug)||getFCByDepURL(ad.url);
+    renderedSlugs.add(ad.slug);
+    const fileRows=ad.files.map(f=>{
+      const sz=f.size>1024?Math.round(f.size/1024)+'KB':f.size+'B';
+      const ico=f.name.endsWith('.html')?'📄':f.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)?'🖼':'📎';
+      return `<div class="gh-file-row" onclick="openGHAdQuickMenu(${idx})" style="cursor:pointer">
+        <span>${ico}</span>
+        <span class="gh-file-nm">${escHtml(f.name)}</span>
+        <span class="gh-file-sz">${sz}</span>
+      </div>`;
+    }).join('');
+    return `<div class="gh-ad-card" id="ghcard-${idx}">
+      <div class="gh-ad-hd" onclick="openGHAdQuickMenu(${idx})">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🌐</div>
+        <div style="flex:1;min-width:0">
+          <div class="gh-ad-slug">${escHtml(linkedFC?.prodName||linkedFC?.prod||ad.slug)}</div>
+          <div style="font-size:10px;color:var(--t3)">${linkedFC?`앱 연결됨 · ${ad.files.length}개 파일`:`${ad.files.length}개 파일`}</div>
+        </div>
+        <div class="gh-ad-chevron" id="ghchv-${idx}" onclick="event.stopPropagation();toggleGHAd(${idx})">›</div>
+      </div>
+      <div class="gh-ad-body" id="ghbody-${idx}">
+        <div class="gh-ad-url">${escHtml(ad.url)}</div>
+        <div style="font-size:11px;color:var(--t2);margin-bottom:8px;line-height:1.6">이 목록을 누르면 광고 편집 메뉴가 열립니다.</div>
+        <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">📁 파일 목록</div>
+        <div class="gh-file-list">${fileRows||'<div style="font-size:11px;color:var(--t3)">파일 없음</div>'}</div>
+      </div>
+    </div>`;
+  };
+
+  _ghAds.forEach((ad,idx)=>cards.push(buildGHCard(ad,idx)));
+
+  const localOnly=localDep.filter(fc=>!renderedSlugs.has(getDepSlug(fc.depURL)));
+  localOnly.forEach((fc,idx)=>{
+    const i='local-'+idx;
+    cards.push(`<div class="gh-ad-card" id="ghcard-${i}">
+      <div class="gh-ad-hd" onclick="openHomeQuickMenu('${fc.id}')">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--green),#06b6d4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🎯</div>
+        <div style="flex:1;min-width:0">
+          <div class="gh-ad-slug">${escHtml(fc.prodName||fc.prod||'—')}</div>
+          <div style="font-size:10px;color:var(--t3)">앱 배포 광고</div>
+        </div>
+        <div class="gh-ad-chevron" id="ghchv-${i}" onclick="event.stopPropagation();toggleGHAd('${i}')">›</div>
+      </div>
+      <div class="gh-ad-body" id="ghbody-${i}">
+        <div class="gh-ad-url">${escHtml(fc.depURL||'')}</div>
+        <div style="font-size:11px;color:var(--t2);margin-bottom:8px;line-height:1.6">이 목록을 누르면 광고 편집 메뉴가 열립니다.</div>
+        <div class="gh-file-list"><div class="gh-file-row" onclick="openHomeQuickMenu('${fc.id}')" style="cursor:pointer"><span>📝</span><span class="gh-file-nm">광고 편집 메뉴 열기</span><span class="gh-file-sz">바로가기</span></div></div>
+      </div>
+    </div>`);
+  });
+
+  if(!cards.length){
+    list.innerHTML=`<div class="empty-state"><div class="es-ico">🔗</div><div class="es-title">배포된 광고 없음</div><div class="es-sub">광고를 생성하고 배포하면<br>여기서 한 목록으로 관리합니다</div></div>`;
+  }else{
+    list.innerHTML=cards.join('');
+  }
+
+  const total=cards.length;
+  if(st){
+    if(APP.ghOwner&&APP.ghToken){
+      st.textContent=`✅ 배포 광고 ${total}개`;
+    }else if(total){
+      st.textContent=`✅ 배포 광고 ${total}개`;
+    }else{
+      st.textContent='⚙️ GitHub 설정 후 사용 가능합니다';
+    }
+  }
+}
+
+function toggleGHAd(idx){
+  const body=document.getElementById('ghbody-'+idx);
+  const chv=document.getElementById('ghchv-'+idx);
+  if(!body)return;
+  const open=body.classList.toggle('open');
+  if(chv)chv.style.transform=open?'rotate(90deg)':'';
+}
+
+async function ghDelFile(slug,fileName,sha,adIdx){
+  if(!confirm(`"${fileName}" 파일을 삭제하시겠습니까?`))return;
+  try{
+    const enc=p=>encodeURIComponent(p);
+    const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(slug)}/${enc(fileName)}`,{
+      method:'DELETE',
+      headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({message:`[삭제] pages/${slug}/${fileName}`,sha})
+    });
+    if(r.ok){
+      _ghAds[adIdx].files=_ghAds[adIdx].files.filter(f=>f.name!==fileName);
+      renderGHAds();
+      const body=document.getElementById('ghbody-'+adIdx);
+      if(body)body.classList.add('open');
+      showToast(`🗑 ${fileName} 삭제 완료`,'success');
+    } else {
+      const j=await r.json().catch(()=>({}));
+      showToast('❌ 삭제 실패: '+(j.message||r.status),'error');
+    }
+  }catch(e){showToast('❌ 오류: '+e.message,'error');}
+}
+
+async function ghDelAd(slug,adIdx){
+  if(!confirm(`"${slug}" 광고 전체를 삭제하시겠습니까?\n포함된 모든 파일이 삭제됩니다.`))return;
+  const files=_ghAds[adIdx]?.files||[];
+  let ok=0;
+  for(const f of files){
+    try{
+      const enc=p=>encodeURIComponent(p);
+      const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(slug)}/${enc(f.name)}`,{
+        method:'DELETE',
+        headers:{Authorization:`token ${APP.ghToken}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+        body:JSON.stringify({message:`[삭제] pages/${slug}/${f.name}`,sha:f.sha})
+      });
+      if(r.ok)ok++;
+    }catch(_){}
+  }
+  _ghAds.splice(adIdx,1);
+  const st=document.getElementById('gh-ads-status');
+  if(st)st.textContent=`✅ 배포 광고 ${_ghAds.length}개`;
+  renderGHAds();
+  showToast(`🗑 ${slug} 삭제 완료 (${ok}개 파일)`,'success');
+}
+
+function urlCopyFC(fcId){
+  const fc=APP.fcList.find(f=>f.id===fcId);
+  if(fc?.depURL)cpyTxt(fc.depURL);
+}
+function urlShareFC(fcId){
+  const fc=APP.fcList.find(f=>f.id===fcId);
+  if(!fc?.depURL)return;
+  shareURL(fc.depURL,`[${fc.prodName||fc.prod||''}] 광고 페이지
+
+${fc.depURL}
+
+📞 상담 문의 가능합니다.`);
+}
+function urlOpenFC(fcId){
+  const fc=APP.fcList.find(f=>f.id===fcId);
+  if(fc?.depURL)window.open(fc.depURL,'_blank');
+}
 function renderURLs(){
-  const list=document.getElementById('url-mgr-list');if(!list)return;
-  const dep=APP.fcList.filter(f=>f.depURL);
-  if(!dep.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">🔗</div><div class="es-title">배포된 광고 없음</div><div class="es-sub">광고를 생성하고 배포하면<br>여기서 모든 URL을 관리합니다</div></div>`;return;}
-  list.innerHTML=dep.map(fc=>`<div class="url-mgr-card"><div class="url-mgr-top"><div class="url-mgr-av">🎯</div><div><div class="url-mgr-nm">${escHtml(fc.prodName||fc.prod||'—')}</div><div class="url-mgr-co">🏢 ${escHtml(fc.co)} · 👤 ${escHtml(fc.name)}</div></div></div><div class="url-mgr-url">${fc.depURL}</div><div class="url-mgr-acts"><button class="uma uma-cpy" onclick="cpyTxt('${fc.depURL.replace(/'/g,"\\'")}')">📋 URL 복사</button><button class="uma uma-shr" onclick="shareURL('${fc.depURL.replace(/'/g,"\\'")}','[${escHtml(fc.prodName||fc.prod||'')}] 광고 페이지\\n\\n${fc.depURL}\\n\\n📞 상담 문의 가능합니다.')">💬 카톡 공유</button><button class="uma uma-opn" onclick="window.open('${fc.depURL}','_blank')">🌐 열기</button></div></div>`).join('');
+  const hidden=document.getElementById('url-mgr-list');
+  if(hidden)hidden.innerHTML='';
+  renderGHAds();
+}
+
+
+function buildHomeQuickMenu(fc){
+  const depURL=fc.depURL||'';
+  const homeBtn = depURL
+    ? `<button class="fca" data-action="sendhome" data-id="${fc.id}" onclick="closeSheet('sh-homequick')" style="background:rgba(34,197,94,.08);color:var(--green);border:1px solid rgba(34,197,94,.2)"><span class="fca-ico">🏠</span>홈으로 보내기</button>`
+    : `<button class="fca" disabled style="background:rgba(34,197,94,.05);color:#5e8a6e;border:1px solid rgba(34,197,94,.12)"><span class="fca-ico">🏠</span>홈으로 보내기</button>`;
+  const shareBtn = depURL
+    ? `<button class="fca fca-shr" data-action="share" data-id="${fc.id}" data-url="${escHtml(depURL)}" onclick="closeSheet('sh-homequick')"><span class="fca-ico">📤</span>보내기</button>`
+    : `<button class="fca" disabled style="background:rgba(254,229,0,.05);color:#8b7b3a;border:1px solid rgba(254,229,0,.12)"><span class="fca-ico">📤</span>보내기</button>`;
+  const expiryBtn = depURL
+    ? `<button class="fca" data-action="expiry" data-id="${fc.id}" onclick="closeSheet('sh-homequick')" style="background:rgba(96,165,250,.08);color:#60a5fa;border:1px solid rgba(96,165,250,.2)"><span class="fca-ico">📅</span>기간설정</button>`
+    : `<button class="fca" disabled style="background:rgba(96,165,250,.05);color:#5a6c8f;border:1px solid rgba(96,165,250,.12)"><span class="fca-ico">📅</span>기간설정</button>`;
+  return `
+    <button class="fca fca-gen" data-action="gen" data-id="${fc.id}" onclick="closeSheet('sh-homequick')" ${fc.generating?'disabled':''}>
+      <span class="fca-ico">${isGeneratedReady(fc)?'🔄':'✦'}</span>${isGeneratedReady(fc)?'재생성':'AI생성'}
+    </button>
+    <button class="fca fca-prev" data-action="prev" data-id="${fc.id}" onclick="closeSheet('sh-homequick')">
+      <span class="fca-ico">👁</span>미리보기
+    </button>
+    <button class="fca fca-edit" data-action="edit" data-id="${fc.id}" onclick="closeSheet('sh-homequick')">
+      <span class="fca-ico">✏️</span>정보
+    </button>
+    <button class="fca" data-action="editcontent" data-id="${fc.id}" onclick="closeSheet('sh-homequick')" style="background:rgba(245,158,11,.08);color:var(--amber);border:1px solid rgba(245,158,11,.2)">
+      <span class="fca-ico">📝</span>내용편집
+    </button>
+    <button class="fca fca-dl" data-action="dl" data-id="${fc.id}" onclick="closeSheet('sh-homequick')">
+      <span class="fca-ico">📥</span>저장
+    </button>
+    <button class="fca fca-dep" data-action="dep" data-id="${fc.id}" onclick="closeSheet('sh-homequick')">
+      <span class="fca-ico">🚀</span>배포
+    </button>
+    ${shareBtn}
+    ${homeBtn}
+    ${expiryBtn}`;
+}
+function openHomeQuickMenu(fcId){
+  const fc=APP.fcList.find(f=>f.id===fcId);
+  if(!fc){showToast('광고 정보를 찾을 수 없습니다','error');return;}
+  const title=document.getElementById('homequick-title');
+  const sub=document.getElementById('homequick-sub');
+  const actions=document.getElementById('homequick-actions');
+  if(title) title.textContent=(fc.prodName||fc.prod||'광고')+' 메뉴';
+  if(sub) sub.innerHTML=`🏢 ${escHtml(fc.co||'—')} · 👤 ${escHtml(fc.name||'—')}<br>홈 화면에서 이 광고를 누르면 바로 이 메뉴가 열립니다.`;
+  if(actions) actions.innerHTML=buildHomeQuickMenu(fc);
+  openSheet('sh-homequick');
 }
 
 /* EDIT / DELETE */
@@ -2457,13 +3347,57 @@ function editInfo(fcId){
   setV('e-name',fc.name);setV('e-co',fc.co);setV('e-phone',fc.phone);setV('e-hot',fc.hot);setV('e-email',fc.email);setV('e-prod',fc.prod||fc.prodName);
   document.getElementById('e-edit-err').classList.remove('show');openSheet('sh-edit');
 }
-function saveEditInfo(){
+function getDepSlug(depURL){
+  if(!depURL)return'';
+  try{
+    const u=new URL(depURL);
+    const parts=u.pathname.split('/').filter(Boolean);
+    const idx=parts.indexOf('pages');
+    return idx>=0&&parts[idx+1]?decodeURIComponent(parts[idx+1]):'';
+  }catch(_){
+    const m=String(depURL).match(/\/pages\/([^/?#]+)\/?/);
+    return m&&m[1]?decodeURIComponent(m[1]):'';
+  }
+}
+async function syncDeployedFiles(fc){
+  if(!fc||!fc.depURL||!APP.ghOwner||!APP.ghRepo||!APP.ghToken||!fc.landHTML)return false;
+  const slug=getDepSlug(fc.depURL);
+  if(!slug)throw new Error('배포 경로를 찾을 수 없습니다');
+  const depTs=Date.now();
+  await ghPut(`pages/${slug}/index.html`,b64s(fc.landHTML),APP.ghToken,APP.ghOwner,APP.ghRepo,`[${depTs}] sync ad`);
+  if(fc.formHTML) await ghPut(`pages/${slug}/form.html`,b64s(fc.formHTML),APP.ghToken,APP.ghOwner,APP.ghRepo,`[${depTs}] sync form`);
+  return true;
+}
+function rebuildAdFiles(fc){
+  if(!fc||!fc.aiData)return;
+  const ai=fc.aiData;
+  if(fc.prod) ai.productName=fc.prod;
+  fc.prodName=ai.productName||fc.prodName||fc.prod||'상품';
+  const fcI={
+    name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',
+    kakao:fc.kakao||'',smsnum:fc.smsnum||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''
+  };
+  fc.landHTML=buildLand(fcI,ai,fc.imgURL,fc.tpl||'A',fc.col||'blue');
+  fc.formHTML=buildForm(fcI,ai);
+}
+async function saveEditInfo(){
   const fc=APP.fcList.find(f=>f.id===editingInfoId);if(!fc)return;
   const err=document.getElementById('e-edit-err');
   const name=document.getElementById('e-name').value.trim(),co=document.getElementById('e-co').value.trim(),phone=document.getElementById('e-phone').value.trim();
   if(!name||!co||!phone){err.textContent='⚠ 담당자명, 브랜드명, 연락처를 입력하십시오.';err.classList.add('show');return;}
-  fc.name=name;fc.co=co;fc.phone=phone;fc.hot=document.getElementById('e-hot').value.trim();fc.email=document.getElementById('e-email').value.trim();const np=document.getElementById('e-prod').value.trim();if(np)fc.prod=np;
-  saveData();render();closeSheet('sh-edit');showToast(`✅ ${name} 정보 수정 완료`,'success');
+  fc.name=name;fc.co=co;fc.phone=phone;fc.hot=document.getElementById('e-hot').value.trim();fc.email=document.getElementById('e-email').value.trim();const np=document.getElementById('e-prod').value.trim();if(np){fc.prod=np;fc.prodName=np;if(fc.aiData)fc.aiData.productName=np;}
+  if(fc.aiData)rebuildAdFiles(fc);
+  saveData();render();closeSheet('sh-edit');
+  try{
+    if(fc.depURL&&fc.landHTML){
+      await syncDeployedFiles(fc);
+      showToast(`✅ ${name} 정보 수정 및 배포 반영 완료`,'success');
+    }else{
+      showToast(`✅ ${name} 정보 수정 완료`,'success');
+    }
+  }catch(e){
+    showToast('⚠ 정보는 저장되었지만 배포 반영은 실패했습니다: '+e.message,'error');
+  }
 }
 function quickGen(fcId){
   const fc=APP.fcList.find(f=>f.id===fcId);if(!fc)return;
@@ -2575,9 +3509,11 @@ function ecTab(n,el){
 
 function openEditContent(fcId){
   const fc=APP.fcList.find(f=>f.id===fcId);
-  if(!fc||!fc.aiData){showToast('먼저 AI 광고를 생성하십시오','error');return;}
+  if(!fc){showToast('광고를 찾을 수 없습니다','error');return;}
+  const ai=ensureEditableAIData(fc);
+  if(!ai){showToast('먼저 AI 광고를 생성하십시오','error');return;}
+  if(!fc.landHTML) rebuildAdFiles(fc);
   _ecFcId=fcId;
-  const ai=fc.aiData;
   const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
   // 탭0
   sv('ec-pn',ai.productName);sv('ec-hl',ai.headline);sv('ec-shl',ai.subheadline);
@@ -2669,7 +3605,7 @@ function ecDelFeat(i){document.getElementById('ec-f-'+i)?.remove();}
 function ecDelCov(i){document.getElementById('ec-c-'+i)?.remove();}
 function ecDelFaq(i){document.getElementById('ec-q-'+i)?.remove();}
 
-function saveEditContent(){
+async function saveEditContent(){
   const fc=APP.fcList.find(f=>f.id===_ecFcId);
   if(!fc){showToast('광고를 찾을 수 없습니다','error');return;}
   const gv=id=>(document.getElementById(id)?.value||'').trim();
@@ -2722,12 +3658,19 @@ function saveEditContent(){
   ai.testimonial=(testName||testTxt)?{name:testName,text:testTxt}:null;
   if(faqs.length)ai.faq=faqs;
   fc.aiData=ai;fc.prodName=ai.productName||fc.prod||'상품';
-  // 광고 페이지 재생성
-  const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''};
-  fc.landHTML=buildLand(fcI,ai,fc.imgURL,fc.tpl||'A',fc.col||'blue');
-  fc.formHTML=buildForm(fcI,ai);
+  fc.prod=fc.prodName||fc.prod;
+  rebuildAdFiles(fc);
   saveData();render();closeSheet('sh-ec');
-  showToast('📝 내용 수정 완료! 다시 배포하면 반영됩니다','success');
+  try{
+    if(fc.depURL&&fc.landHTML){
+      await syncDeployedFiles(fc);
+      showToast('📝 내용 수정 및 배포 반영 완료','success');
+    }else{
+      showToast('📝 내용 수정 완료','success');
+    }
+  }catch(e){
+    showToast('⚠ 내용은 저장되었지만 배포 반영은 실패했습니다: '+e.message,'error');
+  }
   if(navigator.vibrate)navigator.vibrate([30,20,30]);
 }
 
@@ -3154,6 +4097,14 @@ function syncHeroImgPreview(){
 }
 function escHtml(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 document.addEventListener('click',function(e){
+  const homeCard=e.target.closest('#sc-home .ad-c');
+  if(!homeCard)return;
+  if(e.target.closest('[data-action],button,a,input,textarea,select,.url-cpy,.url-share'))return;
+  const fcId=homeCard.getAttribute('data-fcid');
+  if(fcId)openHomeQuickMenu(fcId);
+});
+
+document.addEventListener('click',function(e){
   const btn=e.target.closest('[data-action]');if(!btn)return;
   const{action,id,name='',url=''}=btn.dataset;
   if(action==='gen') quickGen(id);
@@ -3165,6 +4116,8 @@ document.addEventListener('click',function(e){
   else if(action==='dep') openDep(id);
   else if(action==='del') delFC(id,name);
   else if(action==='share'){const fc=APP.fcList.find(f=>f.id===id);if(fc){curDepURL=fc.depURL||url;openSendSheet(fc);}}
+  else if(action==='sendhome'){sendDepToHome(id);}
+  else if(action==='filemgr'){openFileMgr(id);}
 });
 
 /* HTML BUILDERS */
@@ -3886,8 +4839,7 @@ let toastTimer;
 function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type}`;void t.offsetWidth;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
 
 /* START */
-loadData();render();setTimeout(checkExpiry,500);updatePinDesc();updateAuthBanner();
-if(APP.globalKakaoKey) initKakaoSDK(APP.globalKakaoKey);
+loadData().finally(()=>{render();setTimeout(checkExpiry,500);updatePinDesc();updateAuthBanner();if(APP.globalKakaoKey) initKakaoSDK(APP.globalKakaoKey);});
 
 // PWA manifest
 const _m={name:'AI 광고 Pro',short_name:'광고Pro',description:'어떤 상품이든 AI 광고 자동 제작',display:'standalone',background_color:'#07090f',theme_color:'#07090f',orientation:'portrait',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='url(%23g)'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234a7ef8'/%3E%3Cstop offset='1' stop-color='%237c5cfc'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='96' y='124' font-size='88' text-anchor='middle' fill='white'%3E🎯%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
