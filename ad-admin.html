@@ -218,6 +218,20 @@ body::before,body::after{display:none;}
 .empty-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t2);}
 .empty-sub{font-size:13px;color:var(--t3);line-height:1.7;}
 
+/* ══ 섹션 ══ */
+.sec-block{margin-bottom:18px;}
+.sec-title{
+  display:flex;align-items:center;gap:8px;margin:0 0 10px;
+  font-size:12px;font-weight:800;color:var(--t2);
+  text-transform:uppercase;letter-spacing:.8px;
+}
+.sec-line{flex:1;height:1px;background:var(--bd);}
+.section-empty{
+  background:#fff;border:1px solid var(--bd);border-radius:14px;
+  padding:18px 16px;font-size:12px;color:var(--t3);text-align:center;
+  box-shadow:0 1px 6px rgba(0,0,0,.05);
+}
+
 /* ══ 모달 ══ */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);z-index:300;display:none;}
 .modal-bg.open{display:block;}
@@ -465,20 +479,20 @@ body::before,body::after{display:none;}
   </div>
 
   <!-- ── 광고 목록 (메인, 상단 배치) ── -->
-  <div id="ad-grid-wrap" style="margin-bottom:20px"><div><div class="grp-hd">
-      
-      <span>오늘</span>
-      <span style="color:var(--t2);font-size:9px;font-weight:600">11개</span>
-      <div class="grp-hd-line"></div>
-    </div>
-    <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-0">
+  <div id="ad-grid-wrap" style="margin-bottom:20px"><div class="sec-block"><div class="sec-title"><span>📣 광고 프로그램</span><div class="sec-line"></div></div><div class="grp-hd">
+        
+        <span>오늘</span>
+        <span style="color:var(--t2);font-size:9px;font-weight:600">11개</span>
+        <div class="grp-hd-line"></div>
+      </div>
+      <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-0">
     <div class="ad-row-main" onclick="toggleRow('det-0','row-0')">  
       <div class="ad-row-num">1</div>
       <div class="ad-row-icon">🌐</div>
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad-양금남-20260421-093018">ad-양금남-20260421-093018</div>
         <div class="ad-row-meta">
-          <span>🕐 3시간 전</span>
+          <span>🕐 6시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -520,7 +534,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad-양금남-20260421-080209">ad-양금남-20260421-080209</div>
         <div class="ad-row-meta">
-          <span>🕐 4시간 전</span>
+          <span>🕐 7시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -562,7 +576,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad-양금남-20260421-074858">ad-양금남-20260421-074858</div>
         <div class="ad-row-meta">
-          <span>🕐 5시간 전</span>
+          <span>🕐 7시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -604,7 +618,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad-양금남-20260421-074429">ad-양금남-20260421-074429</div>
         <div class="ad-row-meta">
-          <span>🕐 5시간 전</span>
+          <span>🕐 7시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -646,7 +660,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad-양금남-20260421-073633">ad-양금남-20260421-073633</div>
         <div class="ad-row-meta">
-          <span>🕐 5시간 전</span>
+          <span>🕐 7시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -688,7 +702,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad-양금남-20260421-031554">ad-양금남-20260421-031554</div>
         <div class="ad-row-meta">
-          <span>🕐 9시간 전</span>
+          <span>🕐 12시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -730,7 +744,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad-양금남-20260421-031541">ad-양금남-20260421-031541</div>
         <div class="ad-row-meta">
-          <span>🕐 9시간 전</span>
+          <span>🕐 12시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -772,7 +786,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad-양금남-20260421-031004">ad-양금남-20260421-031004</div>
         <div class="ad-row-meta">
-          <span>🕐 9시간 전</span>
+          <span>🕐 12시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -814,7 +828,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad-양금남-20260421-000558">ad-양금남-20260421-000558</div>
         <div class="ad-row-meta">
-          <span>🕐 12시간 전</span>
+          <span>🕐 15시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -856,7 +870,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad-양금남-20260421-000532">ad-양금남-20260421-000532</div>
         <div class="ad-row-meta">
-          <span>🕐 12시간 전</span>
+          <span>🕐 15시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -898,7 +912,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="ad">ad</div>
         <div class="ad-row-meta">
-          <span>🕐 14시간 전</span>
+          <span>🕐 17시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -934,12 +948,12 @@ body::before,body::after{display:none;}
       </div>
     </div>
   </div></div><div class="grp-hd">
-      
-      <span>날짜 없음</span>
-      <span style="color:var(--t2);font-size:9px;font-weight:600">1개</span>
-      <div class="grp-hd-line"></div>
-    </div>
-    <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-11">
+        
+        <span>날짜 없음</span>
+        <span style="color:var(--t2);font-size:9px;font-weight:600">1개</span>
+        <div class="grp-hd-line"></div>
+      </div>
+      <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-11">
     <div class="ad-row-main" onclick="toggleRow('det-11','row-11')">  
       <div class="ad-row-num">12</div>
       <div class="ad-row-icon">🌐</div>
@@ -979,6 +993,143 @@ body::before,body::after{display:none;}
       <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📁 파일 목록</div>
       <div class="file-list" id="fl-ad-양금남-20260420-211723" data-slug="ad-양금남-20260420-211723">
         <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
+      </div>
+    </div>
+  </div></div></div></div>
+  <div id="app-grid-wrap" style="margin-bottom:20px"><div class="sec-block"><div class="sec-title"><span>🧩 일반 프로그램</span><div class="sec-line"></div></div><div class="ad-list"><div class="ad-row" id="app-row-0">
+    <div class="ad-row-main" onclick="toggleRow('app-det-0','app-row-0')">
+      <div class="ad-row-num">1</div>
+      <div class="ad-row-icon">🧩</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="보험_분석(완성본).html">보험_분석(완성본).html</div>
+        <div class="ad-row-meta">
+          <span>📄 보험_분석(완성본).html</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🌐 일반</div>
+      <div class="ad-row-chevron" id="app-chv-0">›</div>
+    </div>
+    <div class="ad-row-detail" id="app-det-0">
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/apps/%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html')">📋</button>
+      </div>
+      <div class="detail-acts">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/apps/%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/apps/%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html','보험_분석(완성본).html')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html')">
+          <span class="cai">📋</span>주소복사
+        </button>
+      </div>
+    </div>
+  </div><div class="ad-row" id="app-row-1">
+    <div class="ad-row-main" onclick="toggleRow('app-det-1','app-row-1')">
+      <div class="ad-row-num">2</div>
+      <div class="ad-row-icon">🧩</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="bee_Pro_m.html">bee_Pro_m.html</div>
+        <div class="ad-row-meta">
+          <span>📄 bee_Pro_m.html</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🌐 일반</div>
+      <div class="ad-row-chevron" id="app-chv-1">›</div>
+    </div>
+    <div class="ad-row-detail" id="app-det-1">
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/apps/bee_Pro_m.html</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/bee_Pro_m.html')">📋</button>
+      </div>
+      <div class="detail-acts">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/apps/bee_Pro_m.html','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/bee_Pro_m.html')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/apps/bee_Pro_m.html','bee_Pro_m.html')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/bee_Pro_m.html')">
+          <span class="cai">📋</span>주소복사
+        </button>
+      </div>
+    </div>
+  </div><div class="ad-row" id="app-row-2">
+    <div class="ad-row-main" onclick="toggleRow('app-det-2','app-row-2')">
+      <div class="ad-row-num">3</div>
+      <div class="ad-row-icon">🧩</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="bh_v48.html">bh_v48.html</div>
+        <div class="ad-row-meta">
+          <span>📄 bh_v48.html</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🌐 일반</div>
+      <div class="ad-row-chevron" id="app-chv-2">›</div>
+    </div>
+    <div class="ad-row-detail" id="app-det-2">
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/apps/bh_v48.html</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/bh_v48.html')">📋</button>
+      </div>
+      <div class="detail-acts">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/apps/bh_v48.html','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/bh_v48.html')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/apps/bh_v48.html','bh_v48.html')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/bh_v48.html')">
+          <span class="cai">📋</span>주소복사
+        </button>
+      </div>
+    </div>
+  </div><div class="ad-row" id="app-row-3">
+    <div class="ad-row-main" onclick="toggleRow('app-det-3','app-row-3')">
+      <div class="ad-row-num">4</div>
+      <div class="ad-row-icon">🧩</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="fc-app-free.html">fc-app-free.html</div>
+        <div class="ad-row-meta">
+          <span>📄 fc-app-free.html</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🌐 일반</div>
+      <div class="ad-row-chevron" id="app-chv-3">›</div>
+    </div>
+    <div class="ad-row-detail" id="app-det-3">
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html')">📋</button>
+      </div>
+      <div class="detail-acts">
+        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html','fc-app-free.html')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html')">
+          <span class="cai">📋</span>주소복사
+        </button>
       </div>
     </div>
   </div></div></div></div>
@@ -1087,8 +1238,8 @@ body::before,body::after{display:none;}
     <div style="display:flex;align-items:center;gap:8px;padding:10px 13px;background:#fff;border:1.5px solid rgba(74,126,248,.3);border-radius:10px;margin-bottom:6px">
       <input type="checkbox" id="dep-cb-0" checked="" style="width:16px;height:16px;accent-color:var(--blue);flex-shrink:0">
       <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:700;color:var(--text)">📄 fc-app-free.html</div>
-        <div style="font-size:10px;color:var(--t3);margin-top:1px">309KB</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text)">📄 bee_Pro_m.html</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px">258KB</div>
       </div>
       <button style="border:none;background:none;color:var(--red);font-size:16px;cursor:pointer;padding:2px 4px" onclick="removeDepFile(0)">✕</button>
     </div></div>
@@ -1142,7 +1293,7 @@ body::before,body::after{display:none;}
   </div>
 </div>
 
-<div class="toast success" id="toast">✅ fc-app-free.html 추가됨</div>
+<div class="toast success show" id="toast">✅ bee_Pro_m.html 추가됨</div>
 
 <script>
 
@@ -1288,13 +1439,14 @@ async function deployAdmin(){
   }
 }
 function cpyDepUrl(){
-  navigator.clipboard.writeText(_depResultUrl).then(()=>showToast('🔗 URL 복사 완료','success'));
+  cpy(_depResultUrl);
 }
 
 /* ══ 저장소 ══ */
 const STORE='adm_cfg_v1';
 let CFG={owner:'',repo:'fc-pages',token:''};
 let ALL_ADS=[];
+let ALL_APPS=[];
 let FILTER='all';
 let SELECT_MODE=false;
 let SELECTED=new Set();
@@ -1476,32 +1628,25 @@ async function loadAds(){
     showGrid('<div class="empty"><div class="empty-ico">⚙️</div><div class="empty-title">GitHub 설정 필요</div><div class="empty-sub">우측 상단 설정 버튼을 탭하여<br>GitHub 연결 정보를 입력하십시오</div></div>');
     return;
   }
-  showGrid('<div class="loading"><div class="spin"></div><span>광고 목록 불러오는 중...</span></div>');
+  showGrid('<div class="loading"><div class="spin"></div><span>목록 불러오는 중...</span></div>');
   document.getElementById('stats-bar').style.display='none';
   document.getElementById('toolbar').style.display='none';
 
   try{
-    const r=await GH('pages');
-    if(!r.ok){
-      const j=await r.json().catch(()=>({}));
-      if(r.status===404){
-        showGrid('<div class="empty"><div class="empty-ico">📂</div><div class="empty-title">pages 폴더 없음</div><div class="empty-sub">아직 배포된 광고가 없습니다.<br>앱에서 광고를 배포하면 이곳에 표시됩니다.</div></div>');
-      } else if(r.status===401||r.status===403){
-        showGrid(errHtml('인증 오류','토큰이 유효하지 않거나 권한이 없습니다.','토큰을 재발급하여 설정에 다시 입력하십시오.'));
-      } else {
-        showGrid(errHtml('연결 오류',j.message||`HTTP ${r.status}`,'GitHub 설정값을 확인하십시오.'));
-      }
+    let adDirs=[];
+    const pagesRes=await GH('pages');
+    if(pagesRes.ok){
+      const dirs=await pagesRes.json();
+      adDirs=dirs.filter(d=>d.type==='dir');
+    }else if(pagesRes.status===401||pagesRes.status===403){
+      showGrid(errHtml('인증 오류','토큰이 유효하지 않거나 권한이 없습니다.','토큰을 재발급하여 설정에 다시 입력하십시오.'));
       return;
-    }
-    const dirs=await r.json();
-    const adDirs=dirs.filter(d=>d.type==='dir');
-
-    if(!adDirs.length){
-      showGrid('<div class="empty"><div class="empty-ico">📋</div><div class="empty-title">배포된 광고 없음</div><div class="empty-sub">앱에서 광고를 생성하고 배포하면<br>이곳에서 관리하실 수 있습니다</div></div>');
+    }else if(pagesRes.status!==404){
+      const j=await pagesRes.json().catch(()=>({}));
+      showGrid(errHtml('연결 오류',j.message||`HTTP ${pagesRes.status}`,'GitHub 설정값을 확인하십시오.'));
       return;
     }
 
-    // 각 폴더의 파일 목록 병렬 조회
     const details=await Promise.all(adDirs.map(async d=>{
       try{
         const fr=await GH(`pages/${d.name}`);
@@ -1509,12 +1654,10 @@ async function loadAds(){
         const files=await fr.json();
         const hasIndex=files.some(f=>f.name==='index.html');
         const hasForm=files.some(f=>f.name==='form.html');
-        const lastMod=files.reduce((acc,f)=>acc,null); // sha 기반 최신 파일
         return{slug:d.name,files,hasIndex,hasForm,fileCount:files.length,sha:d.sha};
       }catch(_){return{slug:d.name,files:[],hasIndex:false,hasForm:false,fileCount:0};}
     }));
 
-    // git commits API로 마지막 수정일 조회 (최대 20개만)
     const commitsR=await fetch(`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/commits?path=pages&per_page=50`,{
       headers:{Authorization:`token ${CFG.token}`,Accept:'application/vnd.github.v3+json'}
     });
@@ -1522,7 +1665,6 @@ async function loadAds(){
     if(commitsR.ok){
       const commits=await commitsR.json();
       commits.forEach(c=>{
-        // 커밋 메시지에서 slug 추출
         const m=(c.commit?.message||'').match(/pages\/([^/]+)\//);
         if(m&&!commitMap[m[1]]) commitMap[m[1]]=c.commit.committer.date;
       });
@@ -1533,6 +1675,33 @@ async function loadAds(){
       url:`https://${CFG.owner}.github.io/${CFG.repo}/pages/${d.slug}/`,
       updatedAt:commitMap[d.slug]||null,
     }));
+
+    let appFiles=[];
+    const appsRes=await GH('apps');
+    if(appsRes.ok){
+      const files=await appsRes.json();
+      appFiles=files.filter(f=>f.type==='file' && /\.html?$/i.test(f.name));
+    }else if(appsRes.status===401||appsRes.status===403){
+      showGrid(errHtml('인증 오류','토큰이 유효하지 않거나 권한이 없습니다.','토큰을 재발급하여 설정에 다시 입력하십시오.'));
+      return;
+    }else if(appsRes.status!==404){
+      const j=await appsRes.json().catch(()=>({}));
+      showGrid(errHtml('연결 오류',j.message||`HTTP ${appsRes.status}`,'GitHub 설정값을 확인하십시오.'));
+      return;
+    }
+
+    ALL_APPS=appFiles.map(f=>({
+      fileName:f.name,
+      slug:f.name.replace(/\.html?$/i,''),
+      size:f.size||0,
+      url:`https://${CFG.owner}.github.io/${CFG.repo}/apps/${encodeURIComponent(f.name)}`,
+      updatedAt:null
+    }));
+
+    if(!ALL_ADS.length && !ALL_APPS.length){
+      showGrid('<div class="empty"><div class="empty-ico">📋</div><div class="empty-title">배포된 항목 없음</div><div class="empty-sub">광고 프로그램 또는 일반 프로그램을 배포하면<br>이곳에서 관리하실 수 있습니다</div></div>');
+      return;
+    }
 
     updateStats();
     document.getElementById('stats-bar').style.display='grid';
@@ -1877,7 +2046,6 @@ function renderAds(){
     if(FILTER==='week'&&a.updatedAt){
       if(new Date(a.updatedAt)<weekAgo)return false;
     }
-    // 통계 카드 필터
     if(STAT_FILTER==='live'&&!a.hasIndex)return false;
     if(STAT_FILTER==='today'){
       if(!a.updatedAt)return false;
@@ -1893,57 +2061,72 @@ function renderAds(){
     return 0;
   });
 
-  if(!ads.length){
+  let apps=ALL_APPS.filter(a=>{
+    if(q&&!a.fileName.toLowerCase().includes(q)&&!a.slug.toLowerCase().includes(q))return false;
+    return true;
+  });
+
+  apps=[...apps].sort((a,b)=>a.fileName.localeCompare(b.fileName));
+
+  if(!ads.length && !apps.length){
     showGrid('<div class="empty"><div class="empty-ico">🔍</div><div class="empty-title">결과 없음</div><div class="empty-sub">다른 검색어나 필터를 사용하십시오</div></div>');
     return;
   }
 
-  // 날짜별 그룹핑
-  const groups={};
-  ads.forEach((a,i)=>{
-    let grpKey='날짜 없음';
-    if(a.updatedAt){
-      const d=new Date(a.updatedAt),now=new Date();
-      const diff=Math.floor((now-d)/(1000*60*60*24));
-      if(diff===0)grpKey='오늘';
-      else if(diff<=7)grpKey='이번 주';
-      else if(diff<=30)grpKey='이번 달';
-      else{const m=d.getFullYear()+'년 '+(d.getMonth()+1)+'월';grpKey=m;}
-    }
-    if(!groups[grpKey])groups[grpKey]=[];
-    groups[grpKey].push({a,i});
-  });
+  let adOut='';
+  if(ads.length){
+    const groups={};
+    ads.forEach((a,i)=>{
+      let grpKey='날짜 없음';
+      if(a.updatedAt){
+        const d=new Date(a.updatedAt),now=new Date();
+        const diff=Math.floor((now-d)/(1000*60*60*24));
+        if(diff===0)grpKey='오늘';
+        else if(diff<=7)grpKey='이번 주';
+        else if(diff<=30)grpKey='이번 달';
+        else{const m=d.getFullYear()+'년 '+(d.getMonth()+1)+'월';grpKey=m;}
+      }
+      if(!groups[grpKey])groups[grpKey]=[];
+      groups[grpKey].push({a,i});
+    });
 
-  const ORDER=['오늘','이번 주','이번 달'];
-  const grpKeys=Object.keys(groups).sort((x,y)=>{
-    const xi=ORDER.indexOf(x),yi=ORDER.indexOf(y);
-    if(xi>=0&&yi>=0)return xi-yi;
-    if(xi>=0)return -1;if(yi>=0)return 1;
-    return y.localeCompare(x);
-  });
+    const ORDER=['오늘','이번 주','이번 달'];
+    const grpKeys=Object.keys(groups).sort((x,y)=>{
+      const xi=ORDER.indexOf(x),yi=ORDER.indexOf(y);
+      if(xi>=0&&yi>=0)return xi-yi;
+      if(xi>=0)return -1;if(yi>=0)return 1;
+      return y.localeCompare(x);
+    });
 
-  let out='';
-  grpKeys.forEach(grp=>{
-    const items=groups[grp];
-    const slugs=items.map(({a})=>a.slug);
-    const allCk=slugs.every(s=>SELECTED.has(s));
-    // 그룹 헤더
-    out+=`<div class="grp-hd">
-      ${SELECT_MODE?`<label class="grp-cb-all">
-        <input type="checkbox" style="display:none" ${allCk?'checked':''} onchange="toggleGroupAll(${JSON.stringify(slugs)},this)">
-        <div class="row-cb${allCk?' checked':''}"></div>
-        전체
-      </label>`:''}
-      <span>${escH(grp)}</span>
-      <span style="color:var(--t2);font-size:9px;font-weight:600">${items.length}개</span>
-      <div class="grp-hd-line"></div>
-    </div>
-    <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px">${items.map(({a,i})=>adCard(a,i)).join('')}</div>`;
-  });
+    grpKeys.forEach(grp=>{
+      const items=groups[grp];
+      const slugs=items.map(({a})=>a.slug);
+      const allCk=slugs.every(s=>SELECTED.has(s));
+      adOut+=`<div class="grp-hd">
+        ${SELECT_MODE?`<label class="grp-cb-all">
+          <input type="checkbox" style="display:none" ${allCk?'checked':''} onchange="toggleGroupAll(${JSON.stringify(slugs)},this)">
+          <div class="row-cb${allCk?' checked':''}"></div>
+          전체
+        </label>`:''}
+        <span>${escH(grp)}</span>
+        <span style="color:var(--t2);font-size:9px;font-weight:600">${items.length}개</span>
+        <div class="grp-hd-line"></div>
+      </div>
+      <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px">${items.map(({a,i})=>adCard(a,i)).join('')}</div>`;
+    });
+  }else{
+    adOut='<div class="section-empty">표시할 광고 프로그램이 없습니다</div>';
+  }
 
-  showGrid('<div>'+out+'</div>');
+  const appOut=apps.length
+    ? `<div class="ad-list">${apps.map((a,i)=>appCard(a,i)).join('')}</div>`
+    : '<div class="section-empty">표시할 일반 프로그램이 없습니다</div>';
+
+  showSections(
+    `<div class="sec-block"><div class="sec-title"><span>📣 광고 프로그램</span><div class="sec-line"></div></div>${adOut}</div>`,
+    `<div class="sec-block"><div class="sec-title"><span>🧩 일반 프로그램</span><div class="sec-line"></div></div>${appOut}</div>`
+  );
 }
-
 
 /* ══ 선택 모드 ══ */
 function toggleSelectMode(){
@@ -2085,6 +2268,49 @@ function adCard(a,idx){
   </div>`;
 }
 
+function appCard(a,idx){
+  const safeUrl=a.url.replace(/'/g,'%27');
+  const safeName=escH(a.fileName);
+  const rowId='app-row-'+idx;
+  const detId='app-det-'+idx;
+
+  return`<div class="ad-row" id="${rowId}">
+    <div class="ad-row-main" onclick="toggleRow('${detId}','${rowId}')">
+      <div class="ad-row-num">${idx+1}</div>
+      <div class="ad-row-icon">🧩</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="${safeName}">${safeName}</div>
+        <div class="ad-row-meta">
+          <span>📄 ${safeName}</span>
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🌐 일반</div>
+      <div class="ad-row-chevron" id="app-chv-${idx}">›</div>
+    </div>
+    <div class="ad-row-detail" id="${detId}">
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">${a.url}</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('${safeUrl}')">📋</button>
+      </div>
+      <div class="detail-acts">
+        <button class="ca ca-open" onclick="window.open('${safeUrl}','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('${safeUrl}')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('${safeUrl}','${safeName}')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-copy" onclick="cpy('${safeUrl}')">
+          <span class="cai">📋</span>주소복사
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
 function toggleRow(detId,rowId){
   const det=document.getElementById(detId);
   const chv=document.querySelectorAll(`#${rowId} .ad-row-chevron`)[0];
@@ -2104,7 +2330,7 @@ function toggleRow(detId,rowId){
 
 /* ══ QR 모달 ══ */
 function openQR(url,slug){
-  qrCurUrl=decodeURIComponent(url.replace(/%27/g,"'"));
+  qrCurUrl=url.replace(/%27/g,"'");
   document.getElementById('qr-title').textContent='📱 '+slug;
   document.getElementById('qr-url').textContent=qrCurUrl;
   const box=document.getElementById('qr-box');
@@ -2172,10 +2398,50 @@ function closeModal(id){
   document.getElementById(id+'-bg').classList.remove('open');
   document.getElementById(id+'-modal').classList.remove('open');
 }
-function showGrid(html){document.getElementById('ad-grid-wrap').innerHTML=html;}
-function cpy(txt){
-  navigator.clipboard.writeText(decodeURIComponent(txt.replace(/%27/g,"'")))
-    .then(()=>showToast('🔗 URL 복사 완료','success'));
+function showSections(adHtml,appHtml){
+  document.getElementById('ad-grid-wrap').innerHTML=adHtml||'';
+  const appWrap=document.getElementById('app-grid-wrap');
+  if(appWrap)appWrap.innerHTML=appHtml||'';
+}
+function showGrid(html){
+  document.getElementById('ad-grid-wrap').innerHTML=html;
+  const appWrap=document.getElementById('app-grid-wrap');
+  if(appWrap)appWrap.innerHTML='';
+}
+async function cpy(txt){
+  const value=String(txt||'').replace(/%27/g,"'");
+  if(!value){
+    showToast('복사할 주소가 없습니다','error');
+    return false;
+  }
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(value);
+      showToast('🔗 URL 복사 완료','success');
+      return true;
+    }
+    const ta=document.createElement('textarea');
+    ta.value=value;
+    ta.setAttribute('readonly','');
+    ta.style.position='fixed';
+    ta.style.top='-9999px';
+    ta.style.left='-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0,ta.value.length);
+    const ok=document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(!ok) throw new Error('execCommand copy failed');
+    showToast('🔗 URL 복사 완료','success');
+    return true;
+  }catch(e){
+    try{
+      window.prompt('아래 주소를 길게 눌러 복사하십시오', value);
+    }catch(_){ }
+    showToast('자동 복사가 제한되어 주소창으로 표시했습니다','info');
+    return false;
+  }
 }
 
 let _tt;
