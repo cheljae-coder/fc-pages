@@ -2782,19 +2782,34 @@ function onSearch(inp){
 function clearSearch(){const inp=document.getElementById('srch');if(inp)inp.value='';APP_SEARCH='';const clr=document.getElementById('srch-clr');if(clr)clr.classList.remove('show');closeSheet('sh-search');renderHome();}
 
 function bindHomeStatAndSearchFallbacks(){
+  const safeCall=(fn)=>{try{fn();}catch(err){try{console&&console.warn&&console.warn('[bind]',err);}catch(_){}}};
   const bindOnce=(el,key,ev,fn)=>{
     if(!el||el.dataset[key]==='1') return;
-    el.addEventListener(ev,fn);
+    el.addEventListener(ev,function(e){safeCall(()=>fn(e));});
     el.dataset[key]='1';
   };
-  bindOnce(document.getElementById('stat-all'),'ghBindClick','click',()=>applyStatFilter('all'));
-  bindOnce(document.getElementById('stat-deployed'),'ghBindClick','click',()=>applyStatFilter('deployed'));
-  bindOnce(document.getElementById('stat-generated'),'ghBindClick','click',()=>applyStatFilter('generated'));
-  bindOnce(document.getElementById('stat-pending'),'ghBindClick','click',()=>applyStatFilter('pending'));
+  // 4개 통계 카드 — click + touchend 이중 바인딩 (GitHub Pages 모바일 안정성)
+  const cards=[
+    ['stat-all','all'],['stat-deployed','deployed'],
+    ['stat-generated','generated'],['stat-pending','pending']
+  ];
+  cards.forEach(([id,key])=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    bindOnce(el,'ghBindClick','click',()=>applyStatFilter(key));
+    bindOnce(el,'ghBindTouch','touchend',(e)=>{if(e&&e.preventDefault)e.preventDefault();applyStatFilter(key);});
+  });
+  // 검색 입력창
   const srch=document.getElementById('srch');
+  if(srch){
+    bindOnce(srch,'ghBindInput','input',function(e){onSearch(e&&e.target?e.target:srch);});
+  }
+  // 검색 클리어 버튼
   const srchClr=document.getElementById('srch-clr');
-  bindOnce(srch,'ghBindInput','input',function(){onSearch(this);});
-  bindOnce(srchClr,'ghBindClick','click',function(e){e.preventDefault();clearSearch();});
+  if(srchClr){
+    bindOnce(srchClr,'ghBindClick','click',function(e){if(e&&e.preventDefault)e.preventDefault();clearSearch();});
+    bindOnce(srchClr,'ghBindTouch','touchend',function(e){if(e&&e.preventDefault)e.preventDefault();clearSearch();});
+  }
 }
 
 function isGeneratedReady(fc){
@@ -5344,7 +5359,41 @@ let toastTimer;
 function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type}`;void t.offsetWidth;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
 
 /* START */
-loadData().finally(()=>{render();bindHomeStatAndSearchFallbacks();setTimeout(checkExpiry,500);updatePinDesc();updateAuthBanner();if(APP.globalKakaoKey) initKakaoSDK(APP.globalKakaoKey);});
+(function _bootAdApp(){
+  // GitHub Pages 환경에서 IndexedDB 초기화 지연에 대비한 안전 부팅 로직.
+  // - loadData()가 1.5초 내 응답하지 않아도 렌더링/바인딩을 진행하여 UI가 잠기는 것을 방지.
+  // - 최초 1회만 실행되도록 플래그로 보호.
+  var _booted=false;
+  function _doBoot(reason){
+    if(_booted) return; _booted=true;
+    try{render();}catch(_){}
+    try{bindHomeStatAndSearchFallbacks();}catch(_){}
+    try{setTimeout(checkExpiry,500);}catch(_){}
+    try{updatePinDesc();}catch(_){}
+    try{updateAuthBanner();}catch(_){}
+    try{if(APP.globalKakaoKey) initKakaoSDK(APP.globalKakaoKey);}catch(_){}
+  }
+  // 타임아웃: loadData가 멈춰도 1.5초 후 강제 부팅
+  var _timeoutHandle=setTimeout(function(){_doBoot('timeout');},1500);
+  // 정상 경로
+  try{
+    loadData().finally(function(){
+      clearTimeout(_timeoutHandle);
+      _doBoot('loadData');
+    });
+  }catch(err){
+    clearTimeout(_timeoutHandle);
+    _doBoot('loadData-threw');
+  }
+  // DOM 준비 시점에도 바인딩 한 번 더 시도 (idempotent)
+  function _rebind(){try{bindHomeStatAndSearchFallbacks();}catch(_){}}
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',_rebind);
+  }else{
+    _rebind();
+  }
+  window.addEventListener('load',_rebind);
+})();
 
 // PWA manifest
 const _m={name:'AI 광고 Pro',short_name:'광고Pro',description:'어떤 상품이든 AI 광고 자동 제작',display:'standalone',background_color:'#07090f',theme_color:'#07090f',orientation:'portrait',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='url(%23g)'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234a7ef8'/%3E%3Cstop offset='1' stop-color='%237c5cfc'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='96' y='124' font-size='88' text-anchor='middle' fill='white'%3E🎯%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
