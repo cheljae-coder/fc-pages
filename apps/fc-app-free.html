@@ -2780,6 +2780,23 @@ function onSearch(inp){
   renderHome();
 }
 function clearSearch(){const inp=document.getElementById('srch');if(inp)inp.value='';APP_SEARCH='';const clr=document.getElementById('srch-clr');if(clr)clr.classList.remove('show');closeSheet('sh-search');renderHome();}
+
+function bindHomeStatAndSearchFallbacks(){
+  const bindOnce=(el,key,ev,fn)=>{
+    if(!el||el.dataset[key]==='1') return;
+    el.addEventListener(ev,fn);
+    el.dataset[key]='1';
+  };
+  bindOnce(document.getElementById('stat-all'),'ghBindClick','click',()=>applyStatFilter('all'));
+  bindOnce(document.getElementById('stat-dep'),'ghBindClick','click',()=>applyStatFilter('deployed'));
+  bindOnce(document.getElementById('stat-ready'),'ghBindClick','click',()=>applyStatFilter('ready'));
+  bindOnce(document.getElementById('stat-pend'),'ghBindClick','click',()=>applyStatFilter('pending'));
+  const srch=document.getElementById('srch');
+  const srchClr=document.getElementById('srch-clr');
+  bindOnce(srch,'ghBindInput','input',function(){onSearch(this);});
+  bindOnce(srchClr,'ghBindClick','click',function(e){e.preventDefault();clearSearch();});
+}
+
 function isGeneratedReady(fc){
   return !!(fc&&(fc.landHTML||fc.formHTML||fc.aiData||fc.imgURL||fc.prodName));
 }
@@ -5333,6 +5350,13 @@ loadData().finally(()=>{render();setTimeout(checkExpiry,500);updatePinDesc();upd
 const _m={name:'AI 광고 Pro',short_name:'광고Pro',description:'어떤 상품이든 AI 광고 자동 제작',display:'standalone',background_color:'#07090f',theme_color:'#07090f',orientation:'portrait',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='url(%23g)'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234a7ef8'/%3E%3Cstop offset='1' stop-color='%237c5cfc'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='96' y='124' font-size='88' text-anchor='middle' fill='white'%3E🎯%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
 const _b=new Blob([JSON.stringify(_m)],{type:'application/json'});
 const _l=document.createElement('link');_l.rel='manifest';_l.href=URL.createObjectURL(_b);document.head.appendChild(_l);
+
+window.applyStatFilter=applyStatFilter;
+window.onSearch=onSearch;
+window.clearSearch=clearSearch;
+window.openSearchResult=openSearchResult;
+window.bindHomeStatAndSearchFallbacks=bindHomeStatAndSearchFallbacks;
+
 </script>
 </body>
 </html>
