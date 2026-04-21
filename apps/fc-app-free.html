@@ -470,10 +470,10 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
       </div>
     </div>
     <div class="stats-grid">
-      <div class="stat-c"><div class="sc-ico sci-b">📋</div><div><div class="sc-num" id="st-fc">0</div><div class="sc-lbl">등록 광고</div></div></div>
-      <div class="stat-c"><div class="sc-ico sci-g">🌐</div><div><div class="sc-num" id="st-dep">0</div><div class="sc-lbl">배포 완료</div></div></div>
-      <div class="stat-c"><div class="sc-ico sci-p">🖼</div><div><div class="sc-num" id="st-pg">0</div><div class="sc-lbl">생성 완료</div></div></div>
-      <div class="stat-c"><div class="sc-ico sci-a">⏳</div><div><div class="sc-num" id="st-pend">0</div><div class="sc-lbl">미배포</div></div></div>
+      <div class="stat-c" id="stat-all" onclick="applyStatFilter('all')" style="cursor:pointer"><div class="sc-ico sci-b">📋</div><div><div class="sc-num" id="st-fc">0</div><div class="sc-lbl">등록 광고</div></div></div>
+      <div class="stat-c" id="stat-deployed" onclick="applyStatFilter('deployed')" style="cursor:pointer"><div class="sc-ico sci-g">🌐</div><div><div class="sc-num" id="st-dep">0</div><div class="sc-lbl">배포 완료</div></div></div>
+      <div class="stat-c" id="stat-generated" onclick="applyStatFilter('generated')" style="cursor:pointer"><div class="sc-ico sci-p">🖼</div><div><div class="sc-num" id="st-pg">0</div><div class="sc-lbl">생성 완료</div></div></div>
+      <div class="stat-c" id="stat-pending" onclick="applyStatFilter('pending')" style="cursor:pointer"><div class="sc-ico sci-a">⏳</div><div><div class="sc-num" id="st-pend">0</div><div class="sc-lbl">미배포</div></div></div>
     </div>
     <div class="search-bar">
       <span style="font-size:15px;color:var(--t3)">🔍</span>
@@ -724,6 +724,21 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
       <input type="file" id="m-gallery" accept="image/*" multiple onchange="addF(this.files)" style="display:none">
       <input type="file" id="m-file" accept=".pdf,.txt" multiple onchange="addF(this.files)" style="display:none">
       <div class="flist" id="m-flist"></div>
+      <div style="height:14px"></div>
+      <div class="ibox" style="margin-bottom:12px">
+        🖼 광고 본문 삽입 이미지 메뉴입니다. 광고주가 직접 만든 이미지를 여러 장 올리면 광고문 중간에 분산 배치됩니다. 각 이미지마다 자동 배치 또는 직접 위치 지정을 선택할 수 있습니다.
+      </div>
+      <div class="upload-row" style="grid-template-columns:1fr 1fr;margin-bottom:10px">
+        <button class="up-btn" style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.22)" onclick="document.getElementById('m-body-cam').click()">
+          <div class="up-ico">📸</div><div class="up-lbl">본문 이미지 촬영</div><div class="up-sub">카메라</div>
+        </button>
+        <button class="up-btn" style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.22)" onclick="document.getElementById('m-body-gallery').click()">
+          <div class="up-ico">🖼</div><div class="up-lbl">본문 이미지 선택</div><div class="up-sub">제한 없음</div>
+        </button>
+      </div>
+      <input type="file" id="m-body-cam" accept="image/*" capture="environment" multiple onchange="addBodyImgs(this.files);this.value=''" style="display:none">
+      <input type="file" id="m-body-gallery" accept="image/*" multiple onchange="addBodyImgs(this.files);this.value=''" style="display:none">
+      <div class="flist" id="m-body-flist"></div>
       <div style="height:12px"></div>
       <div class="brow">
         <button class="btn btn-g" onclick="goStep(2)">← 이전</button>
@@ -1268,6 +1283,21 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
 </div>
 
 
+<!-- 파일 항목 메뉴 -->
+<div class="sheet-bg" id="sh-fmitem-bg" onclick="closeSheet('sh-fmitem')"></div>
+<div class="sheet" id="sh-fmitem">
+  <div class="sheet-handle"></div>
+  <div class="sheet-hd">
+    <div class="sheet-title" id="fmitem-title">파일 메뉴</div>
+    <button class="sheet-close" onclick="closeSheet('sh-fmitem')">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div id="fmitem-sub" style="font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:12px"></div>
+    <div class="ad-acts" id="fmitem-actions" style="grid-template-columns:repeat(3,1fr)"></div>
+  </div>
+</div>
+
+
 <!-- 홈 바로가기 메뉴 -->
 <div class="sheet-bg" id="sh-homequick-bg" onclick="closeSheet('sh-homequick')"></div>
 <div class="sheet" id="sh-homequick">
@@ -1279,6 +1309,24 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
   <div class="sheet-body">
     <div id="homequick-sub" style="font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:12px"></div>
     <div class="ad-acts" id="homequick-actions" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div id="homequick-files-wrap" style="display:none;margin-top:14px">
+      <div class="sec-title" style="margin-bottom:8px">📁 파일목록</div>
+      <div id="homequick-files-status" style="font-size:11px;color:var(--t3);margin-bottom:8px"></div>
+      <div id="homequick-files-list" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 검색 결과 시트 -->
+<div class="sheet-bg" id="sh-search-bg" onclick="closeSheet('sh-search')"></div>
+<div class="sheet" id="sh-search" style="height:72vh">
+  <div class="sheet-hd">
+    <div class="sheet-title">🔎 검색 결과</div>
+    <button class="sheet-close" onclick="closeSheet('sh-search')">✕</button>
+  </div>
+  <div class="sheet-body" style="padding-bottom:24px">
+    <div id="search-hit-info" style="font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:10px">검색 결과가 여기에 표시됩니다.</div>
+    <div id="search-result-list" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
 </div>
 
@@ -1356,7 +1404,7 @@ const DB_STORE='kv';
 let _dbPromise=null;
 let APP={
   fcList:[],
-  mFiles:[],mTpl:'A',mCol:'blue',mAI:'claude',
+  mFiles:[],mBodyImages:[],mTpl:'A',mCol:'blue',mAI:'claude',
   editingId:null,currentGenFC:null,
   prevFCId:null,prevPage:'land',
   depFCId:null,
@@ -1433,9 +1481,9 @@ function buildStoreData(level=0){
     return {fcList:APP.fcList.map(({filesInMem,...r})=>r),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
   }
   if(level===1){
-    return {fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:fc.files||[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
+    return {fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:fc.files||[],bodyImages:fc.bodyImages||[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
   }
-  return {fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
+  return {fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:[],bodyImages:[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
 }
 
 /* INIT / SAVE */
@@ -1528,12 +1576,13 @@ function updateAIStatus(){
 /* FORM STEPS */
 let curStep=1;
 function resetForm(){
-  curStep=1;APP.mFiles=[];APP.mTpl='A';APP.mCol='blue';
+  curStep=1;APP.mFiles=[];APP.mBodyImages=[];APP.mTpl='A';APP.mCol='blue';
   APP.mAI=APP.globalAI||'claude';APP.editingId=null;APP.currentGenFC=null;
   APP.mLogoDataURL=null;APP.mHeroDataURL=null;delLogo();delHeroImg(false);
   ['m-name','m-co','m-phone','m-hot','m-email','m-url','m-kakao','m-smsnum','m-prod','m-desc','m-req'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
   document.getElementById('m-cat').value='';
   document.getElementById('m-flist').innerHTML='';
+  const bodyList=document.getElementById('m-body-flist'); if(bodyList) bodyList.innerHTML='';
   ['e1','e2','e4','e5'].forEach(i=>document.getElementById(i).classList.remove('show'));
   document.getElementById('gen-card').style.display='none';
   document.getElementById('done-card').style.display='none';
@@ -1557,6 +1606,76 @@ function v4(){const e=document.getElementById('e4');e.classList.remove('show');i
 function sAI(ai,el){APP.mAI=ai;document.querySelectorAll('#step4 .ai-opt').forEach(c=>c.classList.remove('sel'));el?.classList.add('sel');document.getElementById('gpt-key-row').style.display=ai==='gpt'?'block':'none';document.getElementById('claude-key-row').style.display=ai==='claude'?'block':'none';}
 function sT(t,el){APP.mTpl=t;document.querySelectorAll('#step4 .tc').forEach(c=>c.classList.remove('sel'));el?.classList.add('sel');}
 function sC(c,el){APP.mCol=c;document.querySelectorAll('#step4 .co-dot').forEach(d=>d.classList.remove('sel'));el?.classList.add('sel');}
+
+const BODY_IMAGE_POSITIONS=[
+  {key:'intro',label:'도입부 뒤'},
+  {key:'risk',label:'위험성 섹션 뒤'},
+  {key:'cost',label:'비용 섹션 뒤'},
+  {key:'solution',label:'솔루션 문구 뒤'},
+  {key:'conclusion',label:'하단 CTA 위'}
+];
+function bodyPosLabel(key){
+  const found=BODY_IMAGE_POSITIONS.find(p=>p.key===key);
+  return found?found.label:'자동 분산 배치';
+}
+function bodyPosOpts(selected){
+  return ['<option value="auto"'+(selected==='auto'?' selected':'')+'>자동 분산 배치</option>']
+    .concat(BODY_IMAGE_POSITIONS.map(p=>'<option value="'+p.key+'"'+(selected===p.key?' selected':'')+'>'+p.label+'</option>'))
+    .join('');
+}
+async function addBodyImgs(fl){
+  const arr=Array.from(fl||[]);
+  for(const f of arr){
+    const mime=f.type||dmime(f.name);
+    if(!mime.startsWith('image/')) continue;
+    if(APP.mBodyImages.find(x=>x.name===f.name&&x.size===f.size)) continue;
+    await new Promise(r=>{
+      const rd=new FileReader();
+      rd.onload=async e=>{
+        const full=await compressImg(e.target.result,1400,.82);
+        const thumb=await compressImg(e.target.result,320,.62);
+        APP.mBodyImages.push({id:uid(),name:f.name,size:f.size,mimeType:'image/jpeg',dataURL:thumb,fullDataURL:full,mode:'auto',position:'auto'});
+        rBodyF();
+        r();
+      };
+      rd.readAsDataURL(f);
+    });
+  }
+  if(navigator.vibrate) navigator.vibrate(30);
+}
+function bodyImgById(id){return APP.mBodyImages.find(x=>x.id===id);}
+function setBodyImgMode(id,val){
+  const item=bodyImgById(id); if(!item) return;
+  item.mode=val;
+  if(val==='auto') item.position='auto';
+  else if(!item.position||item.position==='auto') item.position='intro';
+  rBodyF();
+}
+function setBodyImgPos(id,val){
+  const item=bodyImgById(id); if(!item) return;
+  item.position=val||'auto';
+  item.mode=item.position==='auto'?'auto':'manual';
+  rBodyF();
+}
+function moveBodyImg(id,dir){
+  const idx=APP.mBodyImages.findIndex(x=>x.id===id);
+  if(idx<0) return;
+  const ni=idx+dir;
+  if(ni<0||ni>=APP.mBodyImages.length) return;
+  const tmp=APP.mBodyImages[idx];
+  APP.mBodyImages[idx]=APP.mBodyImages[ni];
+  APP.mBodyImages[ni]=tmp;
+  rBodyF();
+}
+function delBodyImg(id){
+  APP.mBodyImages=APP.mBodyImages.filter(x=>x.id!==id);
+  rBodyF();
+}
+function rBodyF(){
+  const el=document.getElementById('m-body-flist');
+  if(!el) return;
+  el.innerHTML=(APP.mBodyImages||[]).map((f,i)=>`<div class="fi" style="align-items:flex-start;gap:10px"><img class="fi-th" src="${f.dataURL||f.fullDataURL||''}" alt="" style="width:54px;height:54px"><div class="fi-inf"><div class="fi-nm">${escHtml(f.name)}</div><div class="fi-sz">본문 삽입 이미지 · ${fmtSz(f.size)} · ${escHtml(f.mode==='manual'?bodyPosLabel(f.position):'자동 분산 배치')}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px"><select onchange="setBodyImgMode('${f.id}',this.value)" style="background:var(--s2);border:1px solid var(--bd2);border-radius:8px;padding:7px 8px;color:var(--text);font-size:11px"><option value="auto"${f.mode!=='manual'?' selected':''}>자동 배치</option><option value="manual"${f.mode==='manual'?' selected':''}>직접 지정</option></select><select onchange="setBodyImgPos('${f.id}',this.value)" ${f.mode==='manual'?'':'disabled'} style="background:var(--s2);border:1px solid var(--bd2);border-radius:8px;padding:7px 8px;color:var(--text);font-size:11px;${f.mode==='manual'?'':'opacity:.55'}">${bodyPosOpts(f.mode==='manual'?(f.position||'intro'):'auto')}</select></div></div><div style="display:flex;flex-direction:column;gap:6px"><button class="fi-del" onclick="moveBodyImg('${f.id}',-1)" style="width:24px;height:24px">↑</button><button class="fi-del" onclick="moveBodyImg('${f.id}',1)" style="width:24px;height:24px">↓</button><button class="fi-del" onclick="delBodyImg('${f.id}')" style="width:24px;height:24px">✕</button></div></div>`).join('');
+}
 
 /* FILE UPLOAD */
 function dov(e){e.preventDefault();document.getElementById('m-drop').classList.add('over');}
@@ -1582,7 +1701,8 @@ function goToGenStep(){if(!v4())return;goStep(5);setTimeout(()=>startGen(),80);}
 async function startGen(){
   const name=g('m-name'),co=g('m-co'),phone=g('m-phone');
   const filesToSave=APP.mFiles.map(f=>({name:f.name,size:f.size,mimeType:f.mimeType,b64:f.b64,dataURL:f.dataURL||null,isImg:!!f.isImg,isPDF:!!f.isPDF,isText:!!f.isText,textContent:f.isText?(f.textContent||null):null}));
-  const baseFC={name,co,phone,hot:g('m-hot'),logoDataURL:APP.mLogoDataURL||null,customHeroDataURL:APP.mHeroDataURL||null,email:g('m-email'),url:g('m-url'),kakao:g('m-kakao'),smsnum:g('m-smsnum'),cat:g('m-cat'),prod:g('m-prod'),desc:g('m-desc'),req:g('m-req'),tpl:APP.mTpl,col:APP.mCol,ai:APP.mAI,oaiKey:g('m-oai'),claudeKey:g('m-cai')||APP.globalClaudeKey,files:filesToSave,landHTML:null,formHTML:null,depURL:null,aiData:null,imgURL:null,prodName:null,expiresAt:null,generating:false,genMsg:'',genSub:'',genPct:0};
+  const bodyImagesToSave=APP.mBodyImages.map(f=>({id:f.id||uid(),name:f.name,size:f.size,mimeType:f.mimeType||'image/jpeg',dataURL:f.dataURL||null,fullDataURL:f.fullDataURL||f.dataURL||null,mode:f.mode==='manual'?'manual':'auto',position:f.mode==='manual'?(f.position||'intro'):'auto'}));
+  const baseFC={name,co,phone,hot:g('m-hot'),logoDataURL:APP.mLogoDataURL||null,customHeroDataURL:APP.mHeroDataURL||null,email:g('m-email'),url:g('m-url'),kakao:g('m-kakao'),smsnum:g('m-smsnum'),cat:g('m-cat'),prod:g('m-prod'),desc:g('m-desc'),req:g('m-req'),tpl:APP.mTpl,col:APP.mCol,ai:APP.mAI,oaiKey:g('m-oai'),claudeKey:g('m-cai')||APP.globalClaudeKey,files:filesToSave,bodyImages:bodyImagesToSave,landHTML:null,formHTML:null,depURL:null,aiData:null,imgURL:null,prodName:null,expiresAt:null,generating:false,genMsg:'',genSub:'',genPct:0};
   let targetFC;
   if(APP.editingId){const idx=APP.fcList.findIndex(f=>f.id===APP.editingId);if(idx>=0){Object.assign(APP.fcList[idx],baseFC);targetFC=APP.fcList[idx];}else{targetFC={id:uid(),createdAt:Date.now(),...baseFC};APP.fcList.unshift(targetFC);}}
   else{targetFC={id:uid(),createdAt:Date.now(),...baseFC};APP.fcList.unshift(targetFC);}
@@ -2596,9 +2716,70 @@ async function ghPut(path,content,tok,owner,repo,msg){
 }
 
 /* SEARCH / FILTER */
-function setFilter(f,el){APP_FILTER=f;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderHome();}
-function onSearch(inp){APP_SEARCH=inp.value.trim().toLowerCase();const clr=document.getElementById('srch-clr');if(clr)clr.classList.toggle('show',APP_SEARCH.length>0);renderHome();}
-function clearSearch(){const inp=document.getElementById('srch');if(inp)inp.value='';APP_SEARCH='';const clr=document.getElementById('srch-clr');if(clr)clr.classList.remove('show');renderHome();}
+function updateFilterButtons(f){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
+  const map={all:'fb-all',deployed:'fb-dep',ready:'fb-ready',none:'fb-none'};
+  const id=map[f];
+  if(id) document.getElementById(id)?.classList.add('active');
+}
+function scrollHomeList(){
+  const target=document.getElementById('all-section-title')||document.getElementById('fc-list');
+  if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function applyStatFilter(f){
+  APP_FILTER=f;
+  updateFilterButtons(f);
+  renderHome();
+  setTimeout(scrollHomeList,60);
+}
+function setFilter(f,el){APP_FILTER=f;updateFilterButtons(f);if(el)el.classList.add('active');renderHome();}
+function getSearchMatches(q){
+  const s=String(q||'').trim().toLowerCase();
+  if(!s) return [];
+  return APP.fcList.filter(fc=>[
+    fc.name,fc.co,fc.prod,fc.prodName,fc.cat,fc.desc,
+    fc.aiData?.headline,fc.aiData?.tagline,fc.aiData?.intro?.title,
+    getDepSlug(fc.depURL)
+  ].some(v=>String(v||'').toLowerCase().includes(s)));
+}
+function renderSearchPopup(matches,q){
+  const info=document.getElementById('search-hit-info');
+  const list=document.getElementById('search-result-list');
+  if(info) info.textContent=`검색어 "${q}" 결과 ${matches.length}건`;
+  if(list) list.innerHTML=matches.map(fc=>{
+    const status=fc.depURL?'🌐 배포됨':isGeneratedReady(fc)?'✅ 생성완료':'⏳ 미생성';
+    return `<div onclick="openSearchResult('${fc.id}')" style="background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:13px 14px;cursor:pointer">
+      <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px">${escHtml(fc.prodName||fc.prod||fc.name||'광고')}</div>
+      <div style="font-size:11px;color:var(--t2);line-height:1.7">🏢 ${escHtml(fc.co||'—')} · 👤 ${escHtml(fc.name||'—')}<br>${status}</div>
+    </div>`;
+  }).join('');
+}
+function openSearchResult(fcId){
+  closeSheet('sh-search');
+  const fc=APP.fcList.find(f=>f.id===fcId);
+  if(!fc) return;
+  if(isGeneratedReady(fc)) openPreview(fcId);
+  else openHomeQuickMenu(fcId);
+}
+function onSearch(inp){
+  APP_SEARCH=inp.value.trim().toLowerCase();
+  const clr=document.getElementById('srch-clr');
+  if(clr)clr.classList.toggle('show',APP_SEARCH.length>0);
+  if(APP_SEARCH){
+    const matches=getSearchMatches(APP_SEARCH);
+    if(matches.length){
+      renderSearchPopup(matches,inp.value.trim());
+      const sh=document.getElementById('sh-search');
+      if(sh&&!sh.classList.contains('open')) openSheet('sh-search');
+    }else{
+      closeSheet('sh-search');
+    }
+  }else{
+    closeSheet('sh-search');
+  }
+  renderHome();
+}
+function clearSearch(){const inp=document.getElementById('srch');if(inp)inp.value='';APP_SEARCH='';const clr=document.getElementById('srch-clr');if(clr)clr.classList.remove('show');closeSheet('sh-search');renderHome();}
 function isGeneratedReady(fc){
   return !!(fc&&(fc.landHTML||fc.formHTML||fc.aiData||fc.imgURL||fc.prodName));
 }
@@ -2634,8 +2815,14 @@ function getFiltered(){
     const ready=isGeneratedReady(fc);
     if(APP_FILTER==='deployed'&&!fc.depURL) return false;
     if(APP_FILTER==='ready'&&(!ready||fc.depURL)) return false;
+    if(APP_FILTER==='generated'&&!ready) return false;
     if(APP_FILTER==='none'&&ready) return false;
-    if(APP_SEARCH){const q=APP_SEARCH;return(fc.name||'').toLowerCase().includes(q)||(fc.co||'').toLowerCase().includes(q)||(fc.prod||'').toLowerCase().includes(q)||(fc.prodName||'').toLowerCase().includes(q);}
+    if(APP_FILTER==='pending'&&fc.depURL) return false;
+    if(APP_SEARCH){
+      const q=APP_SEARCH;
+      return [fc.name,fc.co,fc.prod,fc.prodName,fc.cat,fc.desc,fc.aiData?.headline,fc.aiData?.tagline]
+        .some(v=>String(v||'').toLowerCase().includes(q));
+    }
     return true;
   });
 }
@@ -2714,15 +2901,9 @@ function renderHome(){
   if(depList)depList.innerHTML='';
   if(at)at.style.display='block';
   if(!APP.fcList.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">🎯</div><div class="es-title">광고를 만들어 보십시오</div><div class="es-sub">보험·부동산·쇼핑·서비스 등<br>어떤 상품이든 AI가 광고 페이지를 자동 제작합니다<br><br>카카오톡·SNS 링크 공유 즉시 가능!</div><button class="es-btn" onclick="openAddSheet()">＋ 첫 번째 광고 만들기</button></div>`;return;}
-  const homeList=APP.fcList.filter(f=>{
-    if(APP_SEARCH){
-      const q=APP_SEARCH;
-      const matched=((f.name||'').toLowerCase().includes(q)||(f.co||'').toLowerCase().includes(q)||(f.prod||'').toLowerCase().includes(q)||(f.prodName||'').toLowerCase().includes(q));
-      if(!matched) return false;
-    }
-    return (!f.depURL || f.homeVisibleFromURL) && (f.generating || isGeneratedReady(f));
-  });
-  if(!homeList.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">📝</div><div class="es-title">홈 화면에 표시할 광고가 없습니다</div><div class="es-sub">홈 화면에는 생성중이거나 생성완료 후 아직 배포하지 않은 광고, 그리고 URL 메뉴에서 홈으로 보낸 광고가 표시됩니다<br><br>표시된 광고는 정보와 내용편집으로 다시 수정할 수 있습니다</div></div>`;return;}
+  const defaultHomeList=APP.fcList.filter(f=>(!f.depURL || f.homeVisibleFromURL) && (f.generating || isGeneratedReady(f)));
+  const homeList=(APP_FILTER!=='all'||APP_SEARCH)?getFiltered():defaultHomeList;
+  if(!homeList.length){list.innerHTML=`<div class="empty-state"><div class="es-ico">📝</div><div class="es-title">표시할 광고가 없습니다</div><div class="es-sub">선택한 조건에 맞는 광고가 없거나 홈 화면 표시 대상이 없습니다</div></div>`;return;}
   list.innerHTML=homeList.map(adCard).join('');
 }
 function renderManage(){
@@ -2733,7 +2914,7 @@ function renderManage(){
 
 
 /* ══ 파일 관리 시트 ══ */
-let _fmFcId=null, _fmSlug='', _fmURL='', _fmFiles=[];
+let _fmFcId=null, _fmSlug='', _fmURL='', _fmFiles=[], _fmMenuIdx=-1;
 
 async function openFileMgr(fcId){
   const fc=APP.fcList.find(f=>f.id===fcId);
@@ -2780,17 +2961,44 @@ function fmRender(){
     const ico=f.name.endsWith('.html')?'📄':f.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)?'🖼':'📎';
     const sz=f.size>1024?Math.round(f.size/1024)+'KB':f.size+'B';
     const fileUrl=_fmURL.replace(/\/$/,'')+'/'+f.name;
-    return `<div class="gh-file-row" id="fmrow-${i}">
+    return `<div class="gh-file-row" id="fmrow-${i}" onclick="openFMItemMenu(${i})" style="cursor:pointer">
       <span style="font-size:16px">${ico}</span>
       <div style="flex:1;min-width:0">
         <div class="gh-file-nm">${escHtml(f.name)}</div>
         <div class="gh-file-sz">${sz}</div>
       </div>
-      <button class="gh-file-btn gh-fbtn-open" onclick="window.open('${escHtml(fileUrl)}','_blank')">열기</button>
-      ${/\.(html|js|css|txt)$/i.test(f.name)?`<button class="gh-file-btn gh-fbtn-edit" onclick="fmEditFile(${i})">수정</button>`:''}
-      <button class="gh-file-btn gh-fbtn-del" onclick="fmDelFile(${i})">삭제</button>
+      <button class="gh-file-btn gh-fbtn-open" onclick="event.stopPropagation();window.open('${escHtml(fileUrl)}','_blank')">열기</button>
+      ${/\.(html|js|css|txt)$/i.test(f.name)?`<button class="gh-file-btn gh-fbtn-edit" onclick="event.stopPropagation();fmEditFile(${i})">수정</button>`:''}
+      <button class="gh-file-btn gh-fbtn-del" onclick="event.stopPropagation();fmDelFile(${i})">삭제</button>
     </div>`;
   }).join('');
+}
+
+
+function openFMItemMenu(idx){
+  const f=_fmFiles[idx];
+  if(!f)return;
+  _fmMenuIdx=idx;
+  const editable=/\.(html|js|css|txt)$/i.test(f.name);
+  const fileUrl=_fmURL.replace(/\/$/,'')+'/'+f.name;
+  const title=document.getElementById('fmitem-title');
+  const sub=document.getElementById('fmitem-sub');
+  const acts=document.getElementById('fmitem-actions');
+  if(title) title.textContent='📁 '+f.name;
+  if(sub) sub.textContent='선택한 파일에 대해 열기, 수정, 삭제하기를 할 수 있습니다.';
+  if(acts) acts.innerHTML=`
+    <button class="fca fca-prev" onclick="closeSheet('sh-fmitem');window.open('${escHtml(fileUrl)}','_blank')">
+      <span class="fca-ico">🌐</span>열기
+    </button>
+    ${editable?`<button class="fca fca-edit" onclick="closeSheet('sh-fmitem');fmEditFile(${idx})">
+      <span class="fca-ico">✏️</span>수정
+    </button>`:`<button class="fca" disabled style="background:rgba(124,92,252,.05);color:#7568a8;border:1px solid rgba(124,92,252,.12)">
+      <span class="fca-ico">✏️</span>수정
+    </button>`}
+    <button class="fca" onclick="closeSheet('sh-fmitem');fmDelFile(${idx})" style="background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.2)">
+      <span class="fca-ico">🗑</span>삭제하기
+    </button>`;
+  openSheet('sh-fmitem');
 }
 
 
@@ -3430,6 +3638,38 @@ function urlOpenFC(fcId){
   const fc=APP.fcList.find(f=>f.id===fcId);
   if(fc?.depURL)window.open(fc.depURL,'_blank');
 }
+async function quickDeleteDeployedAd(fcId){
+  const fc=APP.fcList.find(f=>f.id===fcId);
+  if(!fc||!fc.depURL){showToast('배포된 광고만 삭제할 수 있습니다','error');return;}
+  const slug=getDepSlug(fc.depURL);
+  if(!slug){showToast('배포 정보를 찾을 수 없습니다','error');return;}
+  const depURL=String(fc.depURL||'').replace(/\/$/,'');
+  const adIdx=_ghAds.findIndex(ad=>ad.slug===slug||String(ad.url||'').replace(/\/$/,'')===depURL);
+  if(adIdx>=0){
+    await ghDelAd(slug,adIdx);
+    return;
+  }
+  if(!APP.ghOwner||!APP.ghRepo||!APP.ghToken){showToast('GitHub 설정을 확인하십시오','error');return;}
+  try{
+    const enc=s=>encodeURIComponent(s);
+    const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(slug)}`,{
+      headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+    });
+    if(!r.ok){
+      const j=await r.json().catch(()=>({}));
+      throw new Error(j.message||('불러오기 실패 ('+r.status+')'));
+    }
+    const files=await r.json();
+    _fmFcId=fc.id;
+    _fmSlug=slug;
+    _fmURL=fc.depURL;
+    _fmFiles=(Array.isArray(files)?files:[]).filter(f=>f&&f.type!=='dir');
+    if(!_fmFiles.length){showToast('삭제할 파일이 없습니다','error');return;}
+    await fmDelAll();
+  }catch(e){
+    showToast('❌ 삭제 실패: '+e.message,'error');
+  }
+}
 function renderURLs(){
   const hidden=document.getElementById('url-mgr-list');
   if(hidden)hidden.innerHTML='';
@@ -3448,6 +3688,9 @@ function buildHomeQuickMenu(fc){
   const expiryBtn = depURL
     ? `<button class="fca" data-action="expiry" data-id="${fc.id}" onclick="closeSheet('sh-homequick')" style="background:rgba(96,165,250,.08);color:#60a5fa;border:1px solid rgba(96,165,250,.2)"><span class="fca-ico">📅</span>기간설정</button>`
     : `<button class="fca" disabled style="background:rgba(96,165,250,.05);color:#5a6c8f;border:1px solid rgba(96,165,250,.12)"><span class="fca-ico">📅</span>기간설정</button>`;
+  const deleteBtn = depURL
+    ? `<button class="fca" data-action="ghdel" data-id="${fc.id}" onclick="closeSheet('sh-homequick')" style="background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.2)"><span class="fca-ico">🗑</span>삭제하기</button>`
+    : `<button class="fca" disabled style="background:rgba(239,68,68,.05);color:#8f5a5a;border:1px solid rgba(239,68,68,.12)"><span class="fca-ico">🗑</span>삭제하기</button>`;
   return `
     <button class="fca fca-gen" data-action="gen" data-id="${fc.id}" onclick="closeSheet('sh-homequick')" ${fc.generating?'disabled':''}>
       <span class="fca-ico">${isGeneratedReady(fc)?'🔄':'✦'}</span>${isGeneratedReady(fc)?'재생성':'AI생성'}
@@ -3469,9 +3712,56 @@ function buildHomeQuickMenu(fc){
     </button>
     ${shareBtn}
     ${homeBtn}
-    ${expiryBtn}`;
+    ${expiryBtn}
+    ${deleteBtn}`;
 }
-function openHomeQuickMenu(fcId){
+function resetHomeQuickFiles(){
+  const wrap=document.getElementById('homequick-files-wrap');
+  const st=document.getElementById('homequick-files-status');
+  const list=document.getElementById('homequick-files-list');
+  if(wrap) wrap.style.display='none';
+  if(st) st.textContent='';
+  if(list) list.innerHTML='';
+}
+async function loadHomeQuickFiles(fc){
+  const wrap=document.getElementById('homequick-files-wrap');
+  const st=document.getElementById('homequick-files-status');
+  const list=document.getElementById('homequick-files-list');
+  if(!wrap||!st||!list)return;
+  list.innerHTML='';
+  if(!fc||!fc.depURL){wrap.style.display='none';return;}
+  const slug=getDepSlug(fc.depURL);
+  if(!slug){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  st.textContent='⏳ 파일 목록 불러오는 중...';
+  if(!APP.ghOwner||!APP.ghRepo||!APP.ghToken){
+    st.textContent='GitHub 설정 후 파일목록을 볼 수 있습니다';
+    return;
+  }
+  try{
+    const enc=s=>encodeURIComponent(s);
+    const r=await fetch(`https://api.github.com/repos/${APP.ghOwner}/${APP.ghRepo}/contents/pages/${enc(slug)}`,{
+      headers:{Authorization:ghAuth(APP.ghToken),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+    });
+    if(!r.ok){
+      const j=await r.json().catch(()=>({}));
+      throw new Error(j.message||('파일 목록을 불러오지 못했습니다 ('+r.status+')'));
+    }
+    _fmFcId=fc.id;
+    _fmSlug=slug;
+    _fmURL=fc.depURL;
+    _fmFiles=(await r.json()).filter(f=>f&&f.type!=='dir');
+    if(!_fmFiles.length){
+      st.textContent='📂 파일 없음';
+      return;
+    }
+    st.textContent=`✅ ${_fmFiles.length}개 파일`;
+    list.innerHTML=_fmFiles.map((f,i)=>`<div class="gh-file-row" onclick="closeSheet('sh-homequick');openFMItemMenu(${i})" style="cursor:pointer"><div class="gh-file-nm">${escHtml(f.name)}</div><div class="gh-file-sz">${fmtSz(f.size||0)}</div></div>`).join('');
+  }catch(e){
+    st.textContent='❌ '+e.message;
+  }
+}
+async function openHomeQuickMenu(fcId){
   const fc=APP.fcList.find(f=>f.id===fcId);
   if(!fc){showToast('광고 정보를 찾을 수 없습니다','error');return;}
   const title=document.getElementById('homequick-title');
@@ -3480,7 +3770,9 @@ function openHomeQuickMenu(fcId){
   if(title) title.textContent=(fc.prodName||fc.prod||'광고')+' 메뉴';
   if(sub) sub.innerHTML=`🏢 ${escHtml(fc.co||'—')} · 👤 ${escHtml(fc.name||'—')}<br>홈 화면에서 이 광고를 누르면 바로 이 메뉴가 열립니다.`;
   if(actions) actions.innerHTML=buildHomeQuickMenu(fc);
+  resetHomeQuickFiles();
   openSheet('sh-homequick');
+  loadHomeQuickFiles(fc);
 }
 
 /* EDIT / DELETE */
@@ -3553,6 +3845,7 @@ function quickGen(fcId){
   APP.mHeroDataURL=fc.customHeroDataURL||null;syncHeroImgPreview();
   setV('m-name',fc.name);setV('m-co',fc.co);setV('m-phone',fc.phone);setV('m-hot',fc.hot);setV('m-email',fc.email);setV('m-url',fc.url);setV('m-kakao',fc.kakao);setV('m-smsnum',fc.smsnum);setV('m-cat',fc.cat);setV('m-prod',fc.prod);setV('m-desc',fc.desc);setV('m-req',fc.req);
   if(fc.files&&fc.files.length>0){APP.mFiles=[...fc.files];rF();showToast(`📂 저장된 파일 ${fc.files.length}개 불러옴`,'success');}
+  if(fc.bodyImages&&fc.bodyImages.length>0){APP.mBodyImages=(fc.bodyImages||[]).map(img=>({...img,id:img.id||uid(),mode:img.mode==='manual'?'manual':'auto',position:img.position||'auto'}));rBodyF();showToast(`🖼 본문 이미지 ${fc.bodyImages.length}개 불러옴`,'success');}
   const tplMap={A:'m-ta',B:'m-tb',C:'m-tc',D:'m-td'},colMap={blue:'m-cb',green:'m-cg',gold:'m-cgld',rose:'m-cr',violet:'m-cv',slate:'m-cs'};
   if(fc.tpl&&tplMap[fc.tpl])sT(fc.tpl,document.getElementById(tplMap[fc.tpl]));
   if(fc.col&&colMap[fc.col])sC(fc.col,document.getElementById(colMap[fc.col]));
@@ -4268,10 +4561,48 @@ document.addEventListener('click',function(e){
   else if(action==='del') delFC(id,name);
   else if(action==='share'){const fc=APP.fcList.find(f=>f.id===id);if(fc){curDepURL=fc.depURL||url;openSendSheet(fc);}}
   else if(action==='sendhome'){sendDepToHome(id);}
+  else if(action==='ghdel'){quickDeleteDeployedAd(id);}
   else if(action==='filemgr'){openFileMgr(id);}
 });
 
 /* HTML BUILDERS */
+function getBodyImageSlots(ai){
+  const slots=[];
+  if(ai?.intro&&(ai.intro.title||ai.intro.body)) slots.push('intro');
+  if(ai?.riskSection&&(ai.riskSection.title||ai.riskSection.body||(ai.riskSection.stats||[]).length)) slots.push('risk');
+  if(ai?.costSection&&(ai.costSection.title||ai.costSection.body)) slots.push('cost');
+  if(ai?.solutionIntro) slots.push('solution');
+  slots.push('conclusion');
+  return slots;
+}
+function groupBodyImagesForSections(fc,ai){
+  const grouped={};
+  const images=(fc?.bodyImages||[]).filter(img=>img&&(img.fullDataURL||img.dataURL));
+  if(!images.length) return grouped;
+  const slots=getBodyImageSlots(ai);
+  const manual=images.filter(img=>img.mode==='manual'&&img.position&&img.position!=='auto');
+  const auto=images.filter(img=>!(img.mode==='manual'&&img.position&&img.position!=='auto'));
+  manual.forEach(img=>{
+    const key=slots.includes(img.position)?img.position:'conclusion';
+    (grouped[key]||(grouped[key]=[])).push(img);
+  });
+  if(auto.length){
+    auto.forEach((img,idx)=>{
+      const slot=slots[Math.min(slots.length-1,Math.floor(idx*slots.length/auto.length))]||'conclusion';
+      (grouped[slot]||(grouped[slot]=[])).push(img);
+    });
+  }
+  return grouped;
+}
+function renderBodyImageBlocks(grouped,key){
+  const items=(grouped&&grouped[key])?grouped[key]:[];
+  return items.map((img,idx)=>{
+    const src=escHtml(img.fullDataURL||img.dataURL||'');
+    const alt=escHtml(img.name||'광고 이미지');
+    return `<div style="margin:14px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.08)"><img src="${src}" alt="${alt}" style="display:block;width:100%;max-height:340px;object-fit:cover;background:#f3f4f6"></div>`;
+  }).join('');
+}
+
 function buildLand(fc,ai,imgURL,tpl,col){
   const th=COLORS[col]||COLORS.blue;
   const features=(ai.features||[]).filter(b=>b&&b.title).slice(0,4);
@@ -4284,6 +4615,12 @@ function buildLand(fc,ai,imgURL,tpl,col){
   const costSec=ai.costSection||null;
   const solutionIntro=ai.solutionIntro||null;
   const riskStats=(ai.riskSection?.stats||[]).filter(Boolean);
+  const bodyImgMap=groupBodyImagesForSections(fc,ai);
+  const imgIntro=renderBodyImageBlocks(bodyImgMap,'intro');
+  const imgRisk=renderBodyImageBlocks(bodyImgMap,'risk');
+  const imgCost=renderBodyImageBlocks(bodyImgMap,'cost');
+  const imgSolution=renderBodyImageBlocks(bodyImgMap,'solution');
+  const imgConclusion=renderBodyImageBlocks(bodyImgMap,'conclusion');
   // _ogImgUrl 없으면 og:image 비워둠 (Pollinations URL은 캐싱 금지)
   const ogImg=fc._ogImgUrl||'';
   const meta=`<!DOCTYPE html><html lang="ko"><head>
@@ -4353,14 +4690,14 @@ function buildLand(fc,ai,imgURL,tpl,col){
 .ft{text-align:center;padding:10px 16px 24px;font-size:10px;color:#bbb;line-height:1.7;}
 </style></head><body>
 <div class="hero"><img src="${imgURL}" alt="" onerror="this.style.cssText='width:100%;height:280px;background:linear-gradient(135deg,${th.p},${th.a});display:block'"><div class="hg"><div class="badge">${escHtml(ai.badge||'추천')}</div><div class="hl">${escHtml(ai.headline||'')}</div><div class="sub">${escHtml(ai.subheadline||'')}</div></div></div>
-${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}<div class="sec"><div class="fc-row">${fc.logoDataURL?`<img src="${fc.logoDataURL}" class="logo-img" alt="${escHtml(fc.co)} 로고">`:`<div class="fc-av">🎯</div>`}<div><div class="fc-nm">${escHtml(fc.name)} 담당자</div><div class="fc-co">🏢 ${escHtml(fc.co)}</div></div></div>
+${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${imgIntro}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${imgRisk}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${imgCost}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}${imgSolution}<div class="sec"><div class="fc-row">${fc.logoDataURL?`<img src="${fc.logoDataURL}" class="logo-img" alt="${escHtml(fc.co)} 로고">`:`<div class="fc-av">🎯</div>`}<div><div class="fc-nm">${escHtml(fc.name)} 담당자</div><div class="fc-co">🏢 ${escHtml(fc.co)}</div></div></div>
 <div class="sec-t">왜 선택해야 하는가</div><div class="why-list">${whyPoints.map((p,i)=>`<div class="why-item"><div class="why-dot">${i+1}</div><span>${escHtml(p)}</span></div>`).join('')}</div></div>
 ${features.length?`<div class="sec"><div class="sec-t">핵심 특징</div><div class="feat-list">${features.map(b=>`<div class="feat-item"><div class="feat-ico">${b.icon}</div><div><div class="feat-hl">${escHtml(b.highlight||'')}</div><div class="feat-tit">${escHtml(b.title)}</div><div class="feat-desc">${escHtml(b.desc)}</div></div></div>`).join('')}</div></div>`:''}
 ${coverage.length?`<div class="sec"><div class="sec-t">보장 / 조건 / 스펙</div><table class="cov-table">${coverage.map(c=>`<tr><td class="cov-label">${escHtml(c.label)}</td><td class="cov-val">${escHtml(c.value)}</td></tr>`).join('')}</table></div>`:''}
 ${testimonial?`<div class="sec"><div class="sec-t">고객 후기</div><div class="review"><div class="review-text">${escHtml(testimonial.text)}</div><div class="review-name">— ${escHtml(testimonial.name)}</div></div></div>`:''}
 ${faq.length?`<div class="sec"><div class="sec-t">자주 묻는 질문</div><div class="faq-list">${faq.map(f=>`<div class="faq-item"><div class="faq-q">Q. ${escHtml(f.q)}</div><div class="faq-a">A. ${escHtml(f.a)}</div></div>`).join('')}</div></div>`:''}
 ${ai.urgency?`<div class="urgency">⏰ ${escHtml(ai.urgency)}</div>`:''}
-<div class="cta"><a href="tel:${fc.phone}" class="ba">📞 ${escHtml(ai.ctaPhone||'전화 상담받기')}</a><a href="./form.html" class="bb">✏️ ${escHtml(ai.ctaForm||'온라인 신청하기')}</a></div>
+${imgConclusion}<div class="cta"><a href="tel:${fc.phone}" class="ba">📞 ${escHtml(ai.ctaPhone||'전화 상담받기')}</a><a href="./form.html" class="bb">✏️ ${escHtml(ai.ctaForm||'온라인 신청하기')}</a></div>
 <div class="ft">${escHtml(ai.notice||'')}${ai.notice?'<br>':''}${escHtml(fc.co)} · ${escHtml(fc.name)} · 📞 ${escHtml(fc.phone)}</div>
 </body></html>`;
   }
@@ -4395,13 +4732,13 @@ ${ai.urgency?`<div class="urgency">⏰ ${escHtml(ai.urgency)}</div>`:''}
 <div class="top">${fc.logoDataURL?`<img src="${fc.logoDataURL}" class="logo-img" style="width:32px;height:32px" alt="logo">`:''}<span class="co">${escHtml(fc.co)}</span><span class="tagline">${escHtml(ai.tagline||ai.badge||'추천')}</span></div>
 <div class="hero"><div id="_ad_img_wrap" data-src="${imgURL}" style="position:relative;width:100%;min-height:160px;background:linear-gradient(135deg,${th.p},${th.a});overflow:hidden;"><div class="_sp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:_imgSpin 1s linear infinite;"></div><p style="font-size:11px;color:rgba(255,255,255,.7);font-family:sans-serif;margin:0;">이미지 생성 중...</p></div></div><style>@keyframes _imgSpin{to{transform:rotate(360deg)}}</style><script>(function(){var w=document.getElementById("_ad_img_wrap");if(!w)return;var src=w.getAttribute("data-src")||"";var isData=src.indexOf("data:image/")===0;var tries=0;function load(){var i=new Image();i.onload=function(){w.style.background="none";var e=w.querySelector("img");if(e)w.removeChild(e);i.style.cssText="width:100%;display:block;object-fit:cover;";w.appendChild(i);var s=w.querySelector("._sp");if(s)s.style.display="none";};i.onerror=function(){if(isData){var s=w.querySelector("._sp");if(s)s.style.display="none";return;}if(tries++<4){setTimeout(load,6000);}else{var s=w.querySelector("._sp");if(s)s.style.display="none";}};i.src=isData?src:(src+"&_r="+tries);}load();})();<\/script></div>
 <div class="info"><div class="badge">⭐ ${escHtml(ai.badge||'추천')}</div><div class="hl">${escHtml(ai.headline||'')}</div><div class="sub">${escHtml(ai.subheadline||'')}</div></div>
-${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}${whyPoints.length?`<div class="card"><div class="sec-t">왜 선택해야 하는가</div><div class="why-list">${whyPoints.map((p,i)=>`<div class="why-item"><div class="why-dot">${i+1}</div><span>${escHtml(p)}</span></div>`).join('')}</div></div>`:''}
+${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${imgIntro}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${imgRisk}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${imgCost}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}${imgSolution}${whyPoints.length?`<div class="card"><div class="sec-t">왜 선택해야 하는가</div><div class="why-list">${whyPoints.map((p,i)=>`<div class="why-item"><div class="why-dot">${i+1}</div><span>${escHtml(p)}</span></div>`).join('')}</div></div>`:''}
 ${features.length?`<div class="card"><div class="sec-t">핵심 특징</div><div class="feat-list">${features.map(b=>`<div class="feat-c"><div class="feat-ico">${b.icon}</div><div><div class="feat-tit">${escHtml(b.title)}</div><div class="feat-desc">${escHtml(b.desc)}</div></div></div>`).join('')}</div></div>`:''}
 ${coverage.length?`<div class="card"><div class="sec-t">보장 / 조건 / 스펙</div>${coverage.map(c=>`<div class="cov-row"><span class="cov-label">${escHtml(c.label)}</span><span class="cov-val">${escHtml(c.value)}</span></div>`).join('')}</div>`:''}
 ${testimonial?`<div class="card"><div class="sec-t">고객 후기</div><div class="review"><div class="review-text">"${escHtml(testimonial.text)}"</div><div class="review-name">— ${escHtml(testimonial.name)}</div></div></div>`:''}
 ${faq.length?`<div class="card"><div class="sec-t">자주 묻는 질문</div>${faq.map(f=>`<div class="faq-item"><div class="faq-q">Q. ${escHtml(f.q)}</div><div class="faq-a">A. ${escHtml(f.a)}</div></div>`).join('')}</div>`:''}
 ${ai.urgency?`<div class="urgency">⏰ ${escHtml(ai.urgency)}</div>`:''}
-<div class="cta"><a href="tel:${fc.phone}" class="ba">📞 ${escHtml(ai.ctaPhone||'전화 상담')}</a><a href="./form.html" class="bb">✏️ ${escHtml(ai.ctaForm||'온라인 신청')}</a></div>
+${imgConclusion}<div class="cta"><a href="tel:${fc.phone}" class="ba">📞 ${escHtml(ai.ctaPhone||'전화 상담')}</a><a href="./form.html" class="bb">✏️ ${escHtml(ai.ctaForm||'온라인 신청')}</a></div>
 <div class="ft">${escHtml(ai.notice||'')}${ai.notice?'<br>':''}${escHtml(fc.co)} · ${escHtml(fc.name)} · 📞 ${escHtml(fc.phone)}</div>
 </body></html>`;
   }
@@ -4438,13 +4775,13 @@ ${ai.urgency?`<div class="urgency">⏰ ${escHtml(ai.urgency)}</div>`:''}
 <div class="hero"><div id="_ad_img_wrap" data-src="${imgURL}" style="position:relative;width:100%;min-height:200px;background:linear-gradient(135deg,${th.p},${th.a});overflow:hidden;"><div class="_sp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:_imgSpin 1s linear infinite;"></div><p style="font-size:11px;color:rgba(255,255,255,.7);font-family:sans-serif;margin:0;">이미지 생성 중...</p></div></div><style>@keyframes _imgSpin{to{transform:rotate(360deg)}}</style><script>(function(){var w=document.getElementById("_ad_img_wrap");if(!w)return;var src=w.getAttribute("data-src")||"";var isData=src.indexOf("data:image/")===0;var tries=0;function load(){var i=new Image();i.onload=function(){w.style.background="none";var e=w.querySelector("img");if(e)w.removeChild(e);i.style.cssText="width:100%;display:block;object-fit:cover;";w.appendChild(i);var s=w.querySelector("._sp");if(s)s.style.display="none";};i.onerror=function(){if(isData){var s=w.querySelector("._sp");if(s)s.style.display="none";return;}if(tries++<4){setTimeout(load,6000);}else{var s=w.querySelector("._sp");if(s)s.style.display="none";}};i.src=isData?src:(src+"&_r="+tries);}load();})();<\/script><div class="hg"></div></div>
 <div class="cnt">
 <div class="hl">${escHtml(ai.headline||'')}</div><div class="sub">${escHtml(ai.subheadline||'')}</div>
-${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}${whyPoints.length?`<div class="sec"><div class="sec-t">왜 선택해야 하는가</div>${whyPoints.map((p,i)=>`<div class="why-item"><div class="why-num">${i+1}</div><span>${escHtml(p)}</span></div>`).join('')}</div>`:''}
+${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${imgIntro}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${imgRisk}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${imgCost}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}${imgSolution}${whyPoints.length?`<div class="sec"><div class="sec-t">왜 선택해야 하는가</div>${whyPoints.map((p,i)=>`<div class="why-item"><div class="why-num">${i+1}</div><span>${escHtml(p)}</span></div>`).join('')}</div>`:''}
 ${features.length?`<div class="sec"><div class="sec-t">핵심 특징</div>${features.map(b=>`<div class="feat-item"><div class="feat-ico">${b.icon}</div><div><div class="feat-hl">${escHtml(b.highlight||'')}</div><div class="feat-tit">${escHtml(b.title)}</div><div class="feat-desc">${escHtml(b.desc)}</div></div></div>`).join('')}</div>`:''}
 ${coverage.length?`<div class="sec"><div class="sec-t">보장 / 조건 / 스펙</div>${coverage.map(c=>`<div class="cov-row"><span class="cov-label">${escHtml(c.label)}</span><span class="cov-val">${escHtml(c.value)}</span></div>`).join('')}</div>`:''}
 ${testimonial?`<div class="sec"><div class="sec-t">고객 후기</div><div class="review"><div class="review-text">"${escHtml(testimonial.text)}"</div><div class="review-name">— ${escHtml(testimonial.name)}</div></div></div>`:''}
 ${faq.length?`<div class="sec"><div class="sec-t">자주 묻는 질문</div>${faq.map(f=>`<div class="faq-item"><div class="faq-q">Q. ${escHtml(f.q)}</div><div class="faq-a">A. ${escHtml(f.a)}</div></div>`).join('')}</div>`:''}
 ${ai.urgency?`<div class="urgency">⏰ ${escHtml(ai.urgency)}</div>`:''}
-<div class="cta"><a href="tel:${fc.phone}" class="ba">📞 ${escHtml(ai.ctaPhone||'상담받기')}</a><a href="./form.html" class="bb">✏️ ${escHtml(ai.ctaForm||'온라인 신청')}</a></div>
+${imgConclusion}<div class="cta"><a href="tel:${fc.phone}" class="ba">📞 ${escHtml(ai.ctaPhone||'상담받기')}</a><a href="./form.html" class="bb">✏️ ${escHtml(ai.ctaForm||'온라인 신청')}</a></div>
 </div>
 <div class="ft">${escHtml(ai.notice||'')}${ai.notice?'<br>':''}${escHtml(fc.co)} · ${escHtml(fc.name)} · 📞 ${escHtml(fc.phone)}</div>
 </body></html>`;
@@ -4486,14 +4823,14 @@ ${ai.urgency?`<div class="urgency">⏰ ${escHtml(ai.urgency)}</div>`:''}
 <div class="float-card">
 <div class="fc-row">${fc.logoDataURL?`<img src="${fc.logoDataURL}" class="logo-img" alt="logo">`:`<div class="fc-dot">🎯</div>`}<div><div class="fc-nm">${escHtml(fc.name)} 담당자</div><div class="fc-co">🏢 ${escHtml(fc.co)} · 📞 ${escHtml(fc.phone)}</div></div></div>
 <div id="_ad_img_wrap" data-src="${imgURL}" style="position:relative;width:100%;min-height:160px;background:linear-gradient(135deg,${th.p},${th.a});overflow:hidden;"><div class="_sp" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:_imgSpin 1s linear infinite;"></div><p style="font-size:11px;color:rgba(255,255,255,.7);font-family:sans-serif;margin:0;">이미지 생성 중...</p></div></div><style>@keyframes _imgSpin{to{transform:rotate(360deg)}}</style><script>(function(){var w=document.getElementById("_ad_img_wrap");if(!w)return;var src=w.getAttribute("data-src")||"";var isData=src.indexOf("data:image/")===0;var tries=0;function load(){var i=new Image();i.onload=function(){w.style.background="none";var e=w.querySelector("img");if(e)w.removeChild(e);i.style.cssText="width:100%;display:block;object-fit:cover;";w.appendChild(i);var s=w.querySelector("._sp");if(s)s.style.display="none";};i.onerror=function(){if(isData){var s=w.querySelector("._sp");if(s)s.style.display="none";return;}if(tries++<4){setTimeout(load,6000);}else{var s=w.querySelector("._sp");if(s)s.style.display="none";}};i.src=isData?src:(src+"&_r="+tries);}load();})();<\/script>
-${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}${whyPoints.length?`<div class="sec-t">왜 선택해야 하는가</div>${whyPoints.map((p,i)=>`<div class="why-item"><div class="why-dot">${i+1}</div><span>${escHtml(p)}</span></div>`).join('')}<div style="height:12px"></div>`:''}
+${intro?`<div class="intro-sec"><div class="long-title">${escHtml(intro.title||"")}</div><div class="long-body">${(intro.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${imgIntro}${riskSec?`<div class="risk-sec"><div class="long-title">${escHtml(riskSec.title||"")}</div><div class="long-body">${(riskSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div>${riskStats.length?`<div class="stat-grid">${riskStats.map(s=>`<div class="stat-item"><span class="stat-num">⚠️ ${escHtml(s)}</span></div>`).join("")}</div>`:""}</div>`:""}${imgRisk}${costSec?`<div class="cost-sec"><div class="long-title">${escHtml(costSec.title||"")}</div><div class="long-body">${(costSec.body||"").split("\n").map(p=>p.trim()).filter(Boolean).map(p=>`<p>${escHtml(p)}</p>`).join("")}</div></div>`:""}${imgCost}${solutionIntro?`<div class="sol-bridge">💡 ${escHtml(solutionIntro)}</div>`:""}${imgSolution}${whyPoints.length?`<div class="sec-t">왜 선택해야 하는가</div>${whyPoints.map((p,i)=>`<div class="why-item"><div class="why-dot">${i+1}</div><span>${escHtml(p)}</span></div>`).join('')}<div style="height:12px"></div>`:''}
 ${features.length?`<div class="sec-t">핵심 특징</div><div class="feat-list">${features.map(b=>`<div class="feat-c"><div class="feat-ico">${b.icon}</div><div><div class="feat-hl">${escHtml(b.highlight||'')}</div><div class="feat-tit">${escHtml(b.title)}</div><div class="feat-desc">${escHtml(b.desc)}</div></div></div>`).join('')}</div><div style="height:12px"></div>`:''}
 ${coverage.length?`<div class="sec-t">보장 / 조건 / 스펙</div>${coverage.map(c=>`<div class="cov-row"><span class="cov-label">${escHtml(c.label)}</span><span class="cov-val">${escHtml(c.value)}</span></div>`).join('')}<div style="height:12px"></div>`:''}
 ${testimonial?`<div class="sec-t">고객 후기</div><div class="review"><div class="review-text">"${escHtml(testimonial.text)}"</div><div class="review-name">— ${escHtml(testimonial.name)}</div></div><div style="height:12px"></div>`:''}
 ${faq.length?`<div class="sec-t">자주 묻는 질문</div>${faq.map(f=>`<div class="faq-item"><div class="faq-q">Q. ${escHtml(f.q)}</div><div class="faq-a">A. ${escHtml(f.a)}</div></div>`).join('')}`:''}
 </div>
 ${ai.urgency?`<div class="urgency">⏰ ${escHtml(ai.urgency)}</div>`:''}
-<div class="cta"><a href="tel:${fc.phone}" class="ba">📞 ${escHtml(ai.ctaPhone||'전화 상담받기')}</a><a href="./form.html" class="bb">✏️ ${escHtml(ai.ctaForm||'온라인 신청하기')}</a></div>
+${imgConclusion}<div class="cta"><a href="tel:${fc.phone}" class="ba">📞 ${escHtml(ai.ctaPhone||'전화 상담받기')}</a><a href="./form.html" class="bb">✏️ ${escHtml(ai.ctaForm||'온라인 신청하기')}</a></div>
 <div class="ft">${escHtml(ai.notice||'')}${ai.notice?'<br>':''}${escHtml(fc.co)} · ${escHtml(fc.name)}</div>
 </body></html>`;
 }
