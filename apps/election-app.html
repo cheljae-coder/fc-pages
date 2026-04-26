@@ -1206,12 +1206,12 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
 
 <!-- SMS 작성 시트 -->
 <div class="sheet-bg" id="sh-sms-bg" onclick="closeSheet('sh-sms')"></div>
-<div class="sheet" id="sh-sms" style="height:85vh">
+<div class="sheet" id="sh-sms" style="height:90vh">
   <div class="sheet-hd">
     <div class="sheet-title">✍️ 문자 메시지 작성</div>
     <button class="sheet-close" onclick="closeSheet('sh-sms')">✕</button>
   </div>
-  <div class="sheet-body" style="display:flex;flex-direction:column;gap:10px;height:calc(85vh - 60px);overflow:hidden">
+  <div class="sheet-body" style="display:flex;flex-direction:column;gap:10px;height:calc(90vh - 60px);overflow:hidden">
     <div style="font-size:11px;color:var(--t2);line-height:1.6;flex-shrink:0">
       AI가 자동 작성한 문자 내용을 확인·수정 후 전송하십시오.
     </div>
@@ -1219,15 +1219,28 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
       ⏳ AI가 문자 내용 작성 중...
     </div>
     <textarea id="sms-ta" style="flex:1;border:1px solid var(--bd2);border-radius:10px;padding:12px;background:var(--s2);color:var(--text);font-family:var(--font);font-size:13px;line-height:1.7;resize:none;outline:none;word-break:break-all;overflow-wrap:break-word;white-space:pre-wrap" placeholder="문자 내용을 작성하십시오..."></textarea>
-    <div style="background:rgba(74,126,248,.07);border:1px solid rgba(74,126,248,.2);border-radius:8px;padding:8px 10px;font-size:11px;color:var(--blue2);line-height:1.6;flex-shrink:0">
-      📋 <strong>문자 보내기</strong>를 누르면 내용이 자동 복사됩니다.<br>SMS 앱이 열리면 붙여넣기(길게 누르기)하여 전송하십시오.
+
+    <!-- 복사 안내 박스 -->
+    <div style="background:rgba(74,126,248,.1);border:1px solid rgba(74,126,248,.3);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--blue2);line-height:1.7;flex-shrink:0">
+      📋 <strong>① 아래 [내용 복사] 버튼을 먼저 누르세요</strong> → ② [문자 앱 열기] → ③ 문자창에서 길게 눌러 <strong>붙여넣기</strong>
     </div>
+
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
       <span id="sms-char-cnt" style="font-size:10px;color:var(--t3)">0자</span>
       <div style="flex:1"></div>
-      <button class="btn btn-ghost btn-sm" onclick="cpyTxt(document.getElementById('sms-ta').value);showToast('📋 복사 완료','success');">📋 복사</button>
       <button class="btn btn-ghost btn-sm" onclick="genSMSContent()">🤖 AI 재작성</button>
-      <button class="btn btn-p btn-sm" onclick="sendSMS()" style="padding:10px 20px">📱 문자 보내기</button>
+    </div>
+
+    <!-- 핵심 버튼 2개 (크게) -->
+    <div style="display:flex;gap:8px;flex-shrink:0">
+      <button id="sms-copy-btn" class="btn" onclick="smsCopyContent()"
+        style="flex:1;padding:14px 8px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+        📋 내용 복사
+      </button>
+      <button class="btn" onclick="sendSMS()"
+        style="flex:1;padding:14px 8px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+        📱 문자 앱 열기
+      </button>
     </div>
   </div>
 </div>
@@ -2699,22 +2712,60 @@ async function genSMSContent(){
   ta.oninput=()=>{if(cnt)cnt.textContent=ta.value.length+'자';};
 }
 
+/* ── SMS 내용 복사 (전용 함수) ── */
+function smsCopyContent(){
+  const ta=document.getElementById('sms-ta');
+  if(!ta||!ta.value.trim()){showToast('문자 내용을 먼저 작성하십시오','error');return;}
+  const body=ta.value;
+  const btn=document.getElementById('sms-copy-btn');
+
+  function onSuccess(){
+    if(btn){
+      const orig=btn.innerHTML;
+      btn.innerHTML='✅ 복사 완료!';
+      btn.style.background='linear-gradient(135deg,#16a34a,#15803d)';
+      setTimeout(()=>{btn.innerHTML=orig;btn.style.background='';},2200);
+    }
+    showToast('📋 문자 내용이 복사되었습니다. SMS 앱에 붙여넣기 하십시오.','success');
+  }
+
+  // 방법 1: navigator.clipboard (HTTPS/secure context)
+  if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
+    navigator.clipboard.writeText(body).then(onSuccess).catch(()=>_smsCopyFallback(body,onSuccess));
+    return;
+  }
+  // 방법 2: execCommand (비보안 환경 폴백)
+  _smsCopyFallback(body,onSuccess);
+}
+
+function _smsCopyFallback(body,onSuccess){
+  try{
+    // textarea를 뷰포트 안에 잠깐 만들어 select 후 execCommand
+    const el=document.createElement('textarea');
+    el.value=body;
+    el.setAttribute('readonly','');
+    el.style.cssText='position:fixed;top:10px;left:10px;width:calc(100% - 20px);height:120px;opacity:.01;z-index:99999;font-size:14px;padding:8px;';
+    document.body.appendChild(el);
+    el.focus();
+    el.setSelectionRange(0,el.value.length);
+    const ok=document.execCommand('copy');
+    document.body.removeChild(el);
+    if(ok&&onSuccess) onSuccess();
+    else showToast('위 내용을 길게 눌러 직접 선택·복사하십시오','info');
+  }catch(_){
+    showToast('위 내용을 길게 눌러 직접 선택·복사하십시오','info');
+  }
+}
+
 function sendSMS(){
   const ta=document.getElementById('sms-ta');
   if(!ta||!ta.value.trim()){showToast('문자 내용을 작성하십시오','error');return;}
   const body=ta.value;
-  // ① 클립보드에 전체 내용 복사 (URI 길이 제한 우회)
-  if(navigator.clipboard&&window.isSecureContext){
-    navigator.clipboard.writeText(body).then(()=>{
-      showToast('📋 문자 내용이 복사되었습니다. SMS 앱에 붙여넣기 하십시오.','success');
-      setTimeout(()=>{window.location.href='sms:';},600);
-    }).catch(()=>{_smsFallback(body);});
-  } else {
-    _smsFallback(body);
-  }
   closeSheet('sh-sms');
+  // 문자 앱만 열기 (내용은 이미 [내용 복사] 버튼으로 복사)
+  window.location.href='sms:';
 }
-function _smsFallback(body){
+function _smsFallbackLegacy(body){
   // 클립보드 미지원 시 URI 방식 시도
   const MAX=500; // 안전 길이 제한
   const safe=body.length>MAX?body.slice(0,MAX)+'…':body;
@@ -4962,9 +5013,85 @@ function buildLand(fc,ai,imgURL,tpl,col){
   </div>
 </div>`);
 
-  // ─ PAGE 5: CTA / 지지 서명 ─
+  // ─ PAGE 5: 홍보영상 (유튜브 있을 때만) ─
+  // ※ YouTube 153 오류(embed 차단) 완전 우회:
+  //   iframe 대신 썸네일 + 탭 시 YouTube 앱/웹 직접 실행 방식으로 구현
+  if(hasVideo&&ytId){
+    pages.push(`
+<div class="page" id="p5-video">
+  <div style="min-height:100%;display:flex;flex-direction:column;background:#0f0f0f;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))">
+
+    <!-- 헤더 바 -->
+    <div style="background:${th.p};padding:14px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎬</div>
+      <div>
+        <div style="font-size:15px;font-weight:800;color:#fff;line-height:1.2">${escHtml(fc.name)} 후보 홍보영상</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:2px">${escHtml(fc.co)} · ${escHtml(fc.prod||'')}</div>
+      </div>
+    </div>
+
+    <!-- 썸네일 플레이어 (탭하면 YouTube 앱/웹 실행) -->
+    <div onclick="openYTVideo('${ytId}')" style="position:relative;width:100%;cursor:pointer;flex-shrink:0;background:#000;aspect-ratio:16/9;overflow:hidden">
+      <!-- 썸네일 이미지 -->
+      <img
+        id="yt-thumb-main"
+        src="https://img.youtube.com/vi/${ytId}/sddefault.jpg"
+        onerror="this.src='https://img.youtube.com/vi/${ytId}/hqdefault.jpg'"
+        alt="홍보영상 썸네일"
+        style="width:100%;height:100%;object-fit:cover;display:block;opacity:.85"
+      >
+      <!-- 어두운 오버레이 -->
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at center,transparent 30%,rgba(0,0,0,.5) 100%)"></div>
+      <!-- 재생 버튼 -->
+      <div id="yt-play-pulse" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:12px">
+        <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,0,0,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 12px rgba(255,0,0,.18),0 8px 32px rgba(0,0,0,.6);animation:ytPulse 1.8s ease-in-out infinite">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff" style="margin-left:4px"><polygon points="5,3 19,12 5,21"/></svg>
+        </div>
+        <div style="background:rgba(0,0,0,.75);color:#fff;font-size:13px;font-weight:700;padding:6px 16px;border-radius:20px;letter-spacing:.3px;white-space:nowrap">▶ 탭하여 영상 보기</div>
+      </div>
+      <!-- YouTube 로고 뱃지 -->
+      <div style="position:absolute;bottom:10px;right:12px">
+        <svg viewBox="0 0 90 20" width="72" height="16" xmlns="http://www.w3.org/2000/svg">
+          <rect width="90" height="20" rx="4" fill="#FF0000"/>
+          <text x="8" y="14" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#fff">YouTube</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 영상 정보 카드 -->
+    <div style="padding:16px 18px 0;flex-shrink:0">
+      <div style="background:#1a1a2e;border-radius:14px;padding:16px;border:1px solid rgba(255,255,255,.08)">
+        <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:6px;line-height:1.4">${escHtml(fc.name)} 후보 공식 홍보영상</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:14px">${escHtml(fc.co)} · ${escHtml(fc.prod||'')} 출마</div>
+        <!-- 재생 버튼 (크게) -->
+        <button onclick="openYTVideo('${ytId}')"
+          style="width:100%;padding:14px;background:linear-gradient(135deg,#ff0000,#cc0000);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(255,0,0,.4);margin-bottom:10px">
+          <svg viewBox="0 0 68 48" width="28" height="20"><path d="M66.5 7.7c-.8-2.9-3-5.1-5.8-5.9C55.8.5 34 .5 34 .5S12.2.5 7.3 1.8C4.5 2.6 2.3 4.8 1.5 7.7.2 12.7.2 24 .2 24s0 11.3 1.3 16.3c.8 2.9 3 5.1 5.8 5.9C12.2 47.5 34 47.5 34 47.5s21.8 0 26.7-1.3c2.8-.8 5-3 5.8-5.9 1.3-5 1.3-16.3 1.3-16.3s0-11.3-1.3-16.3z" fill="#fff" opacity=".3"/><path d="M27.2 34.4L44.9 24 27.2 13.6z" fill="#fff"/></svg>
+          YouTube에서 영상 재생하기
+        </button>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);text-align:center;line-height:1.6">
+          YouTube 앱 또는 브라우저에서 재생됩니다<br>
+          <span style="color:rgba(255,120,120,.6)">※ 일부 동영상은 임베드 제한으로 직접 재생이 불가합니다</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 후보자 전화 버튼 -->
+    <div style="padding:14px 18px 0">
+      <a href="tel:${escHtml(fc.phone)}"
+        style="display:flex;align-items:center;justify-content:center;gap:8px;background:${th.p};color:#fff;padding:14px;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 16px ${th.a}40">
+        📞 ${escHtml(fc.phone)} · 선거사무소
+      </a>
+    </div>
+
+  </div>
+</div>`);}
+
+
+  // ─ PAGE 6(5): CTA / 지지 서명 ─
+  const ctaPageId=hasVideo&&ytId?'p6':'p5';
   pages.push(`
-<div class="page" id="p5">
+<div class="page" id="${ctaPageId}">
   <div class="page-inner cta-page">
     <div class="cta-top">
       <div class="cta-badge">✊ 함께해 주십시오</div>
@@ -5072,6 +5199,8 @@ body{background:#1a1a2e;touch-action:pan-y;}
 .yt-play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);filter:drop-shadow(0 2px 8px rgba(0,0,0,.5));transition:transform .15s;}
 .yt-thumb-link:active .yt-play-btn{transform:translate(-50%,-60%) scale(.92);}
 .yt-play-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff;font-size:13px;font-weight:700;text-align:center;padding:18px 12px 10px;letter-spacing:-.2px;}
+/* ── 유튜브 영상 페이지 펄스 애니메이션 ── */
+@keyframes ytPulse{0%,100%{box-shadow:0 0 0 12px rgba(255,0,0,.18),0 8px 32px rgba(0,0,0,.6);}50%{box-shadow:0 0 0 20px rgba(255,0,0,.06),0 8px 32px rgba(0,0,0,.6);}}
 .cover-footer{padding:8px 16px;text-align:center;flex-shrink:0;}
 .cover-phone{font-size:16px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.3);}
 
@@ -5181,6 +5310,28 @@ setTimeout(function(){hint.classList.add('show');setTimeout(function(){hint.clas
 var ci=document.querySelector('.cover-img');
 var cp=document.getElementById('cip');
 if(ci&&cp){ci.onerror=function(){ci.style.display='none';cp.style.display='flex';var box=document.querySelector('.cover-img-box');if(box){box.style.display='flex';box.style.alignItems='center';box.style.justifyContent='center';box.style.fontSize='60px';}};}
+// YouTube 영상 열기 (153 오류 완전 우회: 앱 → 웹 순)
+function openYTVideo(ytId){
+  if(!ytId) return;
+  // 모바일: YouTube 앱 스킴 먼저 시도
+  var isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+  var isAndroid=/Android/i.test(navigator.userAgent);
+  var webURL='https://www.youtube.com/watch?v='+ytId;
+  if(isIOS){
+    // iOS: youtube:// 스킴 → 앱 없으면 자동 웹으로
+    var t=setTimeout(function(){window.location.href=webURL;},1200);
+    window.location.href='youtube://'+ytId;
+    // 앱이 열리면 타이머 취소 (앱으로 포커스 이동 → visibilitychange 감지)
+    document.addEventListener('visibilitychange',function h(){if(document.hidden){clearTimeout(t);}document.removeEventListener('visibilitychange',h);});
+  } else if(isAndroid){
+    // Android: intent 스킴 → YouTube 앱 직접 실행, 없으면 Play스토어 대신 웹
+    var intentURL='intent://'+ytId+'#Intent;scheme=vnd.youtube;package=com.google.android.youtube;S.browser_fallback_url='+encodeURIComponent(webURL)+';end';
+    window.location.href=intentURL;
+  } else {
+    // PC/기타: 새 탭에서 YouTube 웹
+    window.open(webURL,'_blank','noopener,noreferrer');
+  }
+}
 <\/script>
 </body></html>`;
 }
