@@ -2755,7 +2755,7 @@ function smsCopyContent(){
   var body=ta.value;
   var btn=document.getElementById('sms-copy-btn');
 
-  var onSuccess=function(){
+  function onSuccess(){
     if(btn){
       var orig=btn.innerHTML;
       btn.innerHTML='✅ 복사 완료!';
@@ -2763,14 +2763,30 @@ function smsCopyContent(){
       setTimeout(function(){btn.innerHTML=orig;btn.style.background='';},2200);
     }
     showToast('📋 문자 내용이 복사되었습니다. SMS 앱에 붙여넣기 하십시오.','success');
-  };
+  }
 
-  // 방법 1: navigator.clipboard
+  // ① 동기 방식 — User Gesture 컨텍스트 내에서 기존 textarea 직접 선택 복사
+  //    iOS Safari는 비동기 Promise 내부에서의 클립보드 쓰기를 차단하므로 이 방식을 우선
+  try{
+    var wasReadonly=ta.hasAttribute('readonly');
+    ta.removeAttribute('readonly');
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0,ta.value.length);
+    var ok=document.execCommand('copy');
+    if(wasReadonly) ta.setAttribute('readonly','');
+    if(ok){onSuccess();return;}
+  }catch(_){}
+
+  // ② 비동기 Clipboard API — Android Chrome / 최신 브라우저 대응
   if(window.navigator&&window.navigator.clipboard&&window.navigator.clipboard.writeText){
-    window.navigator.clipboard.writeText(body).then(onSuccess).catch(function(){_smsCopyFallback(body,onSuccess);});
+    window.navigator.clipboard.writeText(body)
+      .then(onSuccess)
+      .catch(function(){_smsCopyFallback(body,onSuccess);});
     return;
   }
-  // 방법 2: execCommand 폴백
+
+  // ③ 최종 폴백 — 임시 요소 생성 방식
   _smsCopyFallback(body,onSuccess);
 }
 
