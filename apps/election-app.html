@@ -2065,7 +2065,7 @@ ${jsonSchema}`;
     const aiImgURL=`https://image.pollinations.ai/prompt/${encodeURIComponent(imgPrompt)}?width=800&height=600&nologo=true&safe=true&seed=${seed}`;
     fc.imgURL=fc.customHeroDataURL||aiImgURL;
     sp(72,'홍보 페이지 HTML 생성 중...','');
-    const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''};
+    const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',url2:fc.url2||'',url3:fc.url3||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||'',bodyImages:fc.bodyImages||[]};
     fc.landHTML=buildLand(fcI,aiData,fc.imgURL,fc.tpl||'A',fc.col||'blue');
     sp(90,'신청폼 생성 중...','');
     fc.formHTML=buildForm(fcI,aiData);
@@ -2412,7 +2412,7 @@ async function runDeploy(){
         await ghPut(`pages/${sl}/${ogImgName}`,ogImgB64,APP.ghToken,APP.ghOwner,APP.ghRepo);
         ogImgGHUrl=`${getPagesBaseUrl(APP.ghOwner,APP.ghRepo)}/pages/${encodeURIComponent(sl)}/${ogImgName}`;
         fc._ogImgUrl=ogImgGHUrl;
-        const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:ogImgGHUrl,logoDataURL:fc.logoDataURL||''};
+        const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',url2:fc.url2||'',url3:fc.url3||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:ogImgGHUrl,logoDataURL:fc.logoDataURL||'',bodyImages:fc.bodyImages||[]};
         fc.landHTML=buildLand(fcI,fc.aiData,fc.imgURL,fc.tpl||'A',fc.col||'blue');
       }catch(imgErr){console.warn('이미지 업로드 실패:',imgErr);}
     }
@@ -4063,7 +4063,9 @@ function rebuildAdFiles(fc){
   fc.prodName=ai.productName||fc.prodName||fc.prod||'상품';
   const fcI={
     name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',
-    kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''
+    url2:fc.url2||'',url3:fc.url3||'',
+    kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||'',
+    bodyImages:fc.bodyImages||[]
   };
   fc.landHTML=buildLand(fcI,ai,fc.imgURL,fc.tpl||'A',fc.col||'blue');
   fc.formHTML=buildForm(fcI,ai);
