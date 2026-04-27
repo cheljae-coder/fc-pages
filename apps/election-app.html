@@ -1238,7 +1238,7 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
     <div id="sms-gen-status" style="display:none;font-size:11px;color:var(--blue2);font-weight:700;flex-shrink:0">
       ⏳ AI가 문자 내용 작성 중...
     </div>
-    <textarea id="sms-ta" style="flex:1;border:1px solid var(--bd2);border-radius:10px;padding:12px;background:var(--s2);color:var(--text);font-family:var(--font);font-size:13px;line-height:1.7;resize:none;outline:none;word-break:break-all;overflow-wrap:break-word;white-space:pre-wrap" placeholder="문자 내용을 작성하십시오..."></textarea>
+    <textarea id="sms-ta" style="flex:1;border:1px solid var(--bd2);border-radius:10px;padding:12px;background:var(--s2);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.7;resize:none;outline:none;word-break:break-all;overflow-wrap:break-word;white-space:pre-wrap;-webkit-user-select:text;user-select:text" placeholder="문자 내용을 작성하십시오..."></textarea>
 
     <!-- 복사 안내 박스 -->
     <div style="background:rgba(74,126,248,.1);border:1px solid rgba(74,126,248,.3);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--blue2);line-height:1.7;flex-shrink:0">
@@ -2748,7 +2748,7 @@ async function genSMSContent(){
   ta.oninput=()=>{if(cnt)cnt.textContent=ta.value.length+'자';};
 }
 
-/* ── SMS 내용 복사 (전용 함수) ── */
+/* ── SMS 내용 복사 — 4단계 다중 전략 ── */
 function smsCopyContent(){
   var ta=document.getElementById('sms-ta');
   if(!ta||!ta.value.trim()){showToast('문자 내용을 먼저 작성하십시오','error');return;}
@@ -2760,34 +2760,94 @@ function smsCopyContent(){
       var orig=btn.innerHTML;
       btn.innerHTML='✅ 복사 완료!';
       btn.style.background='linear-gradient(135deg,#16a34a,#15803d)';
-      setTimeout(function(){btn.innerHTML=orig;btn.style.background='';},2200);
+      setTimeout(function(){btn.innerHTML=orig;btn.style.background='';},2500);
     }
-    showToast('📋 문자 내용이 복사되었습니다. SMS 앱에 붙여넣기 하십시오.','success');
+    showToast('📋 복사 완료! SMS 앱에 붙여넣기 하십시오.','success');
+  }
+  function onFail(){
+    // 모든 자동 복사 실패 → textarea 전체 선택 후 수동 복사 안내
+    try{
+      ta.removeAttribute('readonly');
+      ta.focus();
+      if(/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)){
+        var rng=document.createRange();
+        rng.selectNodeContents(ta);
+        var sel=window.getSelection();
+        if(sel){sel.removeAllRanges();sel.addRange(rng);}
+      }
+      ta.select();
+      ta.setSelectionRange(0,ta.value.length);
+    }catch(_){}
+    showToast('텍스트가 선택되었습니다. 길게 눌러 [복사]를 선택하십시오.','info');
   }
 
-  // ① 동기 방식 — User Gesture 컨텍스트 내에서 기존 textarea 직접 선택 복사
-  //    iOS Safari는 비동기 Promise 내부에서의 클립보드 쓰기를 차단하므로 이 방식을 우선
-  try{
-    var wasReadonly=ta.hasAttribute('readonly');
-    ta.removeAttribute('readonly');
-    ta.focus();
-    ta.select();
-    ta.setSelectionRange(0,ta.value.length);
-    var ok=document.execCommand('copy');
-    if(wasReadonly) ta.setAttribute('readonly','');
-    if(ok){onSuccess();return;}
-  }catch(_){}
-
-  // ② 비동기 Clipboard API — Android Chrome / 최신 브라우저 대응
-  if(window.navigator&&window.navigator.clipboard&&window.navigator.clipboard.writeText){
-    window.navigator.clipboard.writeText(body)
-      .then(onSuccess)
-      .catch(function(){_smsCopyFallback(body,onSuccess);});
+  // ── 전략 1: Clipboard API (HTTPS + 사용자 제스처 직후, Android Chrome/Safari 16.4+) ──
+  if(navigator.clipboard&&navigator.clipboard.writeText&&window.isSecureContext){
+    navigator.clipboard.writeText(body).then(onSuccess).catch(function(){
+      // Clipboard API 실패 → 전략 2 동기 시도
+      if(!_smsExecCopy(body)){onFail();}else{onSuccess();}
+    });
     return;
   }
 
-  // ③ 최종 폴백 — 임시 요소 생성 방식
-  _smsCopyFallback(body,onSuccess);
+  // ── 전략 2: body 직결 임시 요소 + execCommand (overflow:hidden 우회) ──
+  if(_smsExecCopy(body)){onSuccess();return;}
+
+  // ── 전략 3: iOS 전용 createRange + getSelection ──
+  if(_smsIOSCopy(body)){onSuccess();return;}
+
+  // ── 전략 4: 수동 복사 안내 ──
+  onFail();
+}
+
+/* overflow:hidden 우회 — body에 직접 붙이는 임시 textarea */
+function _smsExecCopy(text){
+  try{
+    var el=document.createElement('textarea');
+    el.value=text;
+    el.setAttribute('readonly','');
+    el.contentEditable='true';
+    // body overflow:hidden 바깥에서 복사되도록 position:fixed + 화면 밖 배치
+    el.style.cssText=[
+      'position:fixed','top:0','left:0','width:100%','height:1px',
+      'opacity:0.01','z-index:99999','font-size:16px',
+      'border:none','outline:none','padding:0','margin:0',
+      '-webkit-user-select:text','user-select:text'
+    ].join(';');
+    document.body.appendChild(el);
+    el.focus();
+    // iOS: createRange 병행
+    var isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS){
+      var rng=document.createRange();
+      rng.selectNodeContents(el);
+      var sel=window.getSelection();
+      if(sel){sel.removeAllRanges();sel.addRange(rng);}
+    }
+    el.select();
+    el.setSelectionRange(0,999999);
+    var ok=document.execCommand('copy');
+    document.body.removeChild(el);
+    return !!ok;
+  }catch(e){return false;}
+}
+
+/* iOS Safari 전용: getSelection + createRange */
+function _smsIOSCopy(text){
+  try{
+    var el=document.createElement('input');
+    el.type='text';
+    el.value=text;
+    el.setAttribute('readonly','');
+    el.style.cssText='position:fixed;top:0;left:0;opacity:0.01;font-size:16px;z-index:99999;-webkit-user-select:text;user-select:text;';
+    document.body.appendChild(el);
+    el.focus();
+    el.select();
+    el.setSelectionRange(0,999999);
+    var ok=document.execCommand('copy');
+    document.body.removeChild(el);
+    return !!ok;
+  }catch(e){return false;}
 }
 
 function _smsCopyFallback(body,onSuccess){
