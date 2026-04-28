@@ -761,7 +761,7 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
           </div>
           <div style="font-size:12px;color:var(--t2);line-height:1.8">
             활동사진·유세사진을 올리면 <strong style="color:var(--blue2)">홍보문 각 페이지에 직접 삽입</strong>됩니다.<br>
-            최대 4장 — 소개·공약·현안·FAQ 페이지 순서대로 배치
+            최대 8장 — 소개·공약·현안·FAQ 등 각 페이지에 순서대로 배치
           </div>
           <div style="margin-top:10px;font-size:11px;color:var(--t3);background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;line-height:1.7">
             ⚠️ 위쪽 <strong>사진 선택</strong>은 AI 분석용이며 홍보문에 삽입되지 않습니다
@@ -771,7 +771,7 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
           <button class="up-btn" style="background:rgba(74,126,248,.12);border:2px solid rgba(74,126,248,.5);padding:18px" onclick="document.getElementById('m-body-gallery').click()">
             <div class="up-ico" style="font-size:32px">📸</div>
             <div class="up-lbl" style="font-size:15px;color:var(--blue2)">홍보문 사진 선택</div>
-            <div class="up-sub">활동사진·유세사진 최대 4장</div>
+            <div class="up-sub">활동사진·유세사진 최대 8장</div>
           </button>
         </div>
         <input type="file" id="m-body-gallery" accept="image/*" multiple onchange="addBodyImgs(this.files);this.value=''" style="display:none">
@@ -973,6 +973,8 @@ input,select,textarea{-webkit-appearance:none;appearance:none;}
     <div class="fg"><label>수신 이메일</label><input id="e-email" type="email" placeholder="contact@example.com"></div>
     <div class="fg"><label>출마 지역구</label><input id="e-prod" placeholder="예) OO시 OO구 제1선거구"></div>
     <div class="fg"><label>선거 기호번호</label><input id="e-symbol" placeholder="예) 기호 1번"></div>
+    <div class="fg"><label>홍보영상 URL 1</label><input id="e-url2" type="url" placeholder="https://www.youtube.com/watch?v=..."></div>
+    <div class="fg"><label>홍보영상 URL 2</label><input id="e-url3" type="url" placeholder="https://www.youtube.com/watch?v=..."></div>
     <div class="fg"><label>후보자 약력</label><textarea id="e-bio" style="min-height:70px" placeholder="학력·경력·수상 등"></textarea></div>
     <div class="err" id="e-edit-err"></div>
     <div class="brow">
@@ -1509,9 +1511,9 @@ function buildStoreData(level=0){
     return {fcList:APP.fcList.map(({filesInMem,...r})=>r),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,cfAccountId:APP.cfAccountId,cfToken:APP.cfToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
   }
   if(level===1){
-    return {fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,bio:fc.bio||'',tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:fc.files||[],bodyImages:fc.bodyImages||[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0,symbol:fc.symbol||'',partyColor:fc.partyColor||'',elec:fc.elec||false})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
+    return {fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,url2:fc.url2||'',url3:fc.url3||'',bio:fc.bio||'',tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:fc.files||[],bodyImages:fc.bodyImages||[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0,symbol:fc.symbol||'',partyColor:fc.partyColor||'',elec:fc.elec||false})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
   }
-  return {fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,bio:fc.bio||'',tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:[],bodyImages:[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0,symbol:fc.symbol||'',partyColor:fc.partyColor||'',elec:fc.elec||false})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
+  return {fcList:APP.fcList.map(fc=>({id:fc.id,createdAt:fc.createdAt,name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot,email:fc.email,kakao:fc.kakao,smsnum:fc.smsnum,cat:fc.cat,prod:fc.prod,desc:fc.desc,req:fc.req,url:fc.url,url2:fc.url2||'',url3:fc.url3||'',bio:fc.bio||'',tpl:fc.tpl,col:fc.col,ai:fc.ai,prodName:fc.prodName,imgURL:fc.imgURL,depURL:fc.depURL,logoDataURL:fc.logoDataURL||null,customHeroDataURL:fc.customHeroDataURL||null,expiresAt:fc.expiresAt||null,files:[],bodyImages:[],landHTML:null,formHTML:null,generating:false,genMsg:'',genSub:'',genPct:0,symbol:fc.symbol||'',partyColor:fc.partyColor||'',elec:fc.elec||false})),ghOwner:APP.ghOwner,ghRepo:APP.ghRepo,ghToken:APP.ghToken,globalAI:APP.globalAI,globalOAIKey:APP.globalOAIKey,globalClaudeKey:APP.globalClaudeKey,globalKakaoKey:APP.globalKakaoKey};
 }
 
 /* INIT / SAVE */
@@ -1607,7 +1609,7 @@ function resetForm(){
   curStep=1;APP.mFiles=[];APP.mBodyImages=[];APP.mTpl='A';APP.mCol='blue'; /* 선거 홍보: 책장 단일 템플릿 */
   APP.mAI=APP.globalAI||'claude';APP.editingId=null;APP.currentGenFC=null;
   APP.mLogoDataURL=null;APP.mHeroDataURL=null;delLogo();delHeroImg(false);
-  ['m-name','m-co','m-phone','m-hot','m-email','m-url','m-kakao','m-smsnum','m-prod','m-desc','m-req','m-bio','m-symbol','m-party-color'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  ['m-name','m-co','m-phone','m-hot','m-email','m-url','m-url2','m-url3','m-kakao','m-smsnum','m-prod','m-desc','m-req','m-bio','m-symbol','m-party-color'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
   document.getElementById('m-cat').value='';
   document.getElementById('m-flist').innerHTML='';
   const bodyList=document.getElementById('m-body-flist'); if(bodyList) bodyList.innerHTML='';
@@ -1667,7 +1669,7 @@ async function addBodyImgs(fl){
         if(existIdx>=0){
           APP.mBodyImages[existIdx]=entry; /* 교체 */
         } else {
-          if(APP.mBodyImages.length>=4){showToast('최대 4장까지 등록 가능합니다','error');r();return;}
+          if(APP.mBodyImages.length>=8){showToast('최대 8장까지 등록 가능합니다','error');r();return;}
           APP.mBodyImages.push(entry);
         }
         rBodyF();
@@ -2090,7 +2092,7 @@ function previewForm(){
   if(!fc.formHTML){
     const ai=fc.aiData||ensureEditableAIData(fc);
     if(ai){
-      const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''};
+      const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',url2:fc.url2||'',url3:fc.url3||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||'',bodyImages:fc.bodyImages||[]};
       try{fc.formHTML=buildForm(fcI,ai);saveData();}catch(_){}
     }
     if(!fc.formHTML){showToast('지지 서명폼을 불러올 수 없습니다. AI 생성을 다시 실행하십시오.','error');return;}
@@ -2138,13 +2140,35 @@ function poRender(){
   <\/script>`;
 
   if(APP.prevPage==='land'){
-    const landWithIntercept=(fc.landHTML||'').replace('</body>',interceptScript+'</body>');
+    // ── 미리보기 실시간 패치 (기존 생성 HTML 포함 모두 적용) ──
+    let patched=(fc.landHTML||'');
+
+    // ① YouTube: www.youtube.com/embed → youtube-nocookie.com/embed
+    patched=patched.split('src="https://www.youtube.com/embed/').join('src="https://www.youtube-nocookie.com/embed/');
+
+    // ② 프로토콜 fallback 스크립트 주입 (content://, about: 등 비HTTP 환경에서 iframe 숨기고 썸네일 표시)
+    if(patched.indexOf('yt-fallback-patch')<0){
+      var ytPatch='<scr'+'ipt id="yt-fallback-patch">(function(){var p=window.location.protocol;if(p!=="http:"&&p!=="https:"){document.addEventListener("DOMContentLoaded",function(){var iframes=document.querySelectorAll("[id^=\"yt-iframe-\"]");for(var i=0;i<iframes.length;i++)iframes[i].style.display="none";var fbs=document.querySelectorAll("[id^=\"yt-fb-\"]");for(var j=0;j<fbs.length;j++)fbs[j].style.display="block";});}})();</'+'script>';
+      patched=patched.replace('</head>',ytPatch+'</head>');
+    }
+
+    // ③ 챗봇 isLocal: 구버전 HTML의 content: 차단 제거
+    patched=patched.split('var isLocal=/^(file:|content:|blob:)/.test').join('var isLocal=/^(file:|blob:)/.test');
+
+    // ④ 챗봇 API 키: 빈값이면 globalClaudeKey로 교체
+    var _gk=APP.globalClaudeKey||'';
+    if(_gk){
+      var _gkSafe=_gk.split("'").join("\'");
+      patched=patched.split("var API_KEY='';").join("var API_KEY='"+_gkSafe+"';");
+    }
+
+        const landWithIntercept=patched.replace('</body>',interceptScript+'</body>');
     iframe.srcdoc=landWithIntercept;
   } else {
     // formHTML 없으면 즉시 재빌드
     if(!fc.formHTML){
       if(ensureEditableAIData(fc)){
-        const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''};
+        const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',url2:fc.url2||'',url3:fc.url3||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||'',bodyImages:fc.bodyImages||[]};
         try{fc.formHTML=buildForm(fcI,fc.aiData);saveData();}catch(_){}
       }
     }
@@ -2164,7 +2188,7 @@ window.addEventListener('message',function(e){
     if(!fc.formHTML){
       const ai=fc.aiData||ensureEditableAIData(fc);
       if(ai){
-        const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''};
+        const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',url2:fc.url2||'',url3:fc.url3||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||'',bodyImages:fc.bodyImages||[]};
         try{fc.formHTML=buildForm(fcI,ai);saveData();}catch(_){}
       }
       if(!fc.formHTML){showToast('지지 서명폼을 불러올 수 없습니다. AI 생성을 다시 실행하십시오.','error');return;}
@@ -2351,7 +2375,9 @@ async function ensureDeployableFiles(fc){
     if(fc.aiData){
       const fcI={
         name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',
-        kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''
+        url2:fc.url2||'',url3:fc.url3||'',
+        kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||'',
+        bodyImages:fc.bodyImages||[]
       };
       fc.formHTML=buildForm(fcI,fc.aiData);
     }
@@ -2426,7 +2452,7 @@ async function runDeploy(){
     document.getElementById('dep-dl-msg').textContent='⑤ 서명폼 업로드 중...';
     try{
       const _ai=fc.aiData||ensureEditableAIData(fc);
-      const _fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''};
+      const _fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',url2:fc.url2||'',url3:fc.url3||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||'',bodyImages:fc.bodyImages||[]};
       const _f=buildForm(_fcI,_ai);if(_f)fc.formHTML=_f;
     }catch(_){}
     if(fc.formHTML){
@@ -2474,35 +2500,6 @@ async function runDeploy(){
   }catch(err){interpretDepErr(err.message);}
   finally{dl.classList.remove('show');btn.disabled=false;}
 }
-function interpretDepErr(msg){
-  const m=msg||'';
-  if(m==='UPLOAD_VERIFY_FAIL'){showDepErr('파일 업로드 실패','파일이 GitHub에 저장되지 않았습니다.',['GitHub 토큰의 Contents 권한(읽기/쓰기)을 확인하십시오.','레포지토리가 공개(Public)인지 확인하십시오.']);return;}
-  if(m==='REPO_NOT_FOUND'||m.includes('Not Found')){showDepErr('레포지토리를 찾을 수 없음',`"${APP.ghOwner}/${APP.ghRepo}" 레포지토리가 존재하지 않거나 접근할 수 없습니다.`,['GitHub에서 사용자명이 정확한지 확인하십시오.',`레포지토리 이름 "${APP.ghRepo}"이(가) 실제로 존재하는지 확인하십시오.`,'레포지토리는 반드시 공개(Public)로 설정해야 합니다.']);}
-  else if(m==='TOKEN_INVALID'||m.includes('Bad credentials')){showDepErr('토큰 인증 실패','입력된 토큰이 유효하지 않거나 만료되었습니다.',['GitHub → 설정 → 개발자 설정 → 세분화된 토큰에서 새 토큰을 발급하십시오.']);}
-  else if(m.includes('403')){showDepErr('토큰 권한 부족','토큰에 파일 쓰기 권한이 없습니다.',['콘텐츠(Contents) → 읽기 및 쓰기 권한을 확인하십시오.']);}
-  else if(m.includes('422')){showDepErr('파일 충돌 오류','sha 충돌로 업로드에 실패했습니다.',['잠시 후 다시 배포를 시도하십시오.']);}
-  else if(m.includes('Failed to fetch')){showDepErr('네트워크 연결 오류','인터넷 연결을 확인하십시오.',['와이파이 또는 데이터 연결 상태를 확인하십시오.']);}
-  else{showDepErr('배포 실패',m||'알 수 없는 오류가 발생했습니다.',['설정 탭에서 GitHub 설정값을 다시 확인하십시오.']);}
-}
-function showPagesChecklist(url){
-  const box=document.getElementById('pages-checklist');const steps=document.getElementById('checklist-steps');if(!box||!steps)return;
-  const settingsUrl=`https://github.com/${APP.ghOwner}/${APP.ghRepo}/settings/pages`;
-  const list=[
-    {text:'브라우저에서 아래 주소를 여십시오',sub:settingsUrl,link:settingsUrl,linkTxt:'GitHub Pages 설정 열기'},
-    {text:'소스(Source)가 없음(None)이면 <strong style="color:var(--amber)">Branch: main</strong> 으로 변경하십시오'},
-    {text:'폴더를 <strong style="color:var(--amber)">/(root)</strong> 로 설정 후 <strong style="color:var(--text)">저장(Save)</strong>을 누르십시오'},
-    {text:'<strong style="color:var(--green)">1~3분 기다린 후</strong> URL을 열면 홍보 페이지가 나타납니다'},
-  ];
-  steps.innerHTML=list.map((s,i)=>`<div style="display:flex;align-items:flex-start;gap:8px;background:var(--s3);border-radius:8px;padding:9px 11px"><div style="width:20px;height:20px;border-radius:50%;background:var(--amber);color:#000;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</div><div style="flex:1"><div style="font-size:11px;color:var(--text);line-height:1.65">${s.text}</div>${s.sub?`<div style="font-size:10px;color:var(--blue2);font-family:monospace;margin-top:2px;word-break:break-all">${s.sub}</div>`:''} ${s.link?`<button onclick="location.href='${s.link}'" style="margin-top:5px;background:var(--blue);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer">${s.linkTxt}</button>`:''}</div></div>`).join('');
-  box.style.display='block';
-}
-function showDepErr(title,desc,steps){
-  const e=document.getElementById('dep-err');
-  const stepsHtml=steps.map((s,i)=>`<div style="display:flex;gap:7px;margin-top:6px"><div style="width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</div><div style="font-size:11px;line-height:1.6;color:#ef4444">${s}</div></div>`).join('');
-  e.innerHTML=`<div style="font-size:13px;font-weight:700;color:#ef4444;margin-bottom:5px">❌ ${title}</div><div style="font-size:12px;color:#f87171;margin-bottom:8px">${desc}</div><div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:4px">🔧 해결 방법:</div>${stepsHtml}`;
-  e.classList.add('show');
-}
-
 // 오류 원인 해석 및 해결책 안내
 function interpretDepErr(msg){
   const m=msg||'';
@@ -2782,7 +2779,7 @@ function smsCopyContent(){
   }
 
   // ── 전략 1: Clipboard API (HTTPS + 사용자 제스처 직후, Android Chrome/Safari 16.4+) ──
-  if(navigator.clipboard&&navigator.clipboard.writeText&&window.isSecureContext){
+  if(navigator.clipboard&&navigator.clipboard?.writeText&&window.isSecureContext){
     navigator.clipboard.writeText(body).then(onSuccess).catch(function(){
       // Clipboard API 실패 → 전략 2 동기 시도
       if(!_smsExecCopy(body)){onFail();}else{onSuccess();}
@@ -2946,7 +2943,7 @@ function shareURL(url,text){
     navigator.clipboard.writeText(shareUrl).then(()=>showToast('📋 URL 복사됨. 카카오톡에 붙여넣기 하십시오.','success'));
   }
 }
-async function ghPut(path,content,tok,owner,repo,msg){
+async function ghPut(path,content,tok,owner,repo,commitMsg){
   // 경로 각 세그먼트를 개별 인코딩 (한글 등 비ASCII 허용)
   const encodedPath=path.split('/').map(s=>encodeURIComponent(s)).join('/');
   let sha=null;
@@ -2957,7 +2954,7 @@ async function ghPut(path,content,tok,owner,repo,msg){
     else if(r.status===401) throw new Error('TOKEN_INVALID');
     else if(r.status===403) throw new Error('TOKEN_NO_PERM');
   }catch(e){if(e.message.startsWith('TOKEN'))throw e;}
-  const body={message:msg||`AI 선거홍보 Pro: update ${path}`,content};
+  const body={message:commitMsg||`AI 선거홍보 Pro: update ${path}`,content};
   if(sha) body.sha=sha;
   const r=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodedPath}`,{
     method:'PUT',
@@ -4076,7 +4073,7 @@ let editingInfoId=null;
 function editInfo(fcId){
   const fc=APP.fcList.find(f=>f.id===fcId);if(!fc)return;editingInfoId=fcId;
   const setV=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
-  setV('e-name',fc.name);setV('e-co',fc.co);setV('e-phone',fc.phone);setV('e-hot',fc.hot);setV('e-email',fc.email);setV('e-prod',fc.prod||fc.prodName);const ebio=document.getElementById('e-bio');if(ebio)ebio.value=fc.bio||'';const esym=document.getElementById('e-symbol');if(esym)esym.value=fc.symbol||'';
+  setV('e-name',fc.name);setV('e-co',fc.co);setV('e-phone',fc.phone);setV('e-hot',fc.hot);setV('e-email',fc.email);setV('e-prod',fc.prod||fc.prodName);const eurl2=document.getElementById('e-url2');if(eurl2)eurl2.value=fc.url2||'';const eurl3=document.getElementById('e-url3');if(eurl3)eurl3.value=fc.url3||'';const ebio=document.getElementById('e-bio');if(ebio)ebio.value=fc.bio||'';const esym=document.getElementById('e-symbol');if(esym)esym.value=fc.symbol||'';
   const ttl=document.getElementById('sh-edit-title');
   if(ttl) ttl.textContent=`✏️ 홍보물 정보 수정 · ${fc.prodName||fc.prod||fc.name||'광고'}`;
   document.getElementById('e-edit-err').classList.remove('show');openSheet('sh-edit');
@@ -4125,7 +4122,7 @@ async function syncDeployedFiles(fc){
   if(!fc.formHTML){
     const ai=fc.aiData||ensureEditableAIData(fc);
     if(ai){
-      const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||''};
+      const fcI={name:fc.name,co:fc.co,phone:fc.phone,hot:fc.hot||'',email:fc.email||'',url:fc.url||'',url2:fc.url2||'',url3:fc.url3||'',kakao:fc.kakao||'',smsnum:fc.smsnum||'',bio:fc.bio||'',symbol:fc.symbol||'',partyColor:fc.partyColor||'',_ogImgUrl:fc._ogImgUrl||'',logoDataURL:fc.logoDataURL||'',bodyImages:fc.bodyImages||[]};
       try{fc.formHTML=buildForm(fcI,ai);}catch(_){}
     }
   }
@@ -4151,7 +4148,7 @@ async function saveEditInfo(){
   const err=document.getElementById('e-edit-err');
   const name=document.getElementById('e-name').value.trim(),co=document.getElementById('e-co').value.trim(),phone=document.getElementById('e-phone').value.trim();
   if(!name||!co||!phone){err.textContent='⚠ 후보자 성명, 소속 정당, 연락처를 입력하십시오.';err.classList.add('show');return;}
-  fc.name=name;fc.co=co;fc.phone=phone;fc.hot=document.getElementById('e-hot').value.trim();fc.email=document.getElementById('e-email').value.trim();const np=document.getElementById('e-prod').value.trim();if(np){fc.prod=np;fc.prodName=np;if(fc.aiData)fc.aiData.productName=np;}const nb=document.getElementById('e-bio');if(nb)fc.bio=nb.value.trim();const ns=document.getElementById('e-symbol');if(ns)fc.symbol=ns.value.trim();
+  fc.name=name;fc.co=co;fc.phone=phone;fc.hot=document.getElementById('e-hot').value.trim();fc.email=document.getElementById('e-email').value.trim();const np=document.getElementById('e-prod').value.trim();if(np){fc.prod=np;fc.prodName=np;if(fc.aiData)fc.aiData.productName=np;}const eu2=document.getElementById('e-url2');if(eu2)fc.url2=eu2.value.trim();const eu3=document.getElementById('e-url3');if(eu3)fc.url3=eu3.value.trim();const nb=document.getElementById('e-bio');if(nb)fc.bio=nb.value.trim();const ns=document.getElementById('e-symbol');if(ns)fc.symbol=ns.value.trim();
   if(fc.aiData)rebuildAdFiles(fc);
   saveData();render();closeSheet('sh-edit');
   try{
@@ -4171,7 +4168,7 @@ function quickGen(fcId){
   const setV=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
   APP.mLogoDataURL=fc.logoDataURL||null;syncLogoPreview();
   APP.mHeroDataURL=fc.customHeroDataURL||null;syncHeroImgPreview();
-  setV('m-name',fc.name);setV('m-co',fc.co);setV('m-phone',fc.phone);setV('m-hot',fc.hot);setV('m-email',fc.email);setV('m-url',fc.url);setV('m-kakao',fc.kakao);setV('m-smsnum',fc.smsnum);setV('m-bio',fc.bio||'');setV('m-symbol',fc.symbol||'');const pcEl=document.getElementById('m-party-color');if(pcEl&&fc.partyColor)pcEl.value=fc.partyColor;const pcLbl=document.getElementById('m-pc-val');if(pcLbl)pcLbl.textContent=fc.partyColor||'#1e5cb3';setV('m-cat',fc.cat);setV('m-prod',fc.prod);setV('m-desc',fc.desc);setV('m-req',fc.req);
+  setV('m-name',fc.name);setV('m-co',fc.co);setV('m-phone',fc.phone);setV('m-hot',fc.hot);setV('m-email',fc.email);setV('m-url',fc.url);setV('m-url2',fc.url2||'');setV('m-url3',fc.url3||'');setV('m-kakao',fc.kakao);setV('m-smsnum',fc.smsnum);setV('m-bio',fc.bio||'');setV('m-symbol',fc.symbol||'');const pcEl=document.getElementById('m-party-color');if(pcEl&&fc.partyColor)pcEl.value=fc.partyColor;const pcLbl=document.getElementById('m-pc-val');if(pcLbl)pcLbl.textContent=fc.partyColor||'#1e5cb3';setV('m-cat',fc.cat);setV('m-prod',fc.prod);setV('m-desc',fc.desc);setV('m-req',fc.req);
   if(fc.files&&fc.files.length>0){APP.mFiles=[...fc.files];rF();showToast(`📂 저장된 파일 ${fc.files.length}개 불러옴`,'success');}
   if(fc.bodyImages&&fc.bodyImages.length>0){APP.mBodyImages=(fc.bodyImages||[]).map(img=>({...img,id:img.id||uid(),mode:img.mode==='manual'?'manual':'auto',position:img.position||'auto'}));rBodyF();showToast(`🖼 본문 이미지 ${fc.bodyImages.length}개 불러옴`,'success');}
   const tplMap={A:'m-ta',B:'m-tb',C:'m-tc',D:'m-td'},colMap={blue:'m-cb',green:'m-cg',gold:'m-cgld',rose:'m-cr',violet:'m-cv',slate:'m-cs'};
@@ -5117,232 +5114,217 @@ function buildLand(fc,ai,imgURL,tpl,col){
   </div>
 </div>`);
 
-  // ─ PAGE 5: 홍보영상 ─
-  // Cobalt API → <video> 직접 재생 / 실패 시 YouTube 깔끔 오픈 UI
+  // ─ PAGE 5: 홍보영상 1 (litt.ly 스타일 세로 인라인 플레이어) ─
   if(hasVideo&&ytId){
     pages.push(`
 <div class="page" id="p5-video">
-  <div style="min-height:100%;display:flex;flex-direction:column;background:#0a0a0f;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))">
+  <div style="min-height:100%;display:flex;flex-direction:column;background:#0d0d14;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))">
 
     <!-- 헤더 -->
-    <div style="background:${th.p};padding:13px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0">
-      <div style="font-size:20px">🎬</div>
+    <div style="background:${th.p};padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎬</div>
       <div>
-        <div style="font-size:14px;font-weight:800;color:#fff">${escHtml(fc.name)} 후보 홍보영상</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:1px">${escHtml(fc.co)}</div>
+        <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.2">${escHtml(fc.name)} 후보 홍보영상</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">${escHtml(fc.co)} · ${escHtml(fc.prod||'')}</div>
       </div>
     </div>
 
-    <!-- 플레이어 -->
-    <div style="position:relative;width:100%;background:#000;aspect-ratio:16/9;flex-shrink:0">
+    <!-- 세로 플레이어 스크롤 영역 -->
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;align-items:center;padding:20px 16px 12px">
 
-      <!-- 썸네일 초기 화면 (재생 전) -->
-      <div id="vp-thumb" style="position:absolute;inset:0;cursor:pointer;background:#000" onclick="vpPlay()">
-        <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg"
-          onerror="this.src='https://img.youtube.com/vi/${ytId}/0.jpg'"
-          style="width:100%;height:100%;object-fit:cover;opacity:.7;display:block" alt="">
-        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px">
-          <div style="width:68px;height:68px;border-radius:50%;background:rgba(255,0,0,.9);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 14px rgba(255,0,0,.18),0 8px 28px rgba(0,0,0,.5)">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" style="margin-left:4px"><polygon points="5,3 19,12 5,21"/></svg>
-          </div>
-          <div style="background:rgba(0,0,0,.7);color:#fff;font-size:13px;font-weight:700;padding:7px 18px;border-radius:22px;border:1px solid rgba(255,255,255,.2)">▶ 탭하여 재생</div>
+      <!-- litt.ly 스타일 세로(9:16) 영상 컨테이너 -->
+      <div style="width:100%;max-width:340px;position:relative;border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.08);background:#000;aspect-ratio:9/16;flex-shrink:0">
+        <iframe
+          id="yt-iframe-1"
+          src="https://www.youtube-nocookie.com/embed/${ytId}?rel=0&playsinline=1&modestbranding=1&color=white&origin=${typeof location!=='undefined'?location.origin:''}"
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          onerror="ytFallback(this,'${ytId}')"
+          onload="ytCheckError(this,'${ytId}')">
+        </iframe>
+        <div id="yt-fb-1" style="display:none;position:absolute;inset:0;background:#000;border-radius:22px;overflow:hidden">
+          <a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener"
+            style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-decoration:none;gap:16px">
+            <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:.7" alt="">
+            <div style="position:relative;z-index:1;background:rgba(255,0,0,.9);border-radius:50%;width:70px;height:70px;display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 68 48" width="40" height="28"><path d="M66.5 7.7c-.8-2.9-3-5.1-5.8-5.9C55.8.5 34 .5 34 .5S12.2.5 7.3 1.8C4.5 2.6 2.3 4.8 1.5 7.7.2 12.7.2 24 .2 24s0 11.3 1.3 16.3c.8 2.9 3 5.1 5.8 5.9C12.2 47.5 34 47.5 34 47.5s21.8 0 26.7-1.3c2.8-.8 5-3 5.8-5.9 1.3-5 1.3-16.3 1.3-16.3s0-11.3-1.3-16.3z" fill="#fff"/><path d="M27.2 34.4L44.9 24 27.2 13.6z" fill="red"/></svg>
+            </div>
+            <span style="position:relative;z-index:1;color:#fff;font-size:14px;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.8)">▶ YouTube에서 재생</span>
+          </a>
         </div>
       </div>
 
-      <!-- 로딩 -->
-      <div id="vp-load" style="position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#000;z-index:5">
-        <div style="width:44px;height:44px;border:3px solid rgba(255,255,255,.12);border-top-color:#ff0000;border-radius:50%;animation:vSpin .8s linear infinite"></div>
-        <div id="vp-stat" style="color:rgba(255,255,255,.55);font-size:12px">영상 스트림 추출 중…</div>
+      <!-- 영상 제목 -->
+      <div style="width:100%;max-width:340px;margin-top:16px;padding:0 2px">
+        <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px">${escHtml(fc.name)} 후보 공식 홍보영상</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.6">${escHtml(fc.co)}</div>
       </div>
 
-      <!-- HTML5 video (Cobalt 성공 시) -->
-      <video id="vp-vid" controls playsinline preload="none"
-        style="position:absolute;inset:0;width:100%;height:100%;display:none;background:#000;outline:none;z-index:4">
-      </video>
-    </div>
-
-    <!-- 안내 + YouTube 직접 링크 -->
-    <div style="padding:14px 16px;background:#111;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0">
-      <div id="vp-info" style="font-size:11px;color:rgba(255,255,255,.35);text-align:center;line-height:1.8;margin-bottom:12px">
-        탭하면 영상 스트림을 추출하여 페이지 내 직접 재생합니다
+      <!-- YouTube 전체화면 버튼 -->
+      <div style="width:100%;max-width:340px;margin-top:12px">
+        <a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener"
+          style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,30,30,.12);border:1px solid rgba(255,30,30,.3);color:#ff7070;padding:12px;border-radius:12px;font-size:13px;font-weight:700;text-decoration:none">
+          <svg viewBox="0 0 68 48" width="22" height="16"><path d="M66.5 7.7c-.8-2.9-3-5.1-5.8-5.9C55.8.5 34 .5 34 .5S12.2.5 7.3 1.8C4.5 2.6 2.3 4.8 1.5 7.7.2 12.7.2 24 .2 24s0 11.3 1.3 16.3c.8 2.9 3 5.1 5.8 5.9C12.2 47.5 34 47.5 34 47.5s21.8 0 26.7-1.3c2.8-.8 5-3 5.8-5.9 1.3-5 1.3-16.3 1.3-16.3s0-11.3-1.3-16.3z" fill="#ff3030"/><path d="M27.2 34.4L44.9 24 27.2 13.6z" fill="#fff"/></svg>
+          YouTube에서 전체화면으로 보기
+        </a>
       </div>
-      <a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener"
-        style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,0,0,.12);border:1px solid rgba(255,0,0,.35);color:#ff8080;padding:11px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none">
-        <svg viewBox="0 0 68 48" width="22" height="16"><path d="M66.5 7.7c-.8-2.9-3-5.1-5.8-5.9C55.8.5 34 .5 34 .5S12.2.5 7.3 1.8C4.5 2.6 2.3 4.8 1.5 7.7.2 12.7.2 24 .2 24s0 11.3 1.3 16.3c.8 2.9 3 5.1 5.8 5.9C12.2 47.5 34 47.5 34 47.5s21.8 0 26.7-1.3c2.8-.8 5-3 5.8-5.9 1.3-5 1.3-16.3 1.3-16.3s0-11.3-1.3-16.3z" fill="#ff4040"/><path d="M27.2 34.4L44.9 24 27.2 13.6z" fill="#fff"/></svg>
-        YouTube에서 직접 열기
-      </a>
-    </div>
 
-    <!-- 전화 -->
-    <div style="padding:12px 16px 0">
-      <a href="tel:${escHtml(fc.phone)}"
-        style="display:flex;align-items:center;justify-content:center;gap:8px;background:${th.p};color:#fff;padding:14px;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none">
-        📞 ${escHtml(fc.phone)} · 선거사무소
-      </a>
+      <!-- 전화 버튼 -->
+      <div style="width:100%;max-width:340px;margin-top:10px">
+        <a href="tel:${escHtml(fc.phone)}"
+          style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,${th.p},${th.a||th.p});color:#fff;padding:14px;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 6px 20px ${th.p}55">
+          📞 ${escHtml(fc.phone)} · 선거사무소 전화
+        </a>
+      </div>
+
     </div>
   </div>
-
-  <style>@keyframes vSpin{to{transform:rotate(360deg)}}</style>
-  <script>
-  (function(){
-    var YT_ID='${ytId}';
-    var thumb=document.getElementById('vp-thumb');
-    var loadEl=document.getElementById('vp-load');
-    var vidEl=document.getElementById('vp-vid');
-    var statEl=document.getElementById('vp-stat');
-    var infoEl=document.getElementById('vp-info');
-
-    window.vpPlay=function(){
-      thumb.style.display='none';
-      loadEl.style.display='flex';
-      if(statEl) statEl.textContent='Cobalt API로 스트림 추출 중…';
-
-      fetch('https://api.cobalt.tools/',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify({url:'https://www.youtube.com/watch?v='+YT_ID})
-      })
-      .then(function(r){return r.ok?r.json():Promise.reject('HTTP '+r.status);})
-      .then(function(d){
-        var url=null;
-        if(['stream','redirect','tunnel'].includes(d.status)&&d.url) url=d.url;
-        else if(d.status==='picker'&&Array.isArray(d.picker)){
-          var vi=d.picker.find(function(p){return p.type!=='audio';})||d.picker[0];
-          if(vi) url=vi.url;
-        }
-        if(!url) throw new Error('no stream');
-
-        vidEl.src=url;
-        vidEl.style.display='block';
-        loadEl.style.display='none';
-        if(infoEl) infoEl.textContent='🎯 Cobalt API 직접 스트림 재생 중';
-        vidEl.play().catch(function(){});
-      })
-      .catch(function(e){
-        loadEl.style.display='none';
-        thumb.style.display='block';
-        if(infoEl) infoEl.innerHTML='스트림 추출에 실패하였습니다.<br>아래 YouTube 버튼을 이용하십시오.';
-        if(statEl) statEl.textContent='';
-      });
-    };
-  })();
-  <\/script>
-</div>`);}
+</div>`);
+}
 
 
-  // ─ PAGE 5-b: 홍보영상 2 ─
+  // ─ PAGE 5-b: 홍보영상 2 (litt.ly 스타일 세로 인라인 플레이어) ─
   const videoUrl2=fc.url2||'';
   const ytId2=getYtId(videoUrl2);
   if(videoUrl2&&ytId2){
     pages.push(`
 <div class="page" id="p5b-video">
-  <div style="min-height:100%;display:flex;flex-direction:column;background:#0a0a0f;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))">
-    <div style="background:${th.p};padding:13px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0">
-      <div style="font-size:20px">🎬</div>
+  <div style="min-height:100%;display:flex;flex-direction:column;background:#0d0d14;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))">
+
+    <!-- 헤더 -->
+    <div style="background:${th.p};padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎬</div>
       <div>
-        <div style="font-size:14px;font-weight:800;color:#fff">${escHtml(fc.name)} 후보 홍보영상 2</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:1px">${escHtml(fc.co)}</div>
+        <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.2">${escHtml(fc.name)} 후보 홍보영상 2</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">${escHtml(fc.co)} · ${escHtml(fc.prod||'')}</div>
       </div>
     </div>
-    <div style="position:relative;width:100%;background:#000;aspect-ratio:16/9;flex-shrink:0">
-      <div id="vp2-load" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:10;background:#111;pointer-events:none">
-        <div style="width:44px;height:44px;border:3px solid rgba(255,255,255,.12);border-top-color:#ff0000;border-radius:50%;animation:vSpin .8s linear infinite"></div>
-        <div id="vp2-stat" style="color:rgba(255,255,255,.55);font-size:12px;text-align:center;line-height:1.6"></div>
-      </div>
-      <video id="vp2-vid" controls playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;display:none;background:#000;outline:none"></video>
-      <iframe id="vp2-frame" frameborder="0" allow="autoplay;fullscreen;picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation allow-popups" style="position:absolute;inset:0;width:100%;height:100%;display:none;background:#000"></iframe>
-      <div id="vp2-fall" style="position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:#0a0a0f;padding:20px;text-align:center">
-        <img src="https://img.youtube.com/vi/${ytId2}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.2" alt="">
-        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:12px">
-          <div style="font-size:40px">⚠️</div>
-          <div style="font-size:13px;color:#fff;font-weight:700">페이지 내 재생 불가</div>
-          <button onclick="openYTVideo('${ytId2}')" style="background:#f00;color:#fff;border:none;border-radius:24px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer">YouTube에서 재생</button>
+
+    <!-- 세로 플레이어 스크롤 영역 -->
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;align-items:center;padding:20px 16px 12px">
+
+      <!-- litt.ly 스타일 세로(9:16) 영상 컨테이너 -->
+      <div style="width:100%;max-width:340px;position:relative;border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.08);background:#000;aspect-ratio:9/16;flex-shrink:0">
+        <iframe
+          id="yt-iframe-2"
+          src="https://www.youtube-nocookie.com/embed/${ytId2}?rel=0&playsinline=1&modestbranding=1&color=white"
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          onerror="ytFallback(this,'${ytId2}')"
+          onload="ytCheckError(this,'${ytId2}')">
+        </iframe>
+        <div id="yt-fb-2" style="display:none;position:absolute;inset:0;background:#000;border-radius:22px;overflow:hidden">
+          <a href="https://www.youtube.com/watch?v=${ytId2}" target="_blank" rel="noopener"
+            style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-decoration:none;gap:16px">
+            <img src="https://img.youtube.com/vi/${ytId2}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:.7" alt="">
+            <div style="position:relative;z-index:1;background:rgba(255,0,0,.9);border-radius:50%;width:70px;height:70px;display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 68 48" width="40" height="28"><path d="M66.5 7.7c-.8-2.9-3-5.1-5.8-5.9C55.8.5 34 .5 34 .5S12.2.5 7.3 1.8C4.5 2.6 2.3 4.8 1.5 7.7.2 12.7.2 24 .2 24s0 11.3 1.3 16.3c.8 2.9 3 5.1 5.8 5.9C12.2 47.5 34 47.5 34 47.5s21.8 0 26.7-1.3c2.8-.8 5-3 5.8-5.9 1.3-5 1.3-16.3 1.3-16.3s0-11.3-1.3-16.3z" fill="#fff"/><path d="M27.2 34.4L44.9 24 27.2 13.6z" fill="red"/></svg>
+            </div>
+            <span style="position:relative;z-index:1;color:#fff;font-size:14px;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.8)">▶ YouTube에서 재생</span>
+          </a>
         </div>
       </div>
-    </div>
-    <div style="background:#0f0f18;padding:10px 12px;display:flex;gap:5px;align-items:center;flex-shrink:0;overflow-x:auto;border-top:1px solid rgba(255,255,255,.06)">
-      <span style="color:rgba(255,255,255,.35);font-size:10px;white-space:nowrap;flex-shrink:0">재생:</span>
-      <button class="vp2-tb active" id="vp2-tb0" onclick="vp2Switch(0)" style="background:rgba(255,0,0,.2);border:1px solid rgba(255,0,0,.6);color:#ff9090;border-radius:14px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">🎯 직접재생</button>
-      <button class="vp2-tb" id="vp2-tb1" onclick="vp2Switch(1)" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:14px;padding:5px 12px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0">서버2</button>
-      <button class="vp2-tb" id="vp2-tb2" onclick="vp2Switch(2)" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:14px;padding:5px 12px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0">서버3</button>
-    </div>
-    <div style="padding:12px 16px"><a href="tel:${escHtml(fc.phone)}" style="display:flex;align-items:center;justify-content:center;gap:8px;background:${th.p};color:#fff;padding:14px;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none">📞 ${escHtml(fc.phone)} · 선거사무소</a></div>
-  </div>
-  <style>.vp2-tb{transition:all .2s!important}.vp2-tb.active{background:rgba(255,0,0,.2)!important;border-color:rgba(255,0,0,.6)!important;color:#ff9090!important;font-weight:700!important}</style>
-  <script>
-  (function(){
-    var ID='${ytId2}',COBALT='https://api.cobalt.tools/',INV=['https://inv.nadeko.net/embed/'+ID+'?autoplay=0&listen=0','https://invidious.privacydev.net/embed/'+ID+'?autoplay=0&listen=0'];
-    var ld=document.getElementById('vp2-load'),st=document.getElementById('vp2-stat'),vd=document.getElementById('vp2-vid'),fr=document.getElementById('vp2-frame'),fb=document.getElementById('vp2-fall'),ft=null;
-    var tabs=document.querySelectorAll('.vp2-tb');
-    function sTab(i){tabs.forEach(function(t,j){t.classList.toggle('active',j===i);});}
-    function sLoad(m){ld.style.display='flex';vd.style.display='none';fr.style.display='none';fb.style.display='none';if(st)st.innerHTML=m||'';}
-    function sVid(){ld.style.display='none';vd.style.display='block';fr.style.display='none';fb.style.display='none';}
-    function sFrm(){ld.style.display='none';vd.style.display='none';fr.style.display='block';fb.style.display='none';}
-    function sFall(){ld.style.display='none';vd.style.display='none';fr.style.display='none';fb.style.display='flex';}
-    function tryInv(i){clearTimeout(ft);if(i>=INV.length){sFall();return;}sTab(i+1);sLoad('서버'+(i+2)+' 연결 중…');fr.src='';setTimeout(function(){fr.src=INV[i];ft=setTimeout(function(){tryInv(i+1);},9000);},200);fr.onload=function(){clearTimeout(ft);ft=setTimeout(function(){sFrm();},2000);};}
-    function tryCobalt(){sTab(0);sLoad('🎯 직접재생 준비 중…');fetch(COBALT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({url:'https://www.youtube.com/watch?v='+ID})}).then(function(r){return r.ok?r.json():Promise.reject('HTTP '+r.status);}).then(function(d){var url=null;if(d.url&&['stream','redirect','tunnel'].includes(d.status)){url=d.url;}else if(d.status==='picker'&&Array.isArray(d.picker)){var vi=d.picker.find(function(p){return p.type!=='audio';})||d.picker[0];if(vi&&vi.url)url=vi.url;}if(!url)throw new Error('no url');vd.src=url;vd.load();var t=setTimeout(function(){tryInv(0);},15000);vd.onloadedmetadata=function(){clearTimeout(t);sVid();};vd.onerror=function(){clearTimeout(t);tryInv(0);};}).catch(function(){tryInv(0);});}
-    window.vp2Switch=function(i){if(i===0)tryCobalt();else tryInv(i-1);};
-    tryCobalt();
-  })();
-  <\/script>
-</div>`);}
 
-  // ─ PAGE 5-c: 홍보영상 3 ─
+      <!-- 영상 제목 -->
+      <div style="width:100%;max-width:340px;margin-top:16px;padding:0 2px">
+        <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px">${escHtml(fc.name)} 후보 홍보영상 2</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.6">${escHtml(fc.co)}</div>
+      </div>
+
+      <!-- YouTube 전체화면 버튼 -->
+      <div style="width:100%;max-width:340px;margin-top:12px">
+        <a href="https://www.youtube.com/watch?v=${ytId2}" target="_blank" rel="noopener"
+          style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,30,30,.12);border:1px solid rgba(255,30,30,.3);color:#ff7070;padding:12px;border-radius:12px;font-size:13px;font-weight:700;text-decoration:none">
+          <svg viewBox="0 0 68 48" width="22" height="16"><path d="M66.5 7.7c-.8-2.9-3-5.1-5.8-5.9C55.8.5 34 .5 34 .5S12.2.5 7.3 1.8C4.5 2.6 2.3 4.8 1.5 7.7.2 12.7.2 24 .2 24s0 11.3 1.3 16.3c.8 2.9 3 5.1 5.8 5.9C12.2 47.5 34 47.5 34 47.5s21.8 0 26.7-1.3c2.8-.8 5-3 5.8-5.9 1.3-5 1.3-16.3 1.3-16.3s0-11.3-1.3-16.3z" fill="#ff3030"/><path d="M27.2 34.4L44.9 24 27.2 13.6z" fill="#fff"/></svg>
+          YouTube에서 전체화면으로 보기
+        </a>
+      </div>
+
+      <!-- 전화 버튼 -->
+      <div style="width:100%;max-width:340px;margin-top:10px">
+        <a href="tel:${escHtml(fc.phone)}"
+          style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,${th.p},${th.a||th.p});color:#fff;padding:14px;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 6px 20px ${th.p}55">
+          📞 ${escHtml(fc.phone)} · 선거사무소 전화
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>`);
+}
+
+  // ─ PAGE 5-c: 홍보영상 3 (litt.ly 스타일 세로 인라인 플레이어) ─
   const videoUrl3=fc.url3||'';
   const ytId3=getYtId(videoUrl3);
   if(videoUrl3&&ytId3){
     pages.push(`
 <div class="page" id="p5c-video">
-  <div style="min-height:100%;display:flex;flex-direction:column;background:#0a0a0f;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))">
-    <div style="background:${th.p};padding:13px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0">
-      <div style="font-size:20px">🎬</div>
+  <div style="min-height:100%;display:flex;flex-direction:column;background:#0d0d14;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))">
+
+    <!-- 헤더 -->
+    <div style="background:${th.p};padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎬</div>
       <div>
-        <div style="font-size:14px;font-weight:800;color:#fff">${escHtml(fc.name)} 후보 홍보영상 3</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:1px">${escHtml(fc.co)}</div>
+        <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.2">${escHtml(fc.name)} 후보 홍보영상 3</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">${escHtml(fc.co)} · ${escHtml(fc.prod||'')}</div>
       </div>
     </div>
-    <div style="position:relative;width:100%;background:#000;aspect-ratio:16/9;flex-shrink:0">
-      <div id="vp3-load" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:10;background:#111;pointer-events:none">
-        <div style="width:44px;height:44px;border:3px solid rgba(255,255,255,.12);border-top-color:#ff0000;border-radius:50%;animation:vSpin .8s linear infinite"></div>
-        <div id="vp3-stat" style="color:rgba(255,255,255,.55);font-size:12px;text-align:center;line-height:1.6"></div>
-      </div>
-      <video id="vp3-vid" controls playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;display:none;background:#000;outline:none"></video>
-      <iframe id="vp3-frame" frameborder="0" allow="autoplay;fullscreen;picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation allow-popups" style="position:absolute;inset:0;width:100%;height:100%;display:none;background:#000"></iframe>
-      <div id="vp3-fall" style="position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:#0a0a0f;padding:20px;text-align:center">
-        <img src="https://img.youtube.com/vi/${ytId3}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.2" alt="">
-        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:12px">
-          <div style="font-size:40px">⚠️</div>
-          <div style="font-size:13px;color:#fff;font-weight:700">페이지 내 재생 불가</div>
-          <button onclick="openYTVideo('${ytId3}')" style="background:#f00;color:#fff;border:none;border-radius:24px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer">YouTube에서 재생</button>
+
+    <!-- 세로 플레이어 스크롤 영역 -->
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;align-items:center;padding:20px 16px 12px">
+
+      <!-- litt.ly 스타일 세로(9:16) 영상 컨테이너 -->
+      <div style="width:100%;max-width:340px;position:relative;border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.08);background:#000;aspect-ratio:9/16;flex-shrink:0">
+        <iframe
+          id="yt-iframe-3"
+          src="https://www.youtube-nocookie.com/embed/${ytId3}?rel=0&playsinline=1&modestbranding=1&color=white"
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          onerror="ytFallback(this,'${ytId3}')"
+          onload="ytCheckError(this,'${ytId3}')">
+        </iframe>
+        <div id="yt-fb-3" style="display:none;position:absolute;inset:0;background:#000;border-radius:22px;overflow:hidden">
+          <a href="https://www.youtube.com/watch?v=${ytId3}" target="_blank" rel="noopener"
+            style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-decoration:none;gap:16px">
+            <img src="https://img.youtube.com/vi/${ytId3}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:.7" alt="">
+            <div style="position:relative;z-index:1;background:rgba(255,0,0,.9);border-radius:50%;width:70px;height:70px;display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 68 48" width="40" height="28"><path d="M66.5 7.7c-.8-2.9-3-5.1-5.8-5.9C55.8.5 34 .5 34 .5S12.2.5 7.3 1.8C4.5 2.6 2.3 4.8 1.5 7.7.2 12.7.2 24 .2 24s0 11.3 1.3 16.3c.8 2.9 3 5.1 5.8 5.9C12.2 47.5 34 47.5 34 47.5s21.8 0 26.7-1.3c2.8-.8 5-3 5.8-5.9 1.3-5 1.3-16.3 1.3-16.3s0-11.3-1.3-16.3z" fill="#fff"/><path d="M27.2 34.4L44.9 24 27.2 13.6z" fill="red"/></svg>
+            </div>
+            <span style="position:relative;z-index:1;color:#fff;font-size:14px;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.8)">▶ YouTube에서 재생</span>
+          </a>
         </div>
       </div>
+
+      <!-- 영상 제목 -->
+      <div style="width:100%;max-width:340px;margin-top:16px;padding:0 2px">
+        <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px">${escHtml(fc.name)} 후보 홍보영상 3</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.6">${escHtml(fc.co)}</div>
+      </div>
+
+      <!-- YouTube 전체화면 버튼 -->
+      <div style="width:100%;max-width:340px;margin-top:12px">
+        <a href="https://www.youtube.com/watch?v=${ytId3}" target="_blank" rel="noopener"
+          style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,30,30,.12);border:1px solid rgba(255,30,30,.3);color:#ff7070;padding:12px;border-radius:12px;font-size:13px;font-weight:700;text-decoration:none">
+          <svg viewBox="0 0 68 48" width="22" height="16"><path d="M66.5 7.7c-.8-2.9-3-5.1-5.8-5.9C55.8.5 34 .5 34 .5S12.2.5 7.3 1.8C4.5 2.6 2.3 4.8 1.5 7.7.2 12.7.2 24 .2 24s0 11.3 1.3 16.3c.8 2.9 3 5.1 5.8 5.9C12.2 47.5 34 47.5 34 47.5s21.8 0 26.7-1.3c2.8-.8 5-3 5.8-5.9 1.3-5 1.3-16.3 1.3-16.3s0-11.3-1.3-16.3z" fill="#ff3030"/><path d="M27.2 34.4L44.9 24 27.2 13.6z" fill="#fff"/></svg>
+          YouTube에서 전체화면으로 보기
+        </a>
+      </div>
+
+      <!-- 전화 버튼 -->
+      <div style="width:100%;max-width:340px;margin-top:10px">
+        <a href="tel:${escHtml(fc.phone)}"
+          style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,${th.p},${th.a||th.p});color:#fff;padding:14px;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 6px 20px ${th.p}55">
+          📞 ${escHtml(fc.phone)} · 선거사무소 전화
+        </a>
+      </div>
+
     </div>
-    <div style="background:#0f0f18;padding:10px 12px;display:flex;gap:5px;align-items:center;flex-shrink:0;overflow-x:auto;border-top:1px solid rgba(255,255,255,.06)">
-      <span style="color:rgba(255,255,255,.35);font-size:10px;white-space:nowrap;flex-shrink:0">재생:</span>
-      <button class="vp3-tb active" id="vp3-tb0" onclick="vp3Switch(0)" style="background:rgba(255,0,0,.2);border:1px solid rgba(255,0,0,.6);color:#ff9090;border-radius:14px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">🎯 직접재생</button>
-      <button class="vp3-tb" id="vp3-tb1" onclick="vp3Switch(1)" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:14px;padding:5px 12px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0">서버2</button>
-      <button class="vp3-tb" id="vp3-tb2" onclick="vp3Switch(2)" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:14px;padding:5px 12px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0">서버3</button>
-    </div>
-    <div style="padding:12px 16px"><a href="tel:${escHtml(fc.phone)}" style="display:flex;align-items:center;justify-content:center;gap:8px;background:${th.p};color:#fff;padding:14px;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none">📞 ${escHtml(fc.phone)} · 선거사무소</a></div>
   </div>
-  <style>.vp3-tb{transition:all .2s!important}.vp3-tb.active{background:rgba(255,0,0,.2)!important;border-color:rgba(255,0,0,.6)!important;color:#ff9090!important;font-weight:700!important}</style>
-  <script>
-  (function(){
-    var ID='${ytId3}',COBALT='https://api.cobalt.tools/',INV=['https://inv.nadeko.net/embed/'+ID+'?autoplay=0&listen=0','https://invidious.privacydev.net/embed/'+ID+'?autoplay=0&listen=0'];
-    var ld=document.getElementById('vp3-load'),st=document.getElementById('vp3-stat'),vd=document.getElementById('vp3-vid'),fr=document.getElementById('vp3-frame'),fb=document.getElementById('vp3-fall'),ft=null;
-    var tabs=document.querySelectorAll('.vp3-tb');
-    function sTab(i){tabs.forEach(function(t,j){t.classList.toggle('active',j===i);});}
-    function sLoad(m){ld.style.display='flex';vd.style.display='none';fr.style.display='none';fb.style.display='none';if(st)st.innerHTML=m||'';}
-    function sVid(){ld.style.display='none';vd.style.display='block';fr.style.display='none';fb.style.display='none';}
-    function sFrm(){ld.style.display='none';vd.style.display='none';fr.style.display='block';fb.style.display='none';}
-    function sFall(){ld.style.display='none';vd.style.display='none';fr.style.display='none';fb.style.display='flex';}
-    function tryInv(i){clearTimeout(ft);if(i>=INV.length){sFall();return;}sTab(i+1);sLoad('서버'+(i+2)+' 연결 중…');fr.src='';setTimeout(function(){fr.src=INV[i];ft=setTimeout(function(){tryInv(i+1);},9000);},200);fr.onload=function(){clearTimeout(ft);ft=setTimeout(function(){sFrm();},2000);};}
-    function tryCobalt(){sTab(0);sLoad('🎯 직접재생 준비 중…');fetch(COBALT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({url:'https://www.youtube.com/watch?v='+ID})}).then(function(r){return r.ok?r.json():Promise.reject('HTTP '+r.status);}).then(function(d){var url=null;if(d.url&&['stream','redirect','tunnel'].includes(d.status)){url=d.url;}else if(d.status==='picker'&&Array.isArray(d.picker)){var vi=d.picker.find(function(p){return p.type!=='audio';})||d.picker[0];if(vi&&vi.url)url=vi.url;}if(!url)throw new Error('no url');vd.src=url;vd.load();var t=setTimeout(function(){tryInv(0);},15000);vd.onloadedmetadata=function(){clearTimeout(t);sVid();};vd.onerror=function(){clearTimeout(t);tryInv(0);};}).catch(function(){tryInv(0);});}
-    window.vp3Switch=function(i){if(i===0)tryCobalt();else tryInv(i-1);};
-    tryCobalt();
-  })();
-  <\/script>
-</div>`);}
+</div>`);
+}
 
   // ─ PAGE 5-d: AI 사진 홍보 페이지 (tab3 업로드 사진 활용) ─
   if(bodyImgs.length>0){
@@ -5352,37 +5334,29 @@ function buildLand(fc,ai,imgURL,tpl,col){
       aiD.subheadline||'지역을 위해 헌신하는 후보',
       (aiD.features&&aiD.features[0])?aiD.features[0].title||'핵심 공약':'현장을 누비는 후보',
       '함께하면 바꿀 수 있습니다',
+      aiD.urgency||'소중한 한 표가 지역을 바꿉니다',
+      (aiD.features&&aiD.features[1])?aiD.features[1].title||'지역 발전':'변화의 현장',
+      (aiD.whyChoose&&aiD.whyChoose.points&&aiD.whyChoose.points[0])||'유세 현장',
+      aiD.badge||'지지해 주십시오',
     ];
-    const photoCards=bodyImgs.slice(0,2).map((src,i)=>{
+    // ── litt.ly 스타일: 전체 사진을 1열 4:3 전폭 카드로 통일 ──
+    const allPhotoCards=bodyImgs.map((src,i)=>{
       const caption=photoCaptions[i]||photoCaptions[0]||'';
       return `
-      <div style="position:relative;overflow:hidden;border-radius:16px;background:#000;box-shadow:0 8px 32px rgba(0,0,0,.45);cursor:pointer;aspect-ratio:4/3"
+      <div style="position:relative;overflow:hidden;border-radius:18px;background:#000;box-shadow:0 10px 36px rgba(0,0,0,.55);cursor:pointer;aspect-ratio:4/3;width:100%"
         onclick="pgZoom(${i})" data-pg-idx="${i}">
         <img src="${src}"
           style="width:100%;height:100%;object-fit:cover;display:block"
           alt="후보자 활동사진 ${i+1}"
           onerror="this.parentElement.style.display='none'">
-        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,0) 55%)"></div>
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 12px 10px">
-          <div style="font-size:12px;font-weight:700;color:#fff;line-height:1.4;text-shadow:0 1px 4px rgba(0,0,0,.6)">${escHtml(caption)}</div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72) 0%,rgba(0,0,0,0) 50%)"></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 14px 13px">
+          <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.4;text-shadow:0 1px 6px rgba(0,0,0,.7)">${escHtml(caption)}</div>
         </div>
-        <div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.45);border-radius:5px;padding:2px 6px;font-size:10px;color:rgba(255,255,255,.7)">${i+1}/${bodyImgs.length}</div>
+        <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;color:rgba(255,255,255,.85)">${i+1} / ${bodyImgs.length}</div>
       </div>`;
     }).join('');
-
-    const extraCards=bodyImgs.slice(2).map((src,i)=>{
-      const cap=photoCaptions[i+2]||photoCaptions[0]||'';
-      return `
-      <div style="position:relative;overflow:hidden;border-radius:16px;background:#000;box-shadow:0 8px 32px rgba(0,0,0,.45);cursor:pointer;aspect-ratio:16/9;margin-top:12px"
-        onclick="pgZoom(${i+2})" data-pg-idx="${i+2}">
-        <img src="${src}" style="width:100%;height:100%;object-fit:cover;display:block" alt="" onerror="this.parentElement.style.display='none'">
-        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 50%)"></div>
-        <div style="position:absolute;bottom:10px;left:12px;right:12px">
-          <div style="font-size:13px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)">${escHtml(cap)}</div>
-        </div>
-        <div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.45);border-radius:5px;padding:2px 6px;font-size:10px;color:rgba(255,255,255,.7)">${i+3}/${bodyImgs.length}</div>
-      </div>`;
-    }).join('');
+    const photoCards=''; const extraCards='';
 
     pages.push(`
 <div class="page" id="p5d-photo">
@@ -5407,12 +5381,9 @@ function buildLand(fc,ai,imgURL,tpl,col){
       </div>
     </div>
 
-    <!-- 사진 그리드 -->
-    <div style="padding:16px;flex:1">
-      <div id="pg-grid" style="display:grid;grid-template-columns:${bodyImgs.length===1?'1fr':'1fr 1fr'};gap:12px">
-        ${photoCards}
-      </div>
-      ${extraCards}
+    <!-- 사진 목록 (litt.ly 스타일: 1열 전폭 세로 스크롤) -->
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;flex:1">
+      ${allPhotoCards}
     </div>
 
     <!-- 전화 버튼 -->
@@ -5426,32 +5397,44 @@ function buildLand(fc,ai,imgURL,tpl,col){
     </div>
   </div>
 
-  <!-- 라이트박스 (base64 중복 저장 없이 DOM에서 직접 읽음) -->
-  <div id="pg-lb" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px" onclick="pgCloseLb()">
-    <img id="pg-lb-img" src="" style="max-width:100%;max-height:80vh;object-fit:contain;border-radius:10px;display:block" alt="">
-    <div id="pg-lb-cap" style="color:#fff;font-size:13px;margin-top:12px;text-align:center;padding:0 20px;line-height:1.6;font-weight:600"></div>
-    <div style="color:rgba(255,255,255,.4);font-size:11px;margin-top:8px">탭하여 닫기</div>
-  </div>
-
   <script>
-  /* 라이트박스: img 태그 src를 DOM에서 직접 읽음 (base64 중복 저장 없음) */
+  /* 라이트박스: body에 직접 생성 — overflow:auto 컨테이너 안의 position:fixed 깨짐 방지 */
   function pgZoom(i){
     var items=document.querySelectorAll('[data-pg-idx]');
     var el=null;
     items.forEach(function(d){if(parseInt(d.dataset.pgIdx)===i) el=d;});
-    var src=el?el.querySelector('img').src:'';
-    var cap=el?el.querySelector('[style*="text-shadow"]').textContent:'';
-    var lb=document.getElementById('pg-lb');
-    var lbImg=document.getElementById('pg-lb-img');
-    var lbCap=document.getElementById('pg-lb-cap');
-    if(lb){lb.style.display='flex';}
-    if(lbImg) lbImg.src=src;
-    if(lbCap) lbCap.textContent=cap;
+    if(!el) return;
+    var imgEl=el.querySelector('img');
+    var capEl=el.querySelector('[style*="text-shadow"]');
+    var src=imgEl?imgEl.src:'';
+    var cap=capEl?capEl.textContent:'';
+    // 기존 라이트박스 제거
+    var old=document.getElementById('pg-lb');
+    if(old) old.remove();
+    // body에 직접 생성 (position:fixed 보장)
+    var lb=document.createElement('div');
+    lb.id='pg-lb';
+    lb.onclick=function(){lb.remove();document.body.style.overflow='';};
+    lb.style.cssText='position:fixed;inset:0;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:rgba(0,0,0,.96);z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
+    var img=document.createElement('img');
+    img.src=src;
+    img.style.cssText='max-width:100%;max-height:80vh;object-fit:contain;border-radius:10px;display:block;';
+    img.alt='';
+    var capDiv=document.createElement('div');
+    capDiv.textContent=cap;
+    capDiv.style.cssText='color:#fff;font-size:13px;margin-top:12px;text-align:center;padding:0 20px;line-height:1.6;font-weight:600;';
+    var hint=document.createElement('div');
+    hint.textContent='탭하여 닫기';
+    hint.style.cssText='color:rgba(255,255,255,.4);font-size:11px;margin-top:8px;';
+    lb.appendChild(img);
+    lb.appendChild(capDiv);
+    lb.appendChild(hint);
+    document.body.appendChild(lb);
     document.body.style.overflow='hidden';
   }
   function pgCloseLb(){
     var lb=document.getElementById('pg-lb');
-    if(lb) lb.style.display='none';
+    if(lb) lb.remove();
     document.body.style.overflow='';
   }
   <\/script>
@@ -5460,7 +5443,7 @@ function buildLand(fc,ai,imgURL,tpl,col){
 
   // ─ PAGE: AI 후보자 챗봇 ─
   // 후보자 경력·공약·슬로건·지역발전 관련 선거 질문에만 응답
-  const chatApiKey=fc.claudeKey||fc.oaiKey||'';
+  const chatApiKey=fc.claudeKey||APP.globalClaudeKey||fc.oaiKey||APP.globalOAIKey||'';
   const chatContext=[
     `후보자 성명: ${fc.name}`,
     `소속 정당: ${fc.co}`,
@@ -5581,16 +5564,13 @@ ${chatContext}
 
   <script>
   (function(){
-    /* ── 미리보기(iframe) 감지 ── */
-    var isPreview=(function(){
-      try{ return window!==window.top; }catch(e){ return true; }
-    })();
-    var isLocal=/^(file:|content:|blob:)/.test(window.location.protocol||'');
+    /* ── 로컬 파일 실행 감지 (file://, blob:, content: 프로토콜만 차단) ── */
+    /* ※ 미리보기(iframe/srcdoc) 및 배포 페이지 모두 챗봇 작동 허용 */
+    var isLocal=/^(file:|blob:)/.test(window.location.protocol||'');
 
-    if(isPreview||isLocal){
-      /* 미리보기 안내 화면으로 교체 */
+    if(isLocal){
+      /* 로컬 파일 실행 안내 */
       var msgs=document.getElementById('chat-msgs');
-      var inputArea=document.querySelector('[id="chat-inp"]');
       if(msgs){
         msgs.innerHTML='';
         var notice=document.createElement('div');
@@ -5599,27 +5579,24 @@ ${chatContext}
           '<div style="font-size:48px">🤖</div>',
           '<div style="font-size:16px;font-weight:800;color:#1e293b;">AI 후보자 챗봇</div>',
           '<div style="font-size:13px;color:#64748b;line-height:1.8;max-width:280px;">',
-          '챗봇은 <strong>배포 후</strong> 실제 페이지에서<br>정상 작동합니다.<br><br>',
-          '📱 배포 → 링크 공유 → 유권자가<br>챗봇으로 후보자 정보를 질문합니다.',
+          'GitHub Pages에 배포하면<br>챗봇이 정상 작동합니다.',
           '</div>',
           '<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:12px 18px;font-size:12px;color:#0369a1;line-height:1.7;">',
-          '✅ 미리보기에서는 챗봇 UI만 확인 가능<br>✅ GitHub 배포 후 완전 작동',
+          '✅ 앱 미리보기 · 배포 페이지 모두 작동',
           '</div>'
         ].join('');
         msgs.appendChild(notice);
       }
-      /* 입력창 비활성화 */
       var inp=document.getElementById('chat-inp');
       var sbtn=document.getElementById('chat-send-btn');
       if(inp){inp.disabled=true;inp.placeholder='배포 후 사용 가능합니다';}
       if(sbtn) sbtn.disabled=true;
-      /* 빠른 질문 버튼 숨김 */
       var quick=document.getElementById('chat-quick');
       if(quick) quick.style.display='none';
-      return; /* 아래 API 코드 실행 안 함 */
+      return;
     }
 
-    /* ── 배포된 페이지에서만 실행 ── */
+    /* ── 미리보기 및 배포 페이지 공통 실행 ── */
     var API_KEY='${chatApiKey.replace(/'/g,"\\'")}';
     var SYS=${JSON.stringify(sysPrompt)};
     var history=[];
@@ -5796,7 +5773,7 @@ body{background:#1a1a2e;touch-action:pan-y;}
 .cover-logo{width:56px;height:56px;object-fit:contain;border-radius:9px;flex-shrink:0;background:#fff;padding:3px;}
 .cover-logo-placeholder{width:56px;height:56px;border-radius:9px;background:${th.a};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
 .cover-top-info{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;}
-.cover-party{color:#fff;font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1.15;word-break:keep-all;white-space:normal;}
+.cover-party{color:#fff;font-size:22px;font-weight:900;letter-spacing:-.5px;line-height:1.3;word-break:keep-all;white-space:normal;}
 .cover-cat{color:rgba(255,255,255,.65);font-size:11px;font-weight:500;letter-spacing:.2px;}
 .cover-badge-big{background:${th.a};color:#fff;padding:8px 12px;border-radius:12px;flex-shrink:0;text-align:center;min-width:70px;max-width:90px;word-break:keep-all;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .cover-badge-big .sym-label{font-size:12px;font-weight:800;opacity:.95;letter-spacing:.3px;margin-bottom:2px;}
@@ -5935,6 +5912,40 @@ setTimeout(function(){hint.classList.add('show');setTimeout(function(){hint.clas
 var ci=document.querySelector('.cover-img');
 var cp=document.getElementById('cip');
 if(ci&&cp){ci.onerror=function(){ci.style.display='none';cp.style.display='flex';var box=document.querySelector('.cover-img-box');if(box){box.style.display='flex';box.style.alignItems='center';box.style.justifyContent='center';box.style.fontSize='60px';}};}
+// YouTube iframe 오류 153 처리
+// cross-origin 환경(content://, about:, null)에서는 iframe embed가 차단됨
+// → 프로토콜이 http/https 가 아니면 즉시 썸네일 fallback으로 전환
+function ytFallback(iframe,ytId){
+  var fb=iframe.parentElement.querySelector('[id^="yt-fb-"]');
+  if(fb){iframe.style.display='none';fb.style.display='block';}
+}
+function ytCheckError(iframe,ytId){
+  // 1초 타이머: iframe이 정상 재생 중이면 아무 변화 없음
+  // 오류 153이면 빈 검정 화면 유지 → 타이머 후 fallback 전환
+  setTimeout(function(){
+    try{
+      var w=iframe.contentWindow;
+      // 정상이면 cross-origin에러 → catch로, 오류153이면 접근 가능하나 body비어있음
+      var body=w&&w.document&&w.document.body;
+      if(body&&body.innerHTML.trim()===''){ytFallback(iframe,ytId);}
+    }catch(e){/* cross-origin 차단 = 정상 로드 중 */}
+  },2500);
+}
+// 페이지 로드 시 즉시 프로토콜 감지 → http/https 아닌 환경에서 바로 fallback
+(function(){
+  var proto=window.location.protocol;
+  var needFallback=(proto!=='http:'&&proto!=='https:');
+  if(needFallback){
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelectorAll('[id^="yt-iframe-"]').forEach(function(iframe){
+        iframe.style.display='none';
+      });
+      document.querySelectorAll('[id^="yt-fb-"]').forEach(function(fb){
+        fb.style.display='block';
+      });
+    });
+  }
+})();
 // YouTube 영상 열기 (153 오류 완전 우회: 앱 → 웹 순)
 function openYTVideo(ytId){
   if(!ytId) return;
@@ -6310,7 +6321,7 @@ async function doSubmit(){
     hideLoad();
   }
   if(_kakao){
-    try{await navigator.clipboard.writeText(msg);}catch(_){}
+    try{await navigator.clipboard?.writeText(msg);}catch(_){}
     window.open(_kakao,'_blank');
     sent.push('kakao');
   }
@@ -6350,7 +6361,7 @@ function openKakao(){
     +'연락처: '+(s.phone||'')+nl
     +'참여방법: '+(s.vol||'')+nl
     +'응원메시지: '+(s.memo||'(없음)');
-  if(navigator.clipboard){navigator.clipboard.writeText(msg).catch(()=>{});}
+  if(navigator.clipboard){navigator.clipboard?.writeText(msg).catch(()=>{});}
   window.open(_kakao,'_blank');
   setTimeout(function(){
     alert('📋 지지 서명 내용이 복사되었습니다. 카카오 채널에 붙여넣기 해주십시오.');
@@ -6423,7 +6434,7 @@ function b64s(s){
 }
 function cpyTxt(txt){
   if(navigator.clipboard&&window.isSecureContext){
-    navigator.clipboard.writeText(txt)
+    navigator.clipboard?.writeText(txt)
       .then(()=>showToast('🔗 복사 완료','success'))
       .catch(()=>_cpyFallback(txt));
   } else {
