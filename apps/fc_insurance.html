@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0046ad">
+    <title>삼성 보험 전문가 컨설팅</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+        :root { --brand:#0046ad; --brand-dark:#003278; --bg:#f8fafc; --text:#0f172a; --muted:#64748b; --border:#e2e8f0; --safe-bottom:env(safe-area-inset-bottom,0px); --safe-top:env(safe-area-inset-top,0px); }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        html, body { margin:0; width:100%; min-height:100%; overflow-x:hidden; scroll-behavior:smooth; }
+        body { font-family:'Noto Sans KR',sans-serif; background:linear-gradient(180deg,#f8fafc 0%,#eef4ff 100%); color:var(--text); padding-bottom:calc(98px + var(--safe-bottom)); }
+        .mobile-shell { width:100%; max-width:520px; margin:0 auto; }
+        .glass-nav { padding-top:calc(10px + var(--safe-top)); background:rgba(255,255,255,.94); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+        .hero-title { word-break:keep-all; letter-spacing:-.045em; }
+        .hero-desc { word-break:keep-all; line-height:1.75; }
+        input, button, textarea, select { font-size:16px; font-family:inherit; }
+        .touch-btn { min-height:54px; touch-action:manipulation; }
+        .step-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+        .step-card { min-height:178px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; }
+        .step-number { color:var(--brand); font-size:30px; font-weight:900; line-height:1; }
+        .step-label { word-break:keep-all; letter-spacing:-.055em; line-height:1.15; white-space:normal; }
+        .step-desc { margin-top:10px; color:#64748b; font-size:12px; line-height:1.45; word-break:keep-all; letter-spacing:-.035em; }
+        .feature-card p { word-break:keep-all; }
+        .nav-company { font-size:17px; line-height:1.18; letter-spacing:-.045em; }
+        .nav-fc { font-size:16px; line-height:1.15; letter-spacing:-.04em; }
+        .logo-img { max-height:40px; max-width:130px; object-fit:contain; }
+        .sms-float { position:fixed; left:18px; right:18px; bottom:calc(16px + var(--safe-bottom)); z-index:40; max-width:520px; margin:0 auto; }
+        .chat-panel { width:calc(100vw - 28px); max-width:460px; right:14px; bottom:calc(86px + var(--safe-bottom)); }
+        @media (max-width:420px){ .step-grid{ gap:8px; } .step-card{ min-height:174px; padding:16px 7px !important; border-radius:24px !important; } .step-number{ font-size:27px; } .step-label{ font-size:13px !important; } .step-desc{ font-size:11px; line-height:1.38; } .nav-company{ font-size:16px; } .nav-fc{ font-size:15px; } .logo-img{ max-width:112px; } }
+        @media (max-width:360px){ .step-grid{ grid-template-columns:1fr; } .step-card{ min-height:auto; align-items:flex-start; text-align:left; padding:18px !important; } .step-number{ font-size:25px; } .step-label{ font-size:20px !important; margin-top:8px; } .step-desc{ font-size:14px; } .nav-company{ font-size:15px; } .nav-fc{ font-size:14px; padding-left:.55rem !important; padding-right:.55rem !important; } .logo-img{ max-width:96px; } #logo-text{ font-size:12px; padding:.45rem .65rem; } }
+    </style>
+</head>
+<body>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-slate-200">
+        <div class="mobile-shell px-4 pb-3 flex justify-between items-center gap-3">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+                <img id="main-logo" src="" class="logo-img hidden" alt="로고">
+                <div id="logo-text" class="bg-blue-800 text-white px-4 py-2 font-black rounded-xl text-sm shadow-sm">SAMSUNG</div>
+                <div id="company-label" class="nav-company font-black text-slate-800 truncate">삼성생명 | 삼성화재</div>
+            </div>
+            <div id="fc-name-top" class="nav-fc hidden font-black text-blue-800 whitespace-nowrap bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full shadow-sm"></div>
+        </div>
+    </nav>
+
+    <main class="mobile-shell px-4 pt-24">
+        <section class="text-center pt-5 pb-6">
+            <div class="inline-flex gap-2 items-center justify-center mb-5">
+                <span id="badge-left" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-black">무료 보장 분석</span>
+                <span id="badge-right" class="bg-slate-900 text-white px-3 py-1 rounded-full text-xs font-black">맞춤 상품 상담</span>
+            </div>
+            <h1 id="hero-title" class="hero-title text-[30px] leading-tight font-black text-slate-900 mb-5">가족의 내일을 지키는 일,<br>삼성과 함께하는 정직한 설계</h1>
+            <p id="hero-desc" class="hero-desc text-[16px] text-slate-600 px-1">보험은 많이 가입하는 것보다 필요한 보장을 빠짐없이 준비하고 오래 유지할 수 있게 설계하는 것이 중요합니다. 기존 보험의 보장 공백, 중복 특약, 갱신 보험료 부담을 함께 점검해드립니다.</p>
+        </section>
+
+        <section id="menu-section" class="pb-6">
+            <div id="step-grid" class="step-grid"></div>
+        </section>
+
+        <section id="feature-list" class="space-y-5 pb-6"></section>
+
+        <section id="form-section" class="bg-white rounded-[30px] shadow-xl border border-slate-200 p-6 mb-8">
+            <h3 id="form-title" class="text-2xl font-black mb-2 text-slate-900">무료 보장 분석 신청</h3>
+            <p id="form-desc" class="text-sm text-slate-500 leading-relaxed mb-5">성함과 연락처를 남겨주시면 기존 보험의 보장 공백, 중복 특약, 보험료 효율을 순차적으로 점검해드립니다.</p>
+            <form onsubmit="submitLead(event)" class="space-y-3">
+                <input id="lead-name" type="text" placeholder="성함" required class="w-full p-4 border border-slate-300 rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500">
+                <input id="lead-phone" type="tel" placeholder="연락처" required class="w-full p-4 border border-slate-300 rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500" oninput="formatPhone(this)">
+                <button id="form-button" type="submit" class="touch-btn w-full bg-blue-700 text-white font-black py-4 rounded-2xl shadow-lg active:scale-[.99]">상담 신청하기</button>
+            </form>
+        </section>
+    </main>
+
+    <button onclick="scrollToForm()" class="sms-float bg-blue-700 text-white py-5 rounded-[24px] font-black text-xl shadow-2xl active:scale-[.99]">
+        <span id="floating-cta-text">무료 보장 분석 신청하기</span> →
+    </button>
+
+    <button id="chat-toggle" onclick="toggleChat()" class="fixed right-5 bottom-[112px] bg-blue-700 text-white px-5 py-4 rounded-full shadow-2xl z-50 font-black">💬 AI 상담</button>
+    <div id="chat-box" class="hidden fixed chat-panel bg-white rounded-[26px] shadow-2xl border border-slate-200 overflow-hidden z-50">
+        <div class="bg-blue-800 text-white p-4 font-black flex justify-between text-sm"><span>삼성 FC AI 비서</span><button onclick="toggleChat()">✕</button></div>
+        <div id="chat-msgs" class="h-72 p-4 overflow-y-auto space-y-3 text-sm bg-white">
+            <div id="chat-initial" class="bg-slate-100 p-3 rounded-2xl mr-8 leading-relaxed">안녕하세요. 보험 보장 분석과 상담 신청을 도와드리겠습니다.</div>
+        </div>
+        <div class="p-3 border-t bg-slate-50 flex gap-2">
+            <input type="text" id="chat-input" class="flex-1 p-3 border rounded-xl text-sm outline-none" placeholder="문의 입력" onkeydown="if(event.key==='Enter') sendChat()">
+            <button onclick="sendChat()" class="bg-blue-700 text-white px-4 rounded-xl font-black text-sm">전송</button>
+        </div>
+    </div>
+
+    <script>
+        window.FC_EXPORTED_DATA = null;
+        const DEFAULTS = {
+            fc_product_mode: 'base',
+            fc_company_label: '삼성생명 | 삼성화재',
+            fc_name: '',
+            fc_phone: '',
+            fc_email: '',
+            fc_badge_left: '무료 보장 분석',
+            fc_badge_right: '맞춤 상품 상담',
+            fc_title: '가족의 내일을 지키는 일,\n삼성과 함께하는 정직한 설계',
+            fc_desc: '보험은 많이 가입하는 것보다 필요한 보장을 빠짐없이 준비하고 오래 유지할 수 있게 설계하는 것이 중요합니다. 기존 보험의 보장 공백, 중복 특약, 갱신 보험료 부담을 함께 점검해드립니다.',
+            fc_form_title: '무료 보장 분석 신청',
+            fc_form_desc: '성함과 연락처를 남겨주시면 기존 보험의 보장 공백, 중복 특약, 보험료 효율을 순차적으로 점검해드립니다.',
+            fc_form_button: '상담 신청하기',
+            fc_floating_cta: '무료 보장 분석 신청하기',
+            fc_chat_initial: '안녕하세요. 보험 보장 분석과 상담 신청을 도와드리겠습니다. 현재 가입 보험, 보험료 부담, 준비하고 싶은 보장을 알려주시면 상담 신청 방향을 안내해드리겠습니다.',
+            menus: [
+                {title:'현재 보장 점검', desc:'이미 가입한 보험이 암·뇌·심장·실손·운전자 위험을 충분히 대비하는지 무료 분석으로 확인하세요.'},
+                {title:'부족 보장 확인', desc:'치료비, 소득 공백, 가족 생활비까지 고려해 빠진 보장을 찾아드립니다.'},
+                {title:'보험료 효율화', desc:'중복 특약과 갱신 보험료 부담을 점검해 납입 대비 효율을 높일 수 있는 방법을 안내합니다.'}
+            ],
+            features: [
+                {icon:'🛡️', title:'보장 공백 점검', desc:'가입 중인 보험증권을 기준으로 암진단비, 뇌혈관·허혈성심장질환, 실손, 운전자, 후유장해, 간병 보장까지 실제 위험에 비어 있는 부분을 찾아드립니다.'},
+                {icon:'📊', title:'보험료 효율 분석', desc:'갱신형 특약, 중복 특약, 납입기간, 보장기간을 함께 검토해 같은 보험료로 더 필요한 보장에 집중할 수 있는지 확인합니다.'},
+                {icon:'🤝', title:'맞춤형 상품 상담', desc:'나이, 직업, 가족력, 기존 보험, 월 납입 가능 보험료를 반영해 삼성생명·삼성화재 상품 중 필요한 방향을 설명합니다.'}
+            ]
+        };
+        function parseJSONSafe(v, fallback){ try { return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; } }
+        function isDynamicProductMode(){ if(window.FC_EXPORTED_DATA) return window.FC_EXPORTED_DATA.fc_product_mode === 'dynamic'; return localStorage.getItem('fc_product_mode') === 'dynamic'; }
+        function getValue(key){
+            if(window.FC_EXPORTED_DATA && window.FC_EXPORTED_DATA[key] !== undefined) return window.FC_EXPORTED_DATA[key];
+            if(isDynamicProductMode() || key === 'fc_name' || key === 'fc_company_label' || key === 'fc_phone' || key === 'fc_email') return localStorage.getItem(key) || DEFAULTS[key] || '';
+            return DEFAULTS[key] || '';
+        }
+        function getMenus(){ if(window.FC_EXPORTED_DATA && Array.isArray(window.FC_EXPORTED_DATA.menus)) return window.FC_EXPORTED_DATA.menus; if(isDynamicProductMode()){ const stored = parseJSONSafe(localStorage.getItem('fc_menus'), null); if(Array.isArray(stored) && stored.length) return stored; } return DEFAULTS.menus; }
+        function getFeatures(){ if(window.FC_EXPORTED_DATA && Array.isArray(window.FC_EXPORTED_DATA.features)) return window.FC_EXPORTED_DATA.features; if(isDynamicProductMode()){ const stored = parseJSONSafe(localStorage.getItem('fc_features'), null); if(Array.isArray(stored) && stored.length) return stored; } return DEFAULTS.features; }
+        function setText(id, value){ const el=document.getElementById(id); if(el) el.textContent=value || ''; }
+        function setMultiline(id, value){ const el=document.getElementById(id); if(el) el.innerHTML=(value || '').replace(/\n/g,'<br>'); }
+        function renderMenus(){
+            const grid=document.getElementById('step-grid'); grid.innerHTML='';
+            const menus=getMenus().filter(m => m && (m.title || m.desc));
+            menus.forEach(function(m, idx){
+                const card=document.createElement('div');
+                card.className='step-card bg-white rounded-2xl border border-slate-200 px-2 py-5 md:px-4 md:py-8 shadow-sm';
+                const n=document.createElement('div'); n.className='step-number'; n.textContent=String(idx+1).padStart(2,'0');
+                const t=document.createElement('div'); t.className='step-label text-[14px] md:text-[26px] font-black text-slate-700 mt-3'; t.textContent=m.title || '';
+                const p=document.createElement('p'); p.className='step-desc'; p.textContent=m.desc || '';
+                card.appendChild(n); card.appendChild(t); card.appendChild(p); grid.appendChild(card);
+            });
+        }
+        function renderFeatures(){
+            const list=document.getElementById('feature-list'); list.innerHTML='';
+            getFeatures().filter(f => f && (f.title || f.desc || f.icon)).forEach(function(f){
+                const card=document.createElement('div'); card.className='feature-card bg-white rounded-3xl border border-slate-200 p-5 shadow-sm';
+                const icon=document.createElement('div'); icon.className='text-2xl mb-3'; icon.textContent=f.icon || '✅';
+                const h=document.createElement('h4'); h.className='font-black text-slate-900 mb-2'; h.textContent=f.title || '';
+                const p=document.createElement('p'); p.className='text-sm text-slate-500 leading-relaxed'; p.textContent=f.desc || '';
+                card.appendChild(icon); card.appendChild(h); card.appendChild(p); list.appendChild(card);
+            });
+        }
+        function applyData(){
+            const logo = (window.FC_EXPORTED_DATA && window.FC_EXPORTED_DATA.fc_logo) ? window.FC_EXPORTED_DATA.fc_logo : localStorage.getItem('fc_logo');
+            if(logo){ const img=document.getElementById('main-logo'); img.src=logo; img.classList.remove('hidden'); document.getElementById('logo-text').classList.add('hidden'); }
+            setText('company-label', getValue('fc_company_label'));
+            const fcName = getValue('fc_name');
+            const fcTop = document.getElementById('fc-name-top');
+            if(fcTop){
+                if(fcName){ fcTop.textContent = fcName.includes('FC') ? fcName : fcName + ' FC'; fcTop.classList.remove('hidden'); }
+                else { fcTop.textContent = ''; fcTop.classList.add('hidden'); }
+            }
+            setText('badge-left', getValue('fc_badge_left')); setText('badge-right', getValue('fc_badge_right'));
+            setMultiline('hero-title', getValue('fc_title')); setText('hero-desc', getValue('fc_desc'));
+            setText('form-title', getValue('fc_form_title')); setText('form-desc', getValue('fc_form_desc')); setText('form-button', getValue('fc_form_button')); setText('floating-cta-text', getValue('fc_floating_cta')); setText('chat-initial', getValue('fc_chat_initial'));
+            renderMenus(); renderFeatures();
+        }
+        function scrollToForm(){ document.getElementById('form-section').scrollIntoView({behavior:'smooth', block:'start'}); }
+        function toggleChat(){ document.getElementById('chat-box').classList.toggle('hidden'); }
+        function sendChat(){ const input=document.getElementById('chat-input'), msgs=document.getElementById('chat-msgs'); const q=input.value.trim(); if(!q) return; const u=document.createElement('div'); u.className='bg-blue-100 p-3 rounded-2xl text-right ml-8'; u.textContent=q; msgs.appendChild(u); const a=document.createElement('div'); a.className='bg-slate-100 p-3 rounded-2xl mr-8 leading-relaxed'; a.textContent='정확한 상품 안내를 위해 상담 신청을 남겨주시면 보장 내용과 보험료 방향을 함께 점검해드리겠습니다.'; setTimeout(function(){ msgs.appendChild(a); msgs.scrollTop=msgs.scrollHeight; },400); input.value=''; }
+        function formatPhone(el){ let v=el.value.replace(/[^0-9]/g,'').slice(0,11); if(v.length>7) v=v.replace(/(\d{3})(\d{4})(\d{0,4})/,'$1-$2-$3'); else if(v.length>3) v=v.replace(/(\d{3})(\d{0,4})/,'$1-$2'); el.value=v; }
+        function getFcEmail(){ return (getValue('fc_email') || localStorage.getItem('fc_email') || '').trim(); }
+        function isValidEmail(email){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+        function makeLeadBody(name, phone, title){ const fcName=getValue('fc_name') || ''; const now=new Date().toLocaleString(); return '상담 신청이 접수되었습니다.\n\n성함: '+name+'\n연락처: '+phone+'\n관심 페이지: '+title.replace(/\n/g,' ')+'\n접수일시: '+now+'\n담당 FC: '+fcName+'\n\n고객에게 빠르게 연락해 상담을 진행해 주세요.'; }
+        function openMailFallback(email, name, phone, title){ const subject=encodeURIComponent('[상담신청] '+name+'님 보험 상담 요청'); const body=encodeURIComponent(makeLeadBody(name, phone, title)); location.href='mailto:'+email+'?subject='+subject+'&body='+body; }
+        async function sendLeadByEmail(email, name, phone, title){
+            if(!isValidEmail(email)) return 'no-email';
+            const payload={
+                _subject:'[상담신청] '+name+'님 보험 상담 요청',
+                _captcha:'false',
+                _template:'table',
+                고객명:name,
+                연락처:phone,
+                관심페이지:title.replace(/\n/g,' '),
+                신청일시:new Date().toLocaleString(),
+                담당FC:getValue('fc_name') || '',
+                message:makeLeadBody(name, phone, title)
+            };
+            try{
+                const res=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(email),{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)});
+                if(res.ok) return 'sent';
+                throw new Error('mail service failed');
+            } catch(err){ openMailFallback(email, name, phone, title); return 'fallback'; }
+        }
+        async function submitLead(e){
+            e.preventDefault();
+            const name=document.getElementById('lead-name').value.trim();
+            const phone=document.getElementById('lead-phone').value.trim();
+            const title=getValue('fc_title');
+            const fcEmail=getFcEmail();
+            const leads=parseJSONSafe(localStorage.getItem('fc_leads'),'[]');
+            const arr=Array.isArray(leads)?leads:[];
+            arr.unshift({name:name, phone:phone, emailTo:fcEmail, date:new Date().toLocaleString(), title:title});
+            localStorage.setItem('fc_leads', JSON.stringify(arr));
+            if(fcEmail){
+                const status=await sendLeadByEmail(fcEmail, name, phone, title);
+                if(status==='sent') alert('상담 신청이 FC 이메일로 발송되었습니다. 담당 FC가 확인 후 연락드립니다.');
+                else if(status==='fallback') alert('메일앱을 열었습니다. 메일앱 화면에서 전송 버튼을 누르면 FC 이메일로 신청 내용이 발송됩니다.');
+                else alert('FC 이메일 형식이 올바르지 않아 신청 내용은 이 브라우저에만 저장되었습니다.');
+            } else {
+                alert('상담 신청이 저장되었습니다. 관리자 페이지에서 FC 이메일을 설정하면 신청 내용을 이메일로 받을 수 있습니다.');
+            }
+            e.target.reset();
+        }
+        window.addEventListener('DOMContentLoaded', applyData);
+    </script>
+</body>
+</html>
