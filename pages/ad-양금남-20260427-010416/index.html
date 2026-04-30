@@ -62,4 +62,114 @@
 <div class="urgency">⏰ 치매 보험은 건강할 때만 가입할 수 있습니다. 경도인지장애 진단을 받거나 나이가 들수록 가입이 거절되거나 보험료가 급증합니다. 부모님 이름을 잊기 전, 지금 이 순간이 마지막 기회일 수 있습니다.</div>
 <div class="cta"><a href="tel:010-8116-2513" class="ba">📞 치매 보험 전문 상담 받기</a><a href="./form.html" class="bb">✏️ 1분 만에 무료 견적 신청</a></div>
 <div class="ft">본 광고는 상품의 주요 특징을 안내하는 것으로, 보장 내용 및 제한 사항은 반드시 약관을 확인하시기 바랍니다. 가입 전 상품설명서 및 약관을 확인하시고, 보장 내용·보험료·해지환급금 등을 반드시 확인하시기 바랍니다. 보험계약 체결 전 상품설명서 및 약관을 읽어보시기 바랍니다. 문의: 양금남 (삼성생명 FC) 010-8116-2513<br>삼성생명 · 양금남</div>
+
+<script id="samsung-life-insurance-chatbot-guide">
+(function(){
+  'use strict';
+  var PRODUCT_GROUPS=[
+    '건강보장 보험: 플러스원, 퍼스트, 라이트',
+    '저축보험: 행복종신',
+    '연금보험: 밸런스종신',
+    '상속세 준비보험: 골든종신'
+  ];
+  var PRODUCT_NAMES=['플러스원','퍼스트','라이트','행복종신','밸런스종신','골든종신'];
+  var GUIDE='삼성생명 보험의 대표적인 상품군 안내입니다.\n\n'
+    +PRODUCT_GROUPS.map(function(v){return '• '+v;}).join('\n')
+    +'\n\n위 상품명은 고객 상담 시 이해를 돕기 위한 대표 상품군 안내입니다.';
+  var CONSULT='개별 보험의 세부 보장내용, 가입 가능 여부, 보험료, 특약 구성, 해지환급금, 세금 관련 판단은 고객님의 나이, 직업, 병력, 납입기간, 보장금액, 계약 조건에 따라 달라집니다. 정확한 설명과 설계는 담당 FC와 상담해 주십시오.';
+  function hasInsuranceKeyword(q){
+    return /(삼성생명|보험|건강|저축|연금|상속|상속세|종신|보장|특약|보험료|가입|설계|플러스원|퍼스트|라이트|행복종신|밸런스종신|골든종신)/i.test(String(q||''));
+  }
+  function hasProductKeyword(q){
+    q=String(q||'');
+    return PRODUCT_NAMES.some(function(name){return q.indexOf(name)>=0;});
+  }
+  function answer(question){
+    var q=String(question||'').trim();
+    if(!q)return '';
+    if(!hasInsuranceKeyword(q))return '';
+    if(hasProductKeyword(q))return GUIDE+'\n\n문의하신 개별 상품에 대한 세부 내용은 담당 FC와 상담해 주십시오. '+CONSULT;
+    return GUIDE+'\n\n개별 상품에 대해 질문하실 경우 담당 FC와 상담해 주십시오. '+CONSULT;
+  }
+  window.SAMSUNG_LIFE_INSURANCE_CHATBOT_GUIDE=GUIDE;
+  window.SAMSUNG_LIFE_INSURANCE_FC_CONSULT_MESSAGE=CONSULT;
+  window.getSamsungLifeInsuranceChatbotAnswer=answer;
+
+  function patchGlobalFunction(name){
+    try{
+      var original=window[name];
+      if(typeof original!=='function'||original.__samsungLifeGuidePatched)return;
+      var wrapped=function(){
+        var args=[].slice.call(arguments);
+        var q=args.map(function(v){return typeof v==='string'?v:(v&&v.value)||'';}).join(' ');
+        var fixed=answer(q);
+        if(fixed)return fixed;
+        return original.apply(this,arguments);
+      };
+      wrapped.__samsungLifeGuidePatched=true;
+      window[name]=wrapped;
+    }catch(e){}
+  }
+  [
+    'getBotReply','generateBotReply','getAIResponse','getInsuranceAnswer','localChatReply',
+    'makeChatAnswer','createChatAnswer','adBotAnswer','insuranceBotAnswer','botReply'
+  ].forEach(patchGlobalFunction);
+
+  function findChatBox(){
+    return document.querySelector('#chatMessages,#chat-messages,.chat-messages,#chatBody,.chat-body,#botMessages,.bot-messages,.messages,.message-list');
+  }
+  function appendBotMessage(text){
+    var box=findChatBox();
+    if(!box)return false;
+    var div=document.createElement('div');
+    div.className='bot-message samsung-life-guide-message';
+    div.style.cssText='margin:8px 0;padding:12px 14px;border-radius:14px;background:#f3f7ff;border:1px solid #dbe7ff;color:#1c1a17;font-size:14px;line-height:1.65;white-space:pre-line;';
+    div.textContent=text;
+    box.appendChild(div);
+    try{box.scrollTop=box.scrollHeight;}catch(e){}
+    return true;
+  }
+  function showInitialGuide(){
+    if(document.getElementById('samsung-life-guide-initial-message'))return;
+    var box=findChatBox();
+    if(!box)return;
+    var div=document.createElement('div');
+    div.id='samsung-life-guide-initial-message';
+    div.className='bot-message samsung-life-guide-message';
+    div.style.cssText='margin:8px 0;padding:12px 14px;border-radius:14px;background:#f3f7ff;border:1px solid #dbe7ff;color:#1c1a17;font-size:14px;line-height:1.65;white-space:pre-line;';
+    div.textContent=GUIDE+'\n\n개별 보험의 세부 내용은 담당 FC와 상담해 주십시오.';
+    box.appendChild(div);
+  }
+  function readQuestionFromForm(form){
+    var fields=form.querySelectorAll('input,textarea');
+    var vals=[];
+    fields.forEach(function(el){ if(el.value)vals.push(el.value); });
+    return vals.join(' ');
+  }
+  document.addEventListener('submit',function(e){
+    var q=readQuestionFromForm(e.target);
+    var fixed=answer(q);
+    if(fixed)setTimeout(function(){appendBotMessage(fixed);},180);
+  },true);
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest&&e.target.closest('button');
+    if(!btn)return;
+    var q=(btn.textContent||'')+' '+(btn.getAttribute('data-question')||'')+' '+(btn.getAttribute('aria-label')||'');
+    var fixed=answer(q);
+    if(fixed)setTimeout(function(){appendBotMessage(fixed);},180);
+  },true);
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Enter')return;
+    var el=e.target;
+    if(!el||!(/^(INPUT|TEXTAREA)$/i.test(el.tagName)))return;
+    var meta=[el.id,el.className,el.name,el.placeholder].join(' ');
+    if(!/(chat|bot|챗|질문|상담|보험)/i.test(meta))return;
+    var fixed=answer(el.value);
+    if(fixed)setTimeout(function(){appendBotMessage(fixed);},220);
+  },true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',showInitialGuide);
+  else showInitialGuide();
+  setTimeout(showInitialGuide,800);
+})();
+</script>
 </body></html>
