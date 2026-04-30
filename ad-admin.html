@@ -484,7 +484,7 @@ body::before,body::after{display:none;}
   <div id="ad-grid-wrap" style="margin-bottom:20px"><div class="sec-block"><div class="sec-title"><span>📣 광고 프로그램</span><div class="sec-line"></div></div><div class="grp-hd">
         
         <span>오늘</span>
-        <span style="color:var(--t2);font-size:9px;font-weight:600">4개</span>
+        <span style="color:var(--t2);font-size:9px;font-weight:600">3개</span>
         <div class="grp-hd-line"></div>
       </div>
       <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-0">
@@ -586,7 +586,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="elec-20260430-092931">elec-20260430-092931</div>
         <div class="ad-row-meta">
-          <span>🕐 3시간 전</span>
+          <span>🕐 4시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -625,14 +625,20 @@ body::before,body::after{display:none;}
         <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
       </div>
     </div>
-  </div><div class="ad-row" id="row-3">
+  </div></div><div class="grp-hd">
+        
+        <span>날짜 없음</span>
+        <span style="color:var(--t2);font-size:9px;font-weight:600">1개</span>
+        <div class="grp-hd-line"></div>
+      </div>
+      <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-3">
     <div class="ad-row-main" onclick="toggleRow('det-3','row-3')">  
       <div class="ad-row-num">4</div>
       <div class="ad-row-icon">🌐</div>
       <div class="ad-row-info">
         <div class="ad-row-name" title="elec-20260429-203313">elec-20260429-203313</div>
         <div class="ad-row-meta">
-          <span>🕐 16시간 전</span>
+          <span>🕐 —</span>
           <span>· 📁 3개</span>
         </div>
       </div>
@@ -785,9 +791,9 @@ body::before,body::after{display:none;}
         </div>
       </div>
       <div class="ad-row-badge b-live">🌐 일반</div>
-      <div class="ad-row-chevron open" id="app-chv-3">›</div>
+      <div class="ad-row-chevron" id="app-chv-3">›</div>
     </div>
-    <div class="ad-row-detail open" id="app-det-3">
+    <div class="ad-row-detail" id="app-det-3">
       <div class="detail-url">
         <div class="url-dot"></div>
         <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html</div>
@@ -853,15 +859,15 @@ body::before,body::after{display:none;}
   <div class="modal-body">
     <div class="del-icon">⚠️</div>
     <div class="del-msg">
-      <strong class="del-name" id="bdel-names">elec-20260429-153235, elec-20260429-152222, elec-20260429-151548, elec-20260429-151055, elec-20260429-150306, elec-20260429-145318</strong><br>
+      <strong class="del-name" id="bdel-names"></strong><br>
       위 광고가 GitHub에서 영구 삭제됩니다.<br>
       <strong style="color:var(--red)">되돌릴 수 없습니다.</strong>
     </div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-ghost" style="flex:1" onclick="closeModal('bdel')">취소</button>
-      <button class="btn btn-danger" style="flex:1" id="bdel-confirm-btn" onclick="confirmBulkDel()" disabled="">🗑 삭제</button>
+      <button class="btn btn-danger" style="flex:1" id="bdel-confirm-btn" onclick="confirmBulkDel()">🗑 삭제</button>
     </div>
-    <div class="loading" id="bdel-loading" style="display: flex; padding: 14px 0px;"><div class="spin"></div><span id="bdel-msg">"elec-20260429-145318" 삭제 중... (16/6)</span></div>
+    <div class="loading" id="bdel-loading" style="display:none;padding:14px 0"><div class="spin"></div><span id="bdel-msg">삭제 중...</span></div>
     <div class="err-box" id="bdel-err" style="margin-top:10px"></div>
   </div>
 </div>
@@ -936,14 +942,14 @@ body::before,body::after{display:none;}
         <span>📣 광고배포 폴더 선택</span>
         <span style="font-family:var(--mono);font-size:10px;color:var(--blue2)">pages/선택폴더/</span>
       </label>
-      <select id="dep-folder-select" onchange="updateDepPreview()" style="width:100%;margin-top:6px;background:#faf7f3;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none"><option value="ad-양금남-20260427-010416">pages/ad-양금남-20260427-010416/</option><option value="elec-20260429-203313">pages/elec-20260429-203313/</option><option value="elec-20260430-092931">pages/elec-20260430-092931/</option><option value="elec-20260430-105515">pages/elec-20260430-105515/</option></select>
+      <select id="dep-folder-select" onchange="updateDepPreview()" disabled="" style="width:100%;margin-top:6px;background:#faf7f3;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none"><option value="ad-양금남-20260427-010416">pages/ad-양금남-20260427-010416/</option><option value="elec-20260429-203313">pages/elec-20260429-203313/</option><option value="elec-20260430-092931">pages/elec-20260430-092931/</option><option value="elec-20260430-105515">pages/elec-20260430-105515/</option></select>
       <div id="dep-folder-help" style="font-size:10px;color:var(--t3);line-height:1.6;margin-top:7px">추가 파일은 기본적으로 일반 프로그램 폴더에 배포됩니다. 광고 페이지의 파일을 교체하거나 추가하려면 광고배포 폴더를 선택하십시오.</div>
     </div>
 
     <div style="background:rgba(74,126,248,.07);border:1px solid rgba(74,126,248,.2);border-radius:10px;padding:11px 13px;font-size:11px;color:var(--t2);line-height:1.8;margin-bottom:14px">
       📌 배포 후 URL:<br>
       <span id="dep-url-preview" style="font-family:var(--mono);color:var(--blue2);font-size:10px;word-break:break-all;white-space:pre-line">관리페이지: https://cheljae-coder.github.io/fc-pages/ad-admin.html
-추가파일: https://cheljae-coder.github.io/fc-pages/pages/ad-양금남-20260427-010416/fc_insurance.html</span>
+추가파일: https://cheljae-coder.github.io/fc-pages/apps/fc_insurance.html</span>
     </div>
     <div class="loading" id="dep-loading" style="display: flex; padding: 16px 0px;">
       <div class="spin"></div><span id="dep-msg">(1/2) ad-admin.html 업로드 중...</span>
@@ -1217,6 +1223,7 @@ async function deployAdmin(){
     ld.style.display='none';suc.style.display='block';
     document.getElementById('dep-btns').style.display='none';
     showToast('☁️ '+uploaded.length+'개 파일 배포 완료!','success');
+    await refreshCurrentListsAfterDeploy(target.type,target.folder);
   }catch(e){
     err.textContent='배포 실패: '+e.message;
     btn.disabled=false;
@@ -1243,6 +1250,42 @@ function renderDepResultUrls(urls){
       <button class="file-btn fbtn-view" onclick="event.preventDefault();event.stopPropagation();cpy('${safe}')">복사</button>
     </div>`;
   }).join('');
+}
+
+async function refreshCurrentListsAfterDeploy(targetType,targetFolder){
+  try{
+    if(targetType==='pages'&&targetFolder){
+      const fr=await GH('pages/'+targetFolder);
+      if(fr.ok){
+        const files=(await fr.json()).filter(f=>f.type==='file');
+        const ad=getAdObj(targetFolder);
+        if(ad){
+          ad.files=files;
+          ad.fileCount=files.length;
+          ad.hasIndex=files.some(f=>f.name==='index.html');
+          ad.hasForm=files.some(f=>f.name==='form.html');
+        }
+        refreshAdFolderFilesAfterUpload(targetFolder);
+        updateStats();
+      }
+    }else if(targetType==='apps'){
+      const ar=await GH('apps');
+      if(ar.ok){
+        const files=(await ar.json()).filter(f=>f.type==='file'&&/\.html?$/i.test(f.name));
+        ALL_APPS=files.map(f=>({
+          fileName:f.name,
+          slug:f.name.replace(/\.html?$/i,''),
+          size:f.size||0,
+          sha:f.sha||null,
+          url:`https://${CFG.owner}.github.io/${CFG.repo}/apps/${encodeURIComponent(f.name)}`,
+          updatedAt:null
+        }));
+        renderAds();
+      }
+    }
+  }catch(e){
+    console.warn('[refreshCurrentListsAfterDeploy]',e);
+  }
 }
 
 /* ══ 저장소 ══ */
@@ -1307,12 +1350,17 @@ function saveCfg(){
 }
 
 /* ══ GitHub API ══ */
+function ghContentUrl(path){
+  const clean=String(path||'').replace(/^\/+|\/+$/g,'');
+  const encoded=clean?clean.split('/').map(part=>encodeURIComponent(part)).join('/'):'';
+  return `https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents${encoded?'/'+encoded:''}`;
+}
 const GH=(path,opt={})=>{
   const hdrs={Authorization:`token ${CFG.token}`,
     Accept:'application/vnd.github.v3+json',
     'X-Requested-With':'XMLHttpRequest'};
   const merged={...opt,headers:{...hdrs,...(opt.headers||{})}};
-  return fetch(`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${path}`,merged);
+  return fetch(ghContentUrl(path),merged);
 };
 // 연결 진단 API (인증 불필요)
 const GH_TEST=()=>fetch('https://api.github.com/zen',{headers:{'Accept':'application/vnd.github.v3+json'}});
@@ -1621,6 +1669,7 @@ async function saveFile(slug,fileName,fid){
 }
 
 async function delFile(slug,fileName){
+  slug=decArg(slug);
   fileName=decArg(fileName);
   if(!confirm(`"${fileName}" 파일을 삭제하시겠습니까?\n되돌릴 수 없습니다.`))return;
   showToast('🗑 삭제 중...','info');
@@ -1635,8 +1684,7 @@ async function delFile(slug,fileName){
     });
     if(!dr.ok){const dj=await dr.json().catch(()=>({}));throw new Error(dj.message||dr.status);}
     showToast(`🗑 ${fileName} 삭제 완료`,'success');
-    // 목록 새로고침
-    setTimeout(()=>diagAndLoad(),800);
+    refreshAdFolderFilesAfterUpload(slug);
   }catch(e){showToast('삭제 실패: '+e.message,'error');}
 }
 
@@ -1644,6 +1692,23 @@ async function delFile(slug,fileName){
 /* ══ 파일 목록 동적 로드 ══ */
 function encArg(v){return encodeURIComponent(String(v||''));}
 function decArg(v){try{return decodeURIComponent(String(v||''));}catch(_){return String(v||'').replace(/%27/g,"'");}}
+function getAdFileContainer(slug){
+  const val=String(slug||'');
+  const lists=[...document.querySelectorAll('.file-list[data-slug]')];
+  return lists.find(el=>el.dataset.slug===val)||document.getElementById('fl-'+val)||null;
+}
+function getAdObj(slug){
+  return (ALL_ADS||[]).find(a=>a.slug===slug)||null;
+}
+function refreshAdFolderMeta(slug,fileCount){
+  const ad=getAdObj(slug);
+  if(ad&&Number.isFinite(fileCount))ad.fileCount=fileCount;
+  updateStats();
+}
+function refreshAdFolderFilesAfterUpload(slug){
+  const fl=getAdFileContainer(slug);
+  if(fl){fl.dataset.loaded='0';loadFileList(slug,fl,true);}
+}
 function isTextFileName(name){return /\.(html?|js|css|json|txt|md|xml|svg)$/i.test(String(name||''));}
 function isImageFileName(name){return /\.(jpe?g|png|gif|webp|bmp|avif)$/i.test(String(name||''));}
 function pageFileUrl(slug,fileName){
@@ -1659,7 +1724,7 @@ function copyPageFileUrl(encSlug,encFileName){
 }
 function reloadAdFolderFiles(encSlug){
   const slug=decArg(encSlug);
-  const fl=document.getElementById('fl-'+slug);
+  const fl=getAdFileContainer(slug);
   if(fl){fl.dataset.loaded='0';loadFileList(slug,fl,true);}
 }
 
@@ -1680,14 +1745,14 @@ async function loadFileList(slug, container, force){
 
     const encSlug=encArg(slug);
 
-    let html='<div class="file-sel-bar" id="fsb-'+slug+'">'
-      +'<span id="fsb-cnt-'+slug+'">0개 선택</span>'
+    let html='<div class="file-sel-bar">'
+      +'<span data-role="file-sel-count">0개 선택</span>'
       +'<button class="file-btn fbtn-view" onclick="copySelectedFileUrls(\''+encSlug+'\')">🔗 선택 URL 복사</button>'
-      +'<button class="file-btn fbtn-del" onclick="delSelectedFiles(\''+slug+'\')">🗑 선택 삭제</button>'
+      +'<button class="file-btn fbtn-del" onclick="delSelectedFiles(\''+encSlug+'\')">🗑 선택 삭제</button>'
       +'</div>';
 
-    html+='<div class="file-row" style="background:var(--s2);border-color:var(--bd2)">'
-      +'<div class="file-cb" id="cb-all-'+slug+'" onclick="toggleAllFiles(\''+slug+'\')"></div>'
+    html+='<div class="file-row file-all-row" style="background:var(--s2);border-color:var(--bd2)">'
+      +'<div class="file-cb" onclick="toggleAllFiles(\''+encSlug+'\')"></div>'
       +'<div class="file-info"><div class="file-name" style="color:var(--t2)">전체 선택</div><div class="file-size">광고배포 폴더: pages/'+escH(slug)+'/</div></div>'
       +'<div class="file-acts"><button class="file-btn fbtn-view" onclick="uploadToAdFolder(\''+encSlug+'\')">➕ 파일추가</button><span style="font-size:10px;color:var(--t3);align-self:center">'+files.length+'개 파일</span></div>'
       +'</div>';
@@ -1700,17 +1765,16 @@ async function loadFileList(slug, container, force){
       const isText=isTextFileName(name);
       const isImg=isImageFileName(name);
       const url=pageFileUrl(slug,name);
-      const rowId='fr-'+slug+'-'+name.replace(/[^a-z0-9]/gi,'-');
-      return '<div class="file-row" id="'+rowId+'" data-file-name="'+escH(name)+'" data-file-url="'+escH(url)+'">'
-        +'<div class="file-cb" onclick="toggleFileCheck(\''+slug+'\',\''+encName+'\',this)"></div>'
+      return '<div class="file-row" data-file-name="'+escH(name)+'" data-file-url="'+escH(url)+'">'
+        +'<div class="file-cb" onclick="toggleFileCheck(\''+encSlug+'\',\''+encName+'\',this)"></div>'
         +'<span class="file-ico">'+fico+'</span>'
         +'<div class="file-info"><div class="file-name">'+escH(name)+'</div><div class="file-size">'+fsz+'</div><div class="file-url">'+escH(url)+'</div></div>'
         +'<div class="file-acts">'
         +'<button class="file-btn fbtn-view" onclick="openPageFileUrl(\''+encSlug+'\',\''+encName+'\')">열기</button>'
         +'<button class="file-btn" style="background:rgba(6,182,212,.08);color:var(--cyan)" onclick="copyPageFileUrl(\''+encSlug+'\',\''+encName+'\')">URL복사</button>'
-        +((isText||isImg)?'<button class="file-btn fbtn-view" onclick="openFileView(\''+slug+'\',\''+encName+'\','+isText+','+isImg+')">보기</button>':'')
-        +(isText?'<button class="file-btn" style="background:rgba(34,197,94,.1);color:var(--green)" onclick="openFileView(\''+slug+'\',\''+encName+'\',true,false,true)">수정</button>':'')
-        +'<button class="file-btn fbtn-del" onclick="delFile(\''+slug+'\',\''+encName+'\')">삭제</button>'
+        +((isText||isImg)?'<button class="file-btn fbtn-view" onclick="openFileView(\''+encSlug+'\',\''+encName+'\','+isText+','+isImg+')">보기</button>':'')
+        +(isText?'<button class="file-btn" style="background:rgba(34,197,94,.1);color:var(--green)" onclick="openFileView(\''+encSlug+'\',\''+encName+'\',true,false,true)">수정</button>':'')
+        +'<button class="file-btn fbtn-del" onclick="delFile(\''+encSlug+'\',\''+encName+'\')">삭제</button>'
         +'</div>'
         +'</div>';
     }).join('');
@@ -1719,7 +1783,7 @@ async function loadFileList(slug, container, force){
     container._files=files;
   }catch(e){
     container.dataset.loaded='0';
-    container.innerHTML='<div style="font-size:11px;color:var(--red);padding:8px 2px">⚠️ '+escH(e.message)+'<br><button class="file-btn fbtn-view" style="margin-top:6px" onclick="loadFileList(\''+slug+'\',this.closest(\'.file-list\'),true)">🔄 다시 시도</button></div>';
+    container.innerHTML='<div style="font-size:11px;color:var(--red);padding:8px 2px">⚠️ '+escH(e.message)+'<br><button class="file-btn fbtn-view" style="margin-top:6px" onclick="loadFileList(decArg(\''+encArg(slug)+'\'),this.closest(\'.file-list\'),true)">🔄 다시 시도</button></div>';
   }
 }
 
@@ -1748,9 +1812,9 @@ async function uploadToAdFolder(encSlug){
       }
     }
     showToast('✅ '+ok+'/'+files.length+'개 파일 업로드 완료','success');
-    const fl=document.getElementById('fl-'+slug);
+    const fl=getAdFileContainer(slug);
     if(fl)loadFileList(slug,fl,true);
-    diagAndLoad();
+    await refreshCurrentListsAfterDeploy('pages',slug);
   };
   input.click();
 }
@@ -1770,42 +1834,53 @@ function readFileAsBase64ForGit(file){
 
 function copySelectedFileUrls(encSlug){
   const slug=decArg(encSlug);
-  const rows=[...document.querySelectorAll('#fl-'+slug+' .file-row')]
-    .filter(row=>row.querySelector('.file-cb.checked')&&!row.querySelector('#cb-all-'+slug));
+  const box=getAdFileContainer(slug);
+  if(!box){showToast('파일 목록을 먼저 여십시오','error');return;}
+  const rows=[...box.querySelectorAll('.file-row')]
+    .filter(row=>row.querySelector('.file-cb.checked')&&!row.classList.contains('file-all-row'));
   const urls=rows.map(row=>row.dataset.fileUrl).filter(Boolean);
   if(!urls.length){showToast('선택된 파일이 없습니다','error');return;}
   copyText(urls.join('\n'),'🔗 선택 파일 URL 복사 완료');
 }
 
 /* ══ 파일 체크박스 ══ */
-function toggleFileCheck(slug,fileName,cb){
+function toggleFileCheck(encSlug,fileName,cb){
+  const slug=decArg(encSlug);
   cb.classList.toggle('checked');
   updateFileSelBar(slug);
 }
-function toggleAllFiles(slug){
-  const cbs=document.querySelectorAll('#fl-'+slug+' .file-cb:not(#cb-all-'+slug+')');
-  const allCk=[...cbs].every(c=>c.classList.contains('checked'));
+function toggleAllFiles(encSlug){
+  const slug=decArg(encSlug);
+  const box=getAdFileContainer(slug);
+  if(!box)return;
+  const cbs=box.querySelectorAll('.file-row:not(.file-all-row) .file-cb');
+  const allCk=[...cbs].length>0&&[...cbs].every(c=>c.classList.contains('checked'));
   cbs.forEach(c=>c.classList.toggle('checked',!allCk));
-  const allCb=document.getElementById('cb-all-'+slug);
+  const allCb=box.querySelector('.file-all-row .file-cb');
   if(allCb)allCb.classList.toggle('checked',!allCk);
   updateFileSelBar(slug);
 }
-function updateFileSelBar(slug){
-  const cbs=document.querySelectorAll('#fl-'+slug+' .file-row .file-cb.checked');
-  const cnt=cbs.length;
-  const bar=document.getElementById('fsb-'+slug);
-  const cntEl=document.getElementById('fsb-cnt-'+slug);
+function updateFileSelBar(encSlug){
+  const slug=decArg(encSlug);
+  const box=getAdFileContainer(slug);
+  if(!box)return;
+  const checked=[...box.querySelectorAll('.file-row:not(.file-all-row) .file-cb.checked')];
+  const cnt=checked.length;
+  const bar=box.querySelector('.file-sel-bar');
+  const cntEl=bar?bar.querySelector('[data-role="file-sel-count"]'):null;
   if(bar)bar.classList.toggle('show',cnt>0);
   if(cntEl)cntEl.textContent=cnt+'개 선택';
-  // 전체선택 체크박스 동기화
-  const total=document.querySelectorAll('#fl-'+slug+' .file-row .file-cb:not(#cb-all-'+slug+')').length;
-  const allCb=document.getElementById('cb-all-'+slug);
+  const total=box.querySelectorAll('.file-row:not(.file-all-row) .file-cb').length;
+  const allCb=box.querySelector('.file-all-row .file-cb');
   if(allCb)allCb.classList.toggle('checked',cnt>0&&cnt===total);
 }
-async function delSelectedFiles(slug){
-  const cbs=[...document.querySelectorAll('#fl-'+slug+' .file-row .file-cb.checked')];
+async function delSelectedFiles(encSlug){
+  const slug=decArg(encSlug);
+  const box=getAdFileContainer(slug);
+  if(!box)return;
+  const cbs=[...box.querySelectorAll('.file-row:not(.file-all-row) .file-cb.checked')];
   if(!cbs.length)return;
-  const names=cbs.map(cb=>cb.closest('.file-row')?.dataset.fileName||cb.closest('.file-row').querySelector('.file-name')?.textContent).filter(Boolean);
+  const names=cbs.map(cb=>cb.closest('.file-row')?.dataset.fileName||cb.closest('.file-row')?.querySelector('.file-name')?.textContent).filter(Boolean);
   if(!confirm('선택한 '+names.length+'개 파일을 삭제하시겠습니까?\n'+names.join('\n')+'\n\n되돌릴 수 없습니다.'))return;
   let ok=0;
   for(const name of names){
@@ -1813,17 +1888,18 @@ async function delSelectedFiles(slug){
       const r=await GH('pages/'+slug+'/'+name);
       if(!r.ok)continue;
       const j=await r.json();
-      await GH('pages/'+slug+'/'+name,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'[삭제] '+slug+'/'+name,sha:j.sha})});
-      ok++;
+      const dr=await GH('pages/'+slug+'/'+name,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'[삭제] '+slug+'/'+name,sha:j.sha})});
+      if(dr.ok)ok++;
     }catch(_){}
   }
   showToast('🗑 '+ok+'/'+names.length+'개 삭제 완료','success');
-  setTimeout(()=>diagAndLoad(),800);
+  refreshAdFolderFilesAfterUpload(slug);
 }
 
 /* ══ 파일 내용 뷰어 ══ */
 let _fvSlug='',_fvName='',_fvSha='',_fvEditable=false;
 async function openFileView(slug,fileName,isText,isImg,editable){
+  slug=decArg(slug);
   fileName=decArg(fileName);
   _fvSlug=slug;_fvName=fileName;_fvEditable=!!editable;
   const modal=document.getElementById('file-view-modal');
