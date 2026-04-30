@@ -420,10 +420,26 @@ body::before,body::after{display:none;}
     <div class="header-right">
       <button class="btn btn-ghost btn-sm" onclick="openDeploy()" title="관리 페이지를 GitHub Pages에 배포">☁️ 배포</button>
       <button class="btn btn-ghost btn-sm" onclick="openFolderManager()" title="GitHub 저장소 폴더 생성·삭제">📁 폴더관리</button>
+      <button class="btn btn-primary btn-sm" onclick="openSamsungChatbotManager()" title="광고폴더에 삼성생명 챗봇 안내문 적용">🤖 챗봇안내</button>
       <button class="btn btn-ghost btn-sm" onclick="toggleConfig()">⚙️ 설정</button>
       <button class="btn btn-primary btn-sm" onclick="diagAndLoad()" id="refresh-btn">
         <span>🔄</span> <span class="hide-sm">새로고침</span>
       </button>
+    </div>
+  </div>
+
+  <!-- ── 삼성생명 챗봇 안내 상단 고정 메뉴 ── -->
+  <div class="config-panel" id="samsung-chatbot-panel" style="padding:14px 16px;margin-bottom:14px;border-color:rgba(45,107,228,.25);background:linear-gradient(180deg,#ffffff,#f7fbff)">
+    <div class="config-title" style="margin-bottom:10px">
+      <span style="color:var(--blue2)">🤖</span> 삼성생명 챗봇 안내 적용
+    </div>
+    <div style="font-size:11px;color:var(--t2);line-height:1.7;margin-bottom:10px">
+      광고폴더를 펼치지 않아도 여기에서 바로 적용할 수 있습니다. 적용하면 해당 광고폴더의 HTML 파일에 삼성생명 대표 보험 안내와 FC 상담 안내 문구가 들어갑니다.
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <select class="sort-sel" id="samsung-chatbot-folder-select" style="flex:1;min-width:180px;height:40px"><option value="elec-20260429-203313">elec-20260429-203313</option><option value="elec-20260430-092931">elec-20260430-092931</option><option value="elec-20260430-105515">elec-20260430-105515</option></select>
+      <button class="btn btn-primary btn-sm" onclick="applySamsungFromTop()" style="height:40px">🤖 선택 폴더 적용</button>
+      <button class="btn btn-ghost btn-sm" onclick="applySamsungAllFromTop()" style="height:40px">전체 광고폴더 적용</button>
     </div>
   </div>
 
@@ -484,7 +500,7 @@ body::before,body::after{display:none;}
   <div id="ad-grid-wrap" style="margin-bottom:20px"><div class="sec-block"><div class="sec-title"><span>📣 광고 프로그램</span><div class="sec-line"></div></div><div class="grp-hd">
         
         <span>오늘</span>
-        <span style="color:var(--t2);font-size:9px;font-weight:600">3개</span>
+        <span style="color:var(--t2);font-size:9px;font-weight:600">2개</span>
         <div class="grp-hd-line"></div>
       </div>
       <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-0">
@@ -492,63 +508,16 @@ body::before,body::after{display:none;}
       <div class="ad-row-num">1</div>
       <div class="ad-row-icon">🌐</div>
       <div class="ad-row-info">
-        <div class="ad-row-name" title="ad-양금남-20260427-010416">ad-양금남-20260427-010416</div>
+        <div class="ad-row-name" title="elec-20260430-105515">elec-20260430-105515</div>
         <div class="ad-row-meta">
-          <span>🕐 2시간 전</span>
-          <span>· 📁 4개</span>
+          <span>🕐 8시간 전</span>
+          <span>· 📁 3개</span>
         </div>
       </div>
       <div class="ad-row-badge b-live">🟢 라이브</div>
       <div class="ad-row-chevron" id="chv-0">›</div>
     </div>
-    <div class="ad-row-detail" id="det-0" data-slug="ad-양금남-20260427-010416">
-      <!-- URL 바 -->
-      <div class="detail-url">
-        <div class="url-dot"></div>
-        <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/pages/ad-양금남-20260427-010416/</div>
-        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-양금남-20260427-010416/')">📋</button>
-      </div>
-      <!-- 액션 버튼 -->
-      <div class="detail-acts" style="margin-bottom:12px">
-        <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/pages/ad-양금남-20260427-010416/','_blank')">
-          <span class="cai">🌐</span>열기
-        </button>
-        <button class="ca ca-copy" onclick="cpy('https://cheljae-coder.github.io/fc-pages/pages/ad-양금남-20260427-010416/')">
-          <span class="cai">🔗</span>복사
-        </button>
-        <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/pages/ad-양금남-20260427-010416/','ad-양금남-20260427-010416')">
-          <span class="cai">📱</span>QR
-        </button>
-        <button class="ca ca-del" onclick="openDel('ad-양금남-20260427-010416')">
-          <span class="cai">🗑</span>폴더삭제
-        </button>
-      </div>
-      <!-- 파일 목록 -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;flex:1">📁 광고배포 폴더 파일관리</div>
-        <button class="file-btn fbtn-view" onclick="event.stopPropagation();uploadToAdFolder('ad-%EC%96%91%EA%B8%88%EB%82%A8-20260427-010416')">➕ 파일추가</button>
-        <button class="file-btn" style="background:rgba(109,78,212,.09);color:var(--purple)" onclick="event.stopPropagation();applySamsungChatbotToAdFolder('ad-%EC%96%91%EA%B8%88%EB%82%A8-20260427-010416')">🤖 삼성챗봇적용</button>
-        <button class="file-btn" style="background:rgba(6,182,212,.08);color:var(--cyan)" onclick="event.stopPropagation();reloadAdFolderFiles('ad-%EC%96%91%EA%B8%88%EB%82%A8-20260427-010416')">🔄 새로고침</button>
-      </div>
-      <div class="file-list" id="fl-ad-양금남-20260427-010416" data-slug="ad-양금남-20260427-010416">
-        <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
-      </div>
-    </div>
-  </div><div class="ad-row" id="row-1">
-    <div class="ad-row-main" onclick="toggleRow('det-1','row-1')">  
-      <div class="ad-row-num">2</div>
-      <div class="ad-row-icon">🌐</div>
-      <div class="ad-row-info">
-        <div class="ad-row-name" title="elec-20260430-105515">elec-20260430-105515</div>
-        <div class="ad-row-meta">
-          <span>🕐 3시간 전</span>
-          <span>· 📁 3개</span>
-        </div>
-      </div>
-      <div class="ad-row-badge b-live">🟢 라이브</div>
-      <div class="ad-row-chevron" id="chv-1">›</div>
-    </div>
-    <div class="ad-row-detail" id="det-1" data-slug="elec-20260430-105515">
+    <div class="ad-row-detail" id="det-0" data-slug="elec-20260430-105515">
       <!-- URL 바 -->
       <div class="detail-url">
         <div class="url-dot"></div>
@@ -571,31 +540,34 @@ body::before,body::after{display:none;}
         </button>
       </div>
       <!-- 파일 목록 -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;flex:1">📁 광고배포 폴더 파일관리</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;flex:1 1 160px">📁 광고배포 폴더 파일관리</div>
         <button class="file-btn fbtn-view" onclick="event.stopPropagation();uploadToAdFolder('elec-20260430-105515')">➕ 파일추가</button>
-        <button class="file-btn" style="background:rgba(109,78,212,.09);color:var(--purple)" onclick="event.stopPropagation();applySamsungChatbotToAdFolder('elec-20260430-105515')">🤖 삼성챗봇적용</button>
         <button class="file-btn" style="background:rgba(6,182,212,.08);color:var(--cyan)" onclick="event.stopPropagation();reloadAdFolderFiles('elec-20260430-105515')">🔄 새로고침</button>
+      </div>
+      <div style="margin:8px 0 10px;display:grid;grid-template-columns:1fr;gap:6px">
+        <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:13px;padding:12px 14px" onclick="event.stopPropagation();applySamsungChatbotToAdFolder('elec-20260430-105515')">🤖 삼성생명 챗봇 안내 적용</button>
+        <div style="font-size:10px;color:var(--t3);line-height:1.6;text-align:center">이 버튼을 누르면 현재 광고배포 폴더의 HTML 파일에 삼성생명 보험 안내 문구가 적용됩니다.</div>
       </div>
       <div class="file-list" id="fl-elec-20260430-105515" data-slug="elec-20260430-105515">
         <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
       </div>
     </div>
-  </div><div class="ad-row" id="row-2">
-    <div class="ad-row-main" onclick="toggleRow('det-2','row-2')">  
-      <div class="ad-row-num">3</div>
+  </div><div class="ad-row" id="row-1">
+    <div class="ad-row-main" onclick="toggleRow('det-1','row-1')">  
+      <div class="ad-row-num">2</div>
       <div class="ad-row-icon">🌐</div>
       <div class="ad-row-info">
         <div class="ad-row-name" title="elec-20260430-092931">elec-20260430-092931</div>
         <div class="ad-row-meta">
-          <span>🕐 4시간 전</span>
+          <span>🕐 10시간 전</span>
           <span>· 📁 3개</span>
         </div>
       </div>
       <div class="ad-row-badge b-live">🟢 라이브</div>
-      <div class="ad-row-chevron" id="chv-2">›</div>
+      <div class="ad-row-chevron" id="chv-1">›</div>
     </div>
-    <div class="ad-row-detail" id="det-2" data-slug="elec-20260430-092931">
+    <div class="ad-row-detail" id="det-1" data-slug="elec-20260430-092931">
       <!-- URL 바 -->
       <div class="detail-url">
         <div class="url-dot"></div>
@@ -618,11 +590,14 @@ body::before,body::after{display:none;}
         </button>
       </div>
       <!-- 파일 목록 -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;flex:1">📁 광고배포 폴더 파일관리</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;flex:1 1 160px">📁 광고배포 폴더 파일관리</div>
         <button class="file-btn fbtn-view" onclick="event.stopPropagation();uploadToAdFolder('elec-20260430-092931')">➕ 파일추가</button>
-        <button class="file-btn" style="background:rgba(109,78,212,.09);color:var(--purple)" onclick="event.stopPropagation();applySamsungChatbotToAdFolder('elec-20260430-092931')">🤖 삼성챗봇적용</button>
         <button class="file-btn" style="background:rgba(6,182,212,.08);color:var(--cyan)" onclick="event.stopPropagation();reloadAdFolderFiles('elec-20260430-092931')">🔄 새로고침</button>
+      </div>
+      <div style="margin:8px 0 10px;display:grid;grid-template-columns:1fr;gap:6px">
+        <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:13px;padding:12px 14px" onclick="event.stopPropagation();applySamsungChatbotToAdFolder('elec-20260430-092931')">🤖 삼성생명 챗봇 안내 적용</button>
+        <div style="font-size:10px;color:var(--t3);line-height:1.6;text-align:center">이 버튼을 누르면 현재 광고배포 폴더의 HTML 파일에 삼성생명 보험 안내 문구가 적용됩니다.</div>
       </div>
       <div class="file-list" id="fl-elec-20260430-092931" data-slug="elec-20260430-092931">
         <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
@@ -634,9 +609,9 @@ body::before,body::after{display:none;}
         <span style="color:var(--t2);font-size:9px;font-weight:600">1개</span>
         <div class="grp-hd-line"></div>
       </div>
-      <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-3">
-    <div class="ad-row-main" onclick="toggleRow('det-3','row-3')">  
-      <div class="ad-row-num">4</div>
+      <div class="ad-list" style="border-radius:0;border-left:none;border-right:none;border-top:none;margin-bottom:12px"><div class="ad-row" id="row-2">
+    <div class="ad-row-main" onclick="toggleRow('det-2','row-2')">  
+      <div class="ad-row-num">3</div>
       <div class="ad-row-icon">🌐</div>
       <div class="ad-row-info">
         <div class="ad-row-name" title="elec-20260429-203313">elec-20260429-203313</div>
@@ -646,9 +621,9 @@ body::before,body::after{display:none;}
         </div>
       </div>
       <div class="ad-row-badge b-live">🟢 라이브</div>
-      <div class="ad-row-chevron" id="chv-3">›</div>
+      <div class="ad-row-chevron" id="chv-2">›</div>
     </div>
-    <div class="ad-row-detail" id="det-3" data-slug="elec-20260429-203313">
+    <div class="ad-row-detail" id="det-2" data-slug="elec-20260429-203313">
       <!-- URL 바 -->
       <div class="detail-url">
         <div class="url-dot"></div>
@@ -671,11 +646,14 @@ body::before,body::after{display:none;}
         </button>
       </div>
       <!-- 파일 목록 -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;flex:1">📁 광고배포 폴더 파일관리</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;flex:1 1 160px">📁 광고배포 폴더 파일관리</div>
         <button class="file-btn fbtn-view" onclick="event.stopPropagation();uploadToAdFolder('elec-20260429-203313')">➕ 파일추가</button>
-        <button class="file-btn" style="background:rgba(109,78,212,.09);color:var(--purple)" onclick="event.stopPropagation();applySamsungChatbotToAdFolder('elec-20260429-203313')">🤖 삼성챗봇적용</button>
         <button class="file-btn" style="background:rgba(6,182,212,.08);color:var(--cyan)" onclick="event.stopPropagation();reloadAdFolderFiles('elec-20260429-203313')">🔄 새로고침</button>
+      </div>
+      <div style="margin:8px 0 10px;display:grid;grid-template-columns:1fr;gap:6px">
+        <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:13px;padding:12px 14px" onclick="event.stopPropagation();applySamsungChatbotToAdFolder('elec-20260429-203313')">🤖 삼성생명 챗봇 안내 적용</button>
+        <div style="font-size:10px;color:var(--t3);line-height:1.6;text-align:center">이 버튼을 누르면 현재 광고배포 폴더의 HTML 파일에 삼성생명 보험 안내 문구가 적용됩니다.</div>
       </div>
       <div class="file-list" id="fl-elec-20260429-203313" data-slug="elec-20260429-203313">
         <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
@@ -858,22 +836,22 @@ body::before,body::after{display:none;}
   <div class="stats-bar" id="stats-bar" style="display: grid; margin-top: 4px;">
     <div class="stat-card" id="sc-all" onclick="statFilter('all')">
       <div class="stat-ico">📋</div>
-      <div class="stat-num" id="st-total">4</div>
+      <div class="stat-num" id="st-total">3</div>
       <div class="stat-lbl">전체 광고</div>
     </div>
     <div class="stat-card" id="sc-live" onclick="statFilter('live')">
       <div class="stat-ico">🌐</div>
-      <div class="stat-num" id="st-live">4</div>
+      <div class="stat-num" id="st-live">3</div>
       <div class="stat-lbl">배포 활성</div>
     </div>
     <div class="stat-card" id="sc-today" onclick="statFilter('today')">
       <div class="stat-ico">📅</div>
-      <div class="stat-num" id="st-today">3</div>
+      <div class="stat-num" id="st-today">2</div>
       <div class="stat-lbl">오늘 업데이트</div>
     </div>
     <div class="stat-card" id="sc-files" onclick="statFilter('files')">
       <div class="stat-ico">💾</div>
-      <div class="stat-num" id="st-size">13</div>
+      <div class="stat-num" id="st-size">9</div>
       <div class="stat-lbl">총 파일 수</div>
     </div>
   </div>
@@ -954,7 +932,15 @@ body::before,body::after{display:none;}
         </div>
       </div>
       <!-- 동적 파일 목록 -->
-      <div id="dep-extra-files"></div>
+      <div id="dep-extra-files">
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 13px;background:#fff;border:1.5px solid rgba(74,126,248,.3);border-radius:10px;margin-bottom:6px">
+      <input type="checkbox" id="dep-cb-0" checked="" onchange="updateDepPreview()" style="width:16px;height:16px;accent-color:var(--blue);flex-shrink:0">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;color:var(--text)">📄 fc_insurance.html</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px">29KB</div>
+      </div>
+      <button style="border:none;background:none;color:var(--red);font-size:16px;cursor:pointer;padding:2px 4px" onclick="removeDepFile(0)">✕</button>
+    </div></div>
       <!-- 파일 추가 입력창 -->
       <input type="file" id="dep-add-file-input" accept=".html,.js,.css,.json,.txt,.png,.jpg,.jpeg" multiple="" style="display:none" onchange="onDepFilesAdded(this)">
     </div>
@@ -972,17 +958,17 @@ body::before,body::after{display:none;}
         <span>📣 광고배포 폴더 선택</span>
         <span style="font-family:var(--mono);font-size:10px;color:var(--blue2)">pages/선택폴더/</span>
       </label>
-      <select id="dep-folder-select" onchange="updateDepPreview()" disabled="" style="width:100%;margin-top:6px;background:#faf7f3;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none"><option value="ad-양금남-20260427-010416">pages/ad-양금남-20260427-010416/</option><option value="elec-20260429-203313">pages/elec-20260429-203313/</option><option value="elec-20260430-092931">pages/elec-20260430-092931/</option><option value="elec-20260430-105515">pages/elec-20260430-105515/</option></select>
+      <select id="dep-folder-select" onchange="updateDepPreview()" style="width:100%;margin-top:6px;background:#faf7f3;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none"><option value="elec-20260429-203313">pages/elec-20260429-203313/</option><option value="elec-20260430-092931">pages/elec-20260430-092931/</option><option value="elec-20260430-105515">pages/elec-20260430-105515/</option></select>
       <div id="dep-folder-help" style="font-size:10px;color:var(--t3);line-height:1.6;margin-top:7px">추가 파일은 기본적으로 일반 프로그램 폴더에 배포됩니다. 광고 페이지의 파일을 교체하거나 추가하려면 광고배포 폴더를 선택하십시오.</div>
     </div>
 
     <div style="background:rgba(74,126,248,.07);border:1px solid rgba(74,126,248,.2);border-radius:10px;padding:11px 13px;font-size:11px;color:var(--t2);line-height:1.8;margin-bottom:14px">
       📌 배포 후 URL:<br>
       <span id="dep-url-preview" style="font-family:var(--mono);color:var(--blue2);font-size:10px;word-break:break-all;white-space:pre-line">관리페이지: https://cheljae-coder.github.io/fc-pages/ad-admin.html
-추가파일 위치: https://cheljae-coder.github.io/fc-pages/apps/</span>
+추가파일: https://cheljae-coder.github.io/fc-pages/pages/elec-20260430-105515/fc_insurance.html</span>
     </div>
     <div class="loading" id="dep-loading" style="display: flex; padding: 16px 0px;">
-      <div class="spin"></div><span id="dep-msg">(1/1) ad-admin.html 업로드 중...</span>
+      <div class="spin"></div><span id="dep-msg">(1/2) ad-admin.html 업로드 중...</span>
     </div>
     <div class="err-box" id="dep-err" style="margin-bottom:12px"></div>
     <div id="dep-success" style="display:none;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:11px;padding:14px;text-align:center;margin-bottom:14px">
@@ -1063,7 +1049,7 @@ body::before,body::after{display:none;}
   </div>
 </div>
 
-<div class="toast success" id="toast">✅ 연결 성공</div>
+<div class="toast success" id="toast">✅ fc_insurance.html 추가됨</div>
 
 <script>
 
@@ -1589,6 +1575,7 @@ async function loadAds(){
     }
 
     updateStats();
+    refreshSamsungFolderSelect();
     document.getElementById('stats-bar').style.display='grid';
     document.getElementById('toolbar').style.display='flex';
     renderAds();
@@ -2009,6 +1996,58 @@ async function delFileFromView(){
 }
 
 
+
+/* ══ 삼성생명 챗봇 안내 상단 고정 메뉴 ══ */
+function refreshSamsungFolderSelect(){
+  const sel=document.getElementById('samsung-chatbot-folder-select');
+  if(!sel)return;
+  const current=sel.value;
+  if(!Array.isArray(ALL_ADS)||!ALL_ADS.length){
+    sel.innerHTML='<option value="">광고폴더 없음 - 먼저 광고를 배포하거나 새로고침하십시오</option>';
+    return;
+  }
+  sel.innerHTML=ALL_ADS.map(a=>`<option value="${encodeURIComponent(a.slug)}">${escH(a.slug)}</option>`).join('');
+  if(current&&[...sel.options].some(o=>o.value===current))sel.value=current;
+}
+
+function openSamsungChatbotManager(){
+  const p=document.getElementById('samsung-chatbot-panel');
+  if(!CFG.owner||!CFG.token){
+    showToast('먼저 GitHub 설정을 입력하십시오','error');
+    toggleConfig();
+    return;
+  }
+  refreshSamsungFolderSelect();
+  if(p){
+    p.style.display='block';
+    p.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+async function applySamsungFromTop(){
+  if(!CFG.owner||!CFG.token){showToast('먼저 GitHub 설정을 입력하십시오','error');toggleConfig();return;}
+  refreshSamsungFolderSelect();
+  const sel=document.getElementById('samsung-chatbot-folder-select');
+  const slug=sel?sel.value:'';
+  if(!slug){showToast('적용할 광고폴더를 선택하십시오','error');return;}
+  await applySamsungChatbotToAdFolder(slug);
+}
+
+async function applySamsungAllFromTop(){
+  if(!CFG.owner||!CFG.token){showToast('먼저 GitHub 설정을 입력하십시오','error');toggleConfig();return;}
+  if(!Array.isArray(ALL_ADS)||!ALL_ADS.length){showToast('적용할 광고폴더가 없습니다','error');return;}
+  if(!confirm('전체 광고배포 폴더의 HTML 파일에 삼성생명 보험 챗봇 안내문을 적용하시겠습니까?'))return;
+  let ok=0,fail=0;
+  for(const ad of ALL_ADS){
+    try{
+      await applySamsungChatbotToAdFolder(encodeURIComponent(ad.slug),true);
+      ok++;
+    }catch(_){fail++;}
+  }
+  if(fail)showToast('⚠ 전체 적용 완료: 성공 '+ok+'개, 실패 '+fail+'개','error');
+  else showToast('✅ 전체 광고폴더 챗봇 안내 적용 완료','success');
+}
+
 /* ══ 삼성생명 보험 챗봇 안내 적용 ══ */
 function getSamsungLifeChatbotPatchScript(){
   return `<script id="samsung-life-insurance-chatbot-guide">
@@ -2126,10 +2165,10 @@ function removeOldSamsungChatbotPatch(html){
   return String(html||'').replace(/\s*<script\s+id=["']samsung-life-insurance-chatbot-guide["'][\s\S]*?<\/script>\s*/gi,'\n');
 }
 
-async function applySamsungChatbotToAdFolder(encSlug){
+async function applySamsungChatbotToAdFolder(encSlug,silentConfirm=false){
   const slug=decArg(encSlug);
   if(!slug){showToast('광고배포 폴더 정보가 없습니다','error');return;}
-  if(!confirm('"'+slug+'" 광고배포 폴더의 HTML 파일에 삼성생명 보험 챗봇 안내문을 적용하시겠습니까?\n\n적용 내용:\n- 건강보장 보험: 플러스원, 퍼스트, 라이트\n- 저축보험: 행복종신\n- 연금보험: 밸런스종신\n- 상속세 준비보험: 골든종신\n- 개별 상품 질문 시 FC 상담 안내'))return;
+  if(!silentConfirm&&!confirm('"'+slug+'" 광고배포 폴더의 HTML 파일에 삼성생명 보험 챗봇 안내문을 적용하시겠습니까?\n\n적용 내용:\n- 건강보장 보험: 플러스원, 퍼스트, 라이트\n- 저축보험: 행복종신\n- 연금보험: 밸런스종신\n- 상속세 준비보험: 골든종신\n- 개별 상품 질문 시 FC 상담 안내'))return;
   showToast('🤖 삼성생명 챗봇 안내 적용 중...','info');
   try{
     const listR=await GH('pages/'+slug);
@@ -2418,11 +2457,14 @@ function adCard(a,idx){
         </button>
       </div>
       <!-- 파일 목록 -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;flex:1">📁 광고배포 폴더 파일관리</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;flex:1 1 160px">📁 광고배포 폴더 파일관리</div>
         <button class="file-btn fbtn-view" onclick="event.stopPropagation();uploadToAdFolder('${encodeURIComponent(a.slug)}')">➕ 파일추가</button>
-        <button class="file-btn" style="background:rgba(109,78,212,.09);color:var(--purple)" onclick="event.stopPropagation();applySamsungChatbotToAdFolder('${encodeURIComponent(a.slug)}')">🤖 삼성챗봇적용</button>
         <button class="file-btn" style="background:rgba(6,182,212,.08);color:var(--cyan)" onclick="event.stopPropagation();reloadAdFolderFiles('${encodeURIComponent(a.slug)}')">🔄 새로고침</button>
+      </div>
+      <div style="margin:8px 0 10px;display:grid;grid-template-columns:1fr;gap:6px">
+        <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:13px;padding:12px 14px" onclick="event.stopPropagation();applySamsungChatbotToAdFolder('${encodeURIComponent(a.slug)}')">🤖 삼성생명 챗봇 안내 적용</button>
+        <div style="font-size:10px;color:var(--t3);line-height:1.6;text-align:center">이 버튼을 누르면 현재 광고배포 폴더의 HTML 파일에 삼성생명 보험 안내 문구가 적용됩니다.</div>
       </div>
       <div class="file-list" id="fl-${a.slug}" data-slug="${a.slug}">
         <div style="font-size:11px;color:var(--t3);padding:8px 2px;display:flex;align-items:center;gap:5px"><span>⏳</span>파일 목록을 불러오는 중...</div>
