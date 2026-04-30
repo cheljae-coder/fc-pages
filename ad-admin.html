@@ -437,9 +437,33 @@ body::before,body::after{display:none;}
       광고폴더를 펼치지 않아도 여기에서 바로 적용할 수 있습니다. 적용하면 해당 광고폴더의 HTML 파일에 삼성생명 대표 보험 안내와 FC 상담 안내 문구가 들어갑니다.
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <select class="sort-sel" id="samsung-chatbot-folder-select" style="flex:1;min-width:180px;height:40px"><option value="elec-20260429-203313">elec-20260429-203313</option><option value="elec-20260430-092931">elec-20260430-092931</option><option value="elec-20260430-105515">elec-20260430-105515</option></select>
+      <select class="sort-sel" id="samsung-chatbot-folder-select" style="flex:1;min-width:180px;height:40px" data-final-patch-bound="1"><option value="elec-20260429-203313" selected="">pages/elec-20260429-203313/</option><option value="elec-20260430-092931">pages/elec-20260430-092931/</option><option value="elec-20260430-105515">pages/elec-20260430-105515/</option></select>
       <button class="btn btn-primary btn-sm" onclick="applySamsungFromTop()" style="height:40px">🤖 선택 폴더 적용</button>
       <button class="btn btn-ghost btn-sm" onclick="applySamsungAllFromTop()" style="height:40px">전체 광고폴더 적용</button>
+    </div>
+  <div id="samsung-chatbot-manual-wrap" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px;"><input id="samsung-chatbot-manual" placeholder="직접입력: 예) pages/ad-001 또는 ad-001" style="flex:1;min-width:180px;height:40px;background:#fff;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none"><button class="btn btn-primary btn-sm" onclick="applySamsungFromManual()" style="height:40px">🤖 직접입력 폴더 적용</button></div></div>
+
+  <!-- ── 광고배포 폴더 직접 파일관리 패널 ── -->
+  <div class="config-panel" id="ad-folder-direct-panel" style="padding:14px 16px;margin-bottom:14px;border-color:rgba(22,163,74,.25);background:linear-gradient(180deg,#ffffff,#f8fff9)">
+    <div class="config-title" style="margin-bottom:10px">
+      <span style="color:var(--green)">📁</span> 광고배포 폴더 파일 직접관리
+    </div>
+    <div style="font-size:11px;color:var(--t2);line-height:1.7;margin-bottom:10px">
+      광고목록을 펼치지 않아도 GitHub의 <span style="font-family:var(--mono);color:var(--blue2)">pages/광고폴더/</span> 안에 있는 파일을 바로 확인하고 관리할 수 있습니다.
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+      <select class="sort-sel" id="ad-folder-direct-select" onchange="loadSelectedAdFolderFiles(true)" style="flex:1;min-width:180px;height:40px" data-final-patch-bound="1"><option value="elec-20260429-203313" selected="">pages/elec-20260429-203313/</option><option value="elec-20260430-092931">pages/elec-20260430-092931/</option><option value="elec-20260430-105515">pages/elec-20260430-105515/</option></select>
+      <button class="btn btn-primary btn-sm" onclick="loadSelectedAdFolderFiles(true)" style="height:40px">📂 파일보기</button>
+      <button class="btn btn-ghost btn-sm" onclick="refreshAllAdFolderSelects(true)" style="height:40px">🔄 폴더 새로고침</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="file-btn fbtn-view" onclick="uploadToSelectedAdFolder()">➕ 선택 폴더에 파일추가</button>
+      <button class="file-btn" style="background:rgba(6,182,212,.08);color:var(--cyan)" onclick="copySelectedDirectFolderUrl()">🔗 폴더 URL 복사</button>
+      <button class="file-btn" style="background:rgba(124,92,252,.08);color:var(--purple)" onclick="applySamsungToSelectedDirectFolder()">🤖 챗봇 안내 적용</button>
+    </div>
+    <div id="ad-folder-direct-manual-wrap" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 0px 0px 10px;"><input id="ad-folder-direct-manual" placeholder="직접입력: 예) pages/ad-001 또는 ad-001" style="flex:1;min-width:180px;height:40px;background:#fff;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none"><button class="btn btn-primary btn-sm" onclick="loadManualAdFolderFiles()" style="height:40px">📂 직접입력 파일보기</button><button class="btn btn-ghost btn-sm" onclick="forceReloadDirectFolders()" style="height:40px">🔄 전체목록 재조회</button></div><div id="ad-folder-direct-status" style="font-size:10px;color:var(--t3);line-height:1.6;margin-bottom:8px">광고배포 폴더 3개를 불러왔습니다. 선택하거나 직접 입력해 파일을 볼 수 있습니다.</div>
+    <div class="file-list" id="ad-folder-direct-files" data-slug="">
+      <div style="font-size:11px;color:var(--t3);padding:8px 2px">📂 폴더를 선택한 뒤 [파일보기]를 누르십시오.</div>
     </div>
   </div>
 
@@ -510,8 +534,8 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="elec-20260430-105515">elec-20260430-105515</div>
         <div class="ad-row-meta">
-          <span>🕐 8시간 전</span>
-          <span>· 📁 3개</span>
+          <span>🕐 2분 전</span>
+          <span>· 📁 4개</span>
         </div>
       </div>
       <div class="ad-row-badge b-live">🟢 라이브</div>
@@ -667,7 +691,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="보험_분석(완성본).html">보험_분석(완성본).html</div>
         <div class="ad-row-meta">
-          <span>📄 보험_분석(완성본).html</span>
+          <span>📄 파일형</span><span>💾 495KB</span>
         </div>
       </div>
       <div class="ad-row-badge b-live">🌐 일반</div>
@@ -679,6 +703,10 @@ body::before,body::after{display:none;}
         <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/apps/%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html</div>
         <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html')">📋</button>
       </div>
+      <div class="detail-chips">
+        <span class="meta-chip">경로: apps/보험_분석(완성본).html</span>
+        <span class="meta-chip">같은 이름 폴더까지 함께 삭제</span>
+      </div>
       <div class="detail-acts">
         <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/apps/%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html','_blank')">
           <span class="cai">🌐</span>열기
@@ -689,8 +717,8 @@ body::before,body::after{display:none;}
         <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/apps/%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html','보험_분석(완성본).html')">
           <span class="cai">📱</span>QR
         </button>
-        <button class="ca ca-del" onclick="delApp('%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html')">
-          <span class="cai">🗑</span>삭제
+        <button class="ca ca-del" onclick="delApp('apps%2F%EB%B3%B4%ED%97%98_%EB%B6%84%EC%84%9D(%EC%99%84%EC%84%B1%EB%B3%B8).html')">
+          <span class="cai">🗑</span>전체삭제
         </button>
       </div>
     </div>
@@ -701,7 +729,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="bee_Pro_m.html">bee_Pro_m.html</div>
         <div class="ad-row-meta">
-          <span>📄 bee_Pro_m.html</span>
+          <span>📄 파일형</span><span>💾 258KB</span>
         </div>
       </div>
       <div class="ad-row-badge b-live">🌐 일반</div>
@@ -713,6 +741,10 @@ body::before,body::after{display:none;}
         <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/apps/bee_Pro_m.html</div>
         <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/bee_Pro_m.html')">📋</button>
       </div>
+      <div class="detail-chips">
+        <span class="meta-chip">경로: apps/bee_Pro_m.html</span>
+        <span class="meta-chip">같은 이름 폴더까지 함께 삭제</span>
+      </div>
       <div class="detail-acts">
         <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/apps/bee_Pro_m.html','_blank')">
           <span class="cai">🌐</span>열기
@@ -723,8 +755,8 @@ body::before,body::after{display:none;}
         <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/apps/bee_Pro_m.html','bee_Pro_m.html')">
           <span class="cai">📱</span>QR
         </button>
-        <button class="ca ca-del" onclick="delApp('bee_Pro_m.html')">
-          <span class="cai">🗑</span>삭제
+        <button class="ca ca-del" onclick="delApp('apps%2Fbee_Pro_m.html')">
+          <span class="cai">🗑</span>전체삭제
         </button>
       </div>
     </div>
@@ -735,7 +767,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="election-app.html">election-app.html</div>
         <div class="ad-row-meta">
-          <span>📄 election-app.html</span>
+          <span>📄 파일형</span><span>💾 357KB</span>
         </div>
       </div>
       <div class="ad-row-badge b-live">🌐 일반</div>
@@ -747,6 +779,10 @@ body::before,body::after{display:none;}
         <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/apps/election-app.html</div>
         <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/election-app.html')">📋</button>
       </div>
+      <div class="detail-chips">
+        <span class="meta-chip">경로: apps/election-app.html</span>
+        <span class="meta-chip">같은 이름 폴더까지 함께 삭제</span>
+      </div>
       <div class="detail-acts">
         <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/apps/election-app.html','_blank')">
           <span class="cai">🌐</span>열기
@@ -757,8 +793,8 @@ body::before,body::after{display:none;}
         <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/apps/election-app.html','election-app.html')">
           <span class="cai">📱</span>QR
         </button>
-        <button class="ca ca-del" onclick="delApp('election-app.html')">
-          <span class="cai">🗑</span>삭제
+        <button class="ca ca-del" onclick="delApp('apps%2Felection-app.html')">
+          <span class="cai">🗑</span>전체삭제
         </button>
       </div>
     </div>
@@ -769,7 +805,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="fc_insurance.html">fc_insurance.html</div>
         <div class="ad-row-meta">
-          <span>📄 fc_insurance.html</span>
+          <span>📄 파일형</span><span>💾 29KB</span>
         </div>
       </div>
       <div class="ad-row-badge b-live">🌐 일반</div>
@@ -781,6 +817,10 @@ body::before,body::after{display:none;}
         <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/apps/fc_insurance.html</div>
         <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/fc_insurance.html')">📋</button>
       </div>
+      <div class="detail-chips">
+        <span class="meta-chip">경로: apps/fc_insurance.html</span>
+        <span class="meta-chip">같은 이름 폴더까지 함께 삭제</span>
+      </div>
       <div class="detail-acts">
         <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/apps/fc_insurance.html','_blank')">
           <span class="cai">🌐</span>열기
@@ -791,8 +831,8 @@ body::before,body::after{display:none;}
         <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/apps/fc_insurance.html','fc_insurance.html')">
           <span class="cai">📱</span>QR
         </button>
-        <button class="ca ca-del" onclick="delApp('fc_insurance.html')">
-          <span class="cai">🗑</span>삭제
+        <button class="ca ca-del" onclick="delApp('apps%2Ffc_insurance.html')">
+          <span class="cai">🗑</span>전체삭제
         </button>
       </div>
     </div>
@@ -803,7 +843,7 @@ body::before,body::after{display:none;}
       <div class="ad-row-info">
         <div class="ad-row-name" title="fc-app-free.html">fc-app-free.html</div>
         <div class="ad-row-meta">
-          <span>📄 fc-app-free.html</span>
+          <span>📄 파일형</span><span>💾 309KB</span>
         </div>
       </div>
       <div class="ad-row-badge b-live">🌐 일반</div>
@@ -815,6 +855,10 @@ body::before,body::after{display:none;}
         <div class="detail-url-txt">https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html</div>
         <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html')">📋</button>
       </div>
+      <div class="detail-chips">
+        <span class="meta-chip">경로: apps/fc-app-free.html</span>
+        <span class="meta-chip">같은 이름 폴더까지 함께 삭제</span>
+      </div>
       <div class="detail-acts">
         <button class="ca ca-open" onclick="window.open('https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html','_blank')">
           <span class="cai">🌐</span>열기
@@ -825,8 +869,8 @@ body::before,body::after{display:none;}
         <button class="ca ca-qr" onclick="openQR('https://cheljae-coder.github.io/fc-pages/apps/fc-app-free.html','fc-app-free.html')">
           <span class="cai">📱</span>QR
         </button>
-        <button class="ca ca-del" onclick="delApp('fc-app-free.html')">
-          <span class="cai">🗑</span>삭제
+        <button class="ca ca-del" onclick="delApp('apps%2Ffc-app-free.html')">
+          <span class="cai">🗑</span>전체삭제
         </button>
       </div>
     </div>
@@ -851,7 +895,7 @@ body::before,body::after{display:none;}
     </div>
     <div class="stat-card" id="sc-files" onclick="statFilter('files')">
       <div class="stat-ico">💾</div>
-      <div class="stat-num" id="st-size">9</div>
+      <div class="stat-num" id="st-size">10</div>
       <div class="stat-lbl">총 파일 수</div>
     </div>
   </div>
@@ -876,7 +920,7 @@ body::before,body::after{display:none;}
     <div class="del-icon">⚠️</div>
     <div class="del-msg">
       <strong class="del-name" id="bdel-names"></strong><br>
-      위 광고가 GitHub에서 영구 삭제됩니다.<br>
+      선택한 광고폴더 안의 모든 파일과 하위폴더 파일이<br>GitHub에서 영구 삭제됩니다.<br>
       <strong style="color:var(--red)">되돌릴 수 없습니다.</strong>
     </div>
     <div style="display:flex;gap:8px">
@@ -958,14 +1002,14 @@ body::before,body::after{display:none;}
         <span>📣 광고배포 폴더 선택</span>
         <span style="font-family:var(--mono);font-size:10px;color:var(--blue2)">pages/선택폴더/</span>
       </label>
-      <select id="dep-folder-select" onchange="updateDepPreview()" style="width:100%;margin-top:6px;background:#faf7f3;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none"><option value="elec-20260429-203313">pages/elec-20260429-203313/</option><option value="elec-20260430-092931">pages/elec-20260430-092931/</option><option value="elec-20260430-105515">pages/elec-20260430-105515/</option></select>
-      <div id="dep-folder-help" style="font-size:10px;color:var(--t3);line-height:1.6;margin-top:7px">추가 파일은 기본적으로 일반 프로그램 폴더에 배포됩니다. 광고 페이지의 파일을 교체하거나 추가하려면 광고배포 폴더를 선택하십시오.</div>
+      <select id="dep-folder-select" onchange="updateDepPreview()" style="width:100%;margin-top:6px;background:#faf7f3;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none"><option value="elec-20260429-203313" selected="">pages/elec-20260429-203313/</option><option value="elec-20260430-092931">pages/elec-20260430-092931/</option><option value="elec-20260430-105515">pages/elec-20260430-105515/</option></select>
+      <div id="dep-folder-help" style="font-size:10px;color:var(--t3);line-height:1.6;margin-top:7px">광고배포 폴더를 선택하면 추가 파일이 <span style="font-family:var(--mono);color:var(--blue2)">pages/선택폴더/</span> 안에 배포됩니다.</div>
     </div>
 
     <div style="background:rgba(74,126,248,.07);border:1px solid rgba(74,126,248,.2);border-radius:10px;padding:11px 13px;font-size:11px;color:var(--t2);line-height:1.8;margin-bottom:14px">
       📌 배포 후 URL:<br>
       <span id="dep-url-preview" style="font-family:var(--mono);color:var(--blue2);font-size:10px;word-break:break-all;white-space:pre-line">관리페이지: https://cheljae-coder.github.io/fc-pages/ad-admin.html
-추가파일: https://cheljae-coder.github.io/fc-pages/pages/elec-20260430-105515/fc_insurance.html</span>
+추가파일: https://cheljae-coder.github.io/fc-pages/pages/elec-20260429-203313/fc_insurance.html</span>
     </div>
     <div class="loading" id="dep-loading" style="display: flex; padding: 16px 0px;">
       <div class="spin"></div><span id="dep-msg">(1/2) ad-admin.html 업로드 중...</span>
@@ -1035,7 +1079,7 @@ body::before,body::after{display:none;}
     <div class="del-icon">⚠️</div>
     <div class="del-msg">
       <span class="del-name" id="del-name"></span><br>
-      광고 페이지와 상담폼 파일이<br>GitHub에서 영구 삭제됩니다.<br>
+      광고폴더 안의 모든 파일과 하위폴더 파일이<br>GitHub에서 영구 삭제됩니다.<br>
       <strong style="color:var(--red)">이 작업은 되돌릴 수 없습니다.</strong>
     </div>
     <div style="display:flex;gap:8px">
@@ -2887,6 +2931,925 @@ function fmtDate(iso){
   return d.getFullYear()+'.'+(d.getMonth()+1)+'.'+d.getDate();
 }
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+
+/* ══ 광고배포 폴더 선택/파일보기 보강 패치 ══ */
+let DIRECT_PAGE_FOLDERS=[];
+
+function uniqSorted(arr){
+  return [...new Set((arr||[]).map(v=>String(v||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
+}
+function knownAdFolders(){
+  return uniqSorted([...(ALL_ADS||[]).map(a=>a.slug),...(DIRECT_PAGE_FOLDERS||[])]);
+}
+function folderOptionHtml(folders,emptyText,current){
+  if(!folders||!folders.length)return '<option value="">'+escH(emptyText||'선택 가능한 광고폴더 없음')+'</option>';
+  return folders.map(slug=>'<option value="'+escH(slug)+'" '+(slug===current?'selected':'')+'>pages/'+escH(slug)+'/</option>').join('');
+}
+function setFolderSelectOptions(id,folders,emptyText){
+  const sel=document.getElementById(id);
+  if(!sel)return;
+  const current=sel.value;
+  sel.innerHTML=folderOptionHtml(folders,emptyText,current);
+  sel.disabled=!folders.length;
+  if(current&&folders.includes(current))sel.value=current;
+}
+async function loadPagesFoldersFromGithub(){
+  if(!CFG.owner||!CFG.token)return [];
+  try{
+    const r=await GH('pages');
+    if(!r.ok)return [];
+    const list=await r.json();
+    return uniqSorted(list.filter(x=>x&&x.type==='dir').map(x=>x.name));
+  }catch(e){
+    console.warn('[loadPagesFoldersFromGithub]',e);
+    return [];
+  }
+}
+async function refreshAllAdFolderSelects(showMsg){
+  const status=document.getElementById('ad-folder-direct-status');
+  if(status)status.textContent='광고배포 폴더 목록을 불러오는 중입니다...';
+  const fromGithub=await loadPagesFoldersFromGithub();
+  DIRECT_PAGE_FOLDERS=uniqSorted([...(DIRECT_PAGE_FOLDERS||[]),...fromGithub]);
+  const folders=knownAdFolders();
+  setFolderSelectOptions('ad-folder-direct-select',folders,'광고배포 폴더 없음');
+  setFolderSelectOptions('samsung-chatbot-folder-select',folders,'광고폴더 없음 - 먼저 광고를 배포하거나 새로고침하십시오');
+  setFolderSelectOptions('dep-folder-select',folders,'선택 가능한 광고배포 폴더 없음');
+  const depSel=document.getElementById('dep-folder-select');
+  if(depSel){
+    const checked=document.querySelector('input[name="dep-target"]:checked')?.value||'apps';
+    depSel.disabled=checked!=='pages'||!folders.length;
+  }
+  if(status){
+    status.textContent=folders.length
+      ? '선택 가능한 광고배포 폴더 '+folders.length+'개를 불러왔습니다. 폴더를 선택하면 아래에 파일목록이 표시됩니다.'
+      : '현재 pages/ 아래에 표시할 광고배포 폴더가 없습니다. 폴더관리 또는 배포 기능으로 pages/폴더를 먼저 만드십시오.';
+  }
+  if(showMsg)showToast(folders.length?'📁 광고폴더 목록 새로고침 완료':'표시할 광고폴더가 없습니다',folders.length?'success':'error');
+  return folders;
+}
+
+/* 기존 함수명 재정의: 삼성 챗봇 선택박스도 직접 GitHub 목록을 반영 */
+function refreshSamsungFolderSelect(){
+  const folders=knownAdFolders();
+  setFolderSelectOptions('samsung-chatbot-folder-select',folders,'광고폴더 없음 - 먼저 광고를 배포하거나 새로고침하십시오');
+  setFolderSelectOptions('ad-folder-direct-select',folders,'광고배포 폴더 없음');
+  if(CFG.owner&&CFG.token)refreshAllAdFolderSelects(false);
+}
+
+/* 기존 함수명 재정의: 배포 모달의 광고폴더 선택도 직접 GitHub 목록을 반영 */
+function renderDepFolderOptions(){
+  const folders=knownAdFolders();
+  const sel=document.getElementById('dep-folder-select');
+  const help=document.getElementById('dep-folder-help');
+  if(sel){
+    setFolderSelectOptions('dep-folder-select',folders,'선택 가능한 광고배포 폴더 없음');
+    const checked=document.querySelector('input[name="dep-target"]:checked')?.value||'apps';
+    sel.disabled=checked!=='pages'||!folders.length;
+  }
+  if(help){
+    help.innerHTML=folders.length
+      ? '광고배포 폴더를 선택하면 추가 파일이 <span style="font-family:var(--mono);color:var(--blue2)">pages/선택폴더/</span> 안에 배포됩니다.'
+      : '현재 pages/ 아래에 선택 가능한 광고배포 폴더가 없습니다. 폴더관리에서 pages/새폴더를 만들거나 광고 프로그램을 먼저 배포하십시오.';
+  }
+  if(CFG.owner&&CFG.token)refreshAllAdFolderSelects(false).then(()=>updateDepPreview());
+}
+
+async function loadSelectedAdFolderFiles(force){
+  const sel=document.getElementById('ad-folder-direct-select');
+  const status=document.getElementById('ad-folder-direct-status');
+  const cont=document.getElementById('ad-folder-direct-files');
+  let slug=sel?String(sel.value||'').trim():'';
+  if(!slug){
+    const folders=await refreshAllAdFolderSelects(false);
+    slug=sel?String(sel.value||'').trim():'';
+    if(!slug&&folders&&folders.length){slug=folders[0];if(sel)sel.value=slug;}
+  }
+  if(!slug){
+    if(cont)cont.innerHTML='<div style="font-size:11px;color:var(--red);padding:8px 2px">선택된 광고배포 폴더가 없습니다.</div>';
+    showToast('광고배포 폴더를 선택하십시오','error');
+    return;
+  }
+  if(status)status.innerHTML='현재 선택 폴더: <span style="font-family:var(--mono);color:var(--blue2)">pages/'+escH(slug)+'/</span>';
+  if(cont){
+    cont.dataset.slug=slug;
+    await loadFileList(slug,cont,force!==false);
+  }
+}
+function uploadToSelectedAdFolder(){
+  const slug=document.getElementById('ad-folder-direct-select')?.value||'';
+  if(!slug){showToast('파일을 올릴 광고배포 폴더를 선택하십시오','error');return;}
+  uploadToAdFolder(encArg(slug));
+}
+function copySelectedDirectFolderUrl(){
+  const slug=document.getElementById('ad-folder-direct-select')?.value||'';
+  if(!slug){showToast('URL을 복사할 광고배포 폴더를 선택하십시오','error');return;}
+  copyText('https://'+CFG.owner+'.github.io/'+CFG.repo+'/pages/'+encodeURIComponent(slug)+'/', '🔗 광고폴더 URL 복사 완료');
+}
+async function applySamsungToSelectedDirectFolder(){
+  const slug=document.getElementById('ad-folder-direct-select')?.value||'';
+  if(!slug){showToast('챗봇 안내를 적용할 광고배포 폴더를 선택하십시오','error');return;}
+  await applySamsungChatbotToAdFolder(encArg(slug));
+}
+
+/* 기존 함수명 재정의: 배포 완료 후 직접관리 패널까지 같이 새로고침 */
+async function refreshCurrentListsAfterDeploy(targetType,targetFolder){
+  try{
+    if(targetType==='pages'&&targetFolder){
+      const fr=await GH('pages/'+targetFolder);
+      if(fr.ok){
+        const files=(await fr.json()).filter(f=>f.type==='file');
+        const ad=getAdObj(targetFolder);
+        if(ad){
+          ad.files=files;
+          ad.fileCount=files.length;
+          ad.hasIndex=files.some(f=>f.name==='index.html');
+          ad.hasForm=files.some(f=>f.name==='form.html');
+        }else{
+          ALL_ADS.push({slug:targetFolder,files,hasIndex:files.some(f=>f.name==='index.html'),hasForm:files.some(f=>f.name==='form.html'),fileCount:files.length,url:'https://'+CFG.owner+'.github.io/'+CFG.repo+'/pages/'+encodeURIComponent(targetFolder)+'/',updatedAt:null});
+        }
+        DIRECT_PAGE_FOLDERS=uniqSorted([...(DIRECT_PAGE_FOLDERS||[]),targetFolder]);
+        refreshAdFolderFilesAfterUpload(targetFolder);
+        const dsel=document.getElementById('ad-folder-direct-select');
+        if(dsel){dsel.value=targetFolder;await loadSelectedAdFolderFiles(true);}
+        updateStats();
+      }
+    }else if(targetType==='apps'){
+      const ar=await GH('apps');
+      if(ar.ok){
+        const files=(await ar.json()).filter(f=>f.type==='file'&&/\.html?$/i.test(f.name));
+        ALL_APPS=files.map(f=>({
+          fileName:f.name,
+          slug:f.name.replace(/\.html?$/i,''),
+          size:f.size||0,
+          sha:f.sha||null,
+          url:`https://${CFG.owner}.github.io/${CFG.repo}/apps/${encodeURIComponent(f.name)}`,
+          updatedAt:null
+        }));
+        renderAds();
+      }
+    }
+    refreshAllAdFolderSelects(false);
+  }catch(e){
+    console.warn('[refreshCurrentListsAfterDeploy patched]',e);
+  }
+}
+
+/* 기존 함수명 재정의: 광고목록 펼침 시 id 의존을 줄이고 data-slug 기반으로 파일목록 로드 */
+function toggleRow(detId,rowId){
+  const det=document.getElementById(detId);
+  const chv=document.querySelectorAll(`#${rowId} .ad-row-chevron`)[0];
+  if(!det)return;
+  const isOpen=det.classList.contains('open');
+  document.querySelectorAll('.ad-row-detail.open').forEach(el=>el.classList.remove('open'));
+  document.querySelectorAll('.ad-row-chevron.open').forEach(el=>el.classList.remove('open'));
+  if(!isOpen){
+    det.classList.add('open');
+    if(chv)chv.classList.add('open');
+    const slug=det.dataset.slug||'';
+    const fl=det.querySelector('.file-list[data-slug]')||getAdFileContainer(slug);
+    if(fl){fl.dataset.slug=slug;loadFileList(slug,fl,true);}
+  }
+}
+
+
+/* ══ 최종 보강 패치: 광고배포 폴더 직접선택·파일보기 안정화 ══
+   목적:
+   1) select가 비어 있거나 선택이 안 되는 경우에도 직접 입력으로 pages/폴더 파일관리 가능
+   2) GitHub API 경로를 세그먼트별 인코딩하여 한글/공백/특수문자 파일명 안정 처리
+   3) 광고폴더 안 파일 열기·URL복사·보기·수정·삭제를 직접관리 패널에서 확실히 표시
+*/
+function ghPathEncode(path){
+  return String(path||'').split('/').filter(v=>v!=='').map(v=>encodeURIComponent(v)).join('/');
+}
+function GHC(path,opt={}){
+  const hdrs={Authorization:`token ${CFG.token}`,Accept:'application/vnd.github.v3+json','X-Requested-With':'XMLHttpRequest'};
+  const merged={...opt,headers:{...hdrs,...(opt.headers||{})}};
+  return fetch(`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${ghPathEncode(path)}`,merged);
+}
+function normalizePageSlug(v){
+  let s=String(v||'').trim();
+  s=s.replace(/^https?:\/\/[^/]+\/[^/]+\/pages\//i,'');
+  s=s.replace(/^\/+|\/+$/g,'');
+  s=s.replace(/^pages\//i,'');
+  s=s.replace(/\/$/,'');
+  return s;
+}
+function ensureDirectFolderManualControls(){
+  const panel=document.getElementById('ad-folder-direct-panel');
+  const sel=document.getElementById('ad-folder-direct-select');
+  if(!panel||!sel)return;
+  if(!document.getElementById('ad-folder-direct-manual')){
+    const wrap=document.createElement('div');
+    wrap.id='ad-folder-direct-manual-wrap';
+    wrap.style.cssText='display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 10px';
+    wrap.innerHTML='<input id="ad-folder-direct-manual" placeholder="직접입력: 예) pages/ad-001 또는 ad-001" style="flex:1;min-width:180px;height:40px;background:#fff;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none">'
+      +'<button class="btn btn-primary btn-sm" onclick="loadManualAdFolderFiles()" style="height:40px">📂 직접입력 파일보기</button>'
+      +'<button class="btn btn-ghost btn-sm" onclick="forceReloadDirectFolders()" style="height:40px">🔄 전체목록 재조회</button>';
+    const status=document.getElementById('ad-folder-direct-status');
+    panel.insertBefore(wrap,status||panel.children[panel.children.length-1]);
+  }
+  if(!sel.dataset.finalPatchBound){
+    sel.dataset.finalPatchBound='1';
+    sel.addEventListener('change',function(){
+      const man=document.getElementById('ad-folder-direct-manual');
+      if(man)man.value=this.value?('pages/'+this.value):'';
+      loadSelectedAdFolderFiles(true);
+    });
+  }
+}
+function ensureSamsungManualControls(){
+  const panel=document.getElementById('samsung-chatbot-panel');
+  const sel=document.getElementById('samsung-chatbot-folder-select');
+  if(!panel||!sel)return;
+  if(!document.getElementById('samsung-chatbot-manual')){
+    const wrap=document.createElement('div');
+    wrap.id='samsung-chatbot-manual-wrap';
+    wrap.style.cssText='display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px';
+    wrap.innerHTML='<input id="samsung-chatbot-manual" placeholder="직접입력: 예) pages/ad-001 또는 ad-001" style="flex:1;min-width:180px;height:40px;background:#fff;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none">'
+      +'<button class="btn btn-primary btn-sm" onclick="applySamsungFromManual()" style="height:40px">🤖 직접입력 폴더 적용</button>';
+    panel.appendChild(wrap);
+  }
+  if(!sel.dataset.finalPatchBound){
+    sel.dataset.finalPatchBound='1';
+    sel.addEventListener('change',function(){
+      const man=document.getElementById('samsung-chatbot-manual');
+      if(man)man.value=this.value?('pages/'+this.value):'';
+    });
+  }
+}
+async function forceReloadDirectFolders(){
+  await refreshAllAdFolderSelects(true);
+  const sel=document.getElementById('ad-folder-direct-select');
+  if(sel&&sel.value)await loadSelectedAdFolderFiles(true);
+}
+async function loadPagesFoldersFromGithub(){
+  if(!CFG.owner||!CFG.token)return [];
+  try{
+    const r=await GHC('pages');
+    if(!r.ok)return [];
+    const list=await r.json();
+    return uniqSorted((list||[]).filter(x=>x&&x.type==='dir').map(x=>x.name));
+  }catch(e){
+    console.warn('[final loadPagesFoldersFromGithub]',e);
+    return [];
+  }
+}
+async function refreshAllAdFolderSelects(showMsg){
+  ensureDirectFolderManualControls();
+  ensureSamsungManualControls();
+  const status=document.getElementById('ad-folder-direct-status');
+  if(status)status.textContent='GitHub pages/ 광고배포 폴더 목록을 다시 불러오는 중입니다...';
+  const fromGithub=await loadPagesFoldersFromGithub();
+  DIRECT_PAGE_FOLDERS=uniqSorted([...(DIRECT_PAGE_FOLDERS||[]),...fromGithub]);
+  const folders=knownAdFolders();
+  setFolderSelectOptions('ad-folder-direct-select',folders,'광고배포 폴더 없음');
+  setFolderSelectOptions('samsung-chatbot-folder-select',folders,'광고폴더 없음 - 직접입력 가능');
+  setFolderSelectOptions('dep-folder-select',folders,'선택 가능한 광고배포 폴더 없음');
+  const directSel=document.getElementById('ad-folder-direct-select');
+  const directManual=document.getElementById('ad-folder-direct-manual');
+  if(directSel&&directManual&&!directManual.value&&directSel.value)directManual.value='pages/'+directSel.value;
+  const samsungSel=document.getElementById('samsung-chatbot-folder-select');
+  const samsungManual=document.getElementById('samsung-chatbot-manual');
+  if(samsungSel&&samsungManual&&!samsungManual.value&&samsungSel.value)samsungManual.value='pages/'+samsungSel.value;
+  const depSel=document.getElementById('dep-folder-select');
+  if(depSel){
+    const checked=document.querySelector('input[name="dep-target"]:checked')?.value||'apps';
+    depSel.disabled=checked!=='pages'||!folders.length;
+  }
+  if(status){
+    status.textContent=folders.length
+      ? '광고배포 폴더 '+folders.length+'개를 불러왔습니다. 선택하거나 직접 입력해 파일을 볼 수 있습니다.'
+      : 'pages/ 아래 폴더를 찾지 못했습니다. 직접입력 칸에 pages/폴더명을 넣어 파일보기를 시도할 수 있습니다.';
+  }
+  if(showMsg)showToast(folders.length?'📁 광고폴더 목록 재조회 완료':'목록이 비어 있습니다. 직접입력으로도 조회할 수 있습니다',folders.length?'success':'info');
+  return folders;
+}
+async function loadManualAdFolderFiles(){
+  ensureDirectFolderManualControls();
+  const man=document.getElementById('ad-folder-direct-manual');
+  const sel=document.getElementById('ad-folder-direct-select');
+  const slug=normalizePageSlug(man?man.value:'');
+  if(!slug){showToast('직접입력 칸에 pages/광고폴더명 또는 광고폴더명을 입력하십시오','error');return;}
+  if(sel){
+    const exists=[...sel.options].some(o=>o.value===slug);
+    if(!exists){
+      const opt=document.createElement('option');
+      opt.value=slug; opt.textContent='pages/'+slug+'/';
+      sel.appendChild(opt);
+    }
+    sel.disabled=false; sel.value=slug;
+  }
+  DIRECT_PAGE_FOLDERS=uniqSorted([...(DIRECT_PAGE_FOLDERS||[]),slug]);
+  await loadAdFolderFilesBySlug(slug,true);
+}
+async function loadSelectedAdFolderFiles(force){
+  ensureDirectFolderManualControls();
+  const sel=document.getElementById('ad-folder-direct-select');
+  const man=document.getElementById('ad-folder-direct-manual');
+  let slug=normalizePageSlug(sel?sel.value:'');
+  if(!slug&&man&&man.value)slug=normalizePageSlug(man.value);
+  if(!slug){
+    const folders=await refreshAllAdFolderSelects(false);
+    slug=normalizePageSlug(sel?sel.value:'');
+    if(!slug&&folders&&folders.length){slug=folders[0]; if(sel)sel.value=slug;}
+  }
+  if(!slug){
+    const cont=document.getElementById('ad-folder-direct-files');
+    if(cont)cont.innerHTML='<div style="font-size:11px;color:var(--red);padding:8px 2px">선택된 광고배포 폴더가 없습니다. 직접입력 칸에 pages/폴더명을 입력해 보십시오.</div>';
+    showToast('광고배포 폴더를 선택하거나 직접 입력하십시오','error');
+    return;
+  }
+  if(man)man.value='pages/'+slug;
+  await loadAdFolderFilesBySlug(slug,force!==false);
+}
+async function loadAdFolderFilesBySlug(slug,force){
+  slug=normalizePageSlug(slug);
+  const status=document.getElementById('ad-folder-direct-status');
+  const cont=document.getElementById('ad-folder-direct-files');
+  if(status)status.innerHTML='현재 선택 폴더: <span style="font-family:var(--mono);color:var(--blue2)">pages/'+escH(slug)+'/</span>';
+  if(!cont)return;
+  cont.dataset.slug=slug;
+  await loadFileList(slug,cont,true);
+}
+async function loadFileList(slug,container,force){
+  slug=normalizePageSlug(decArg(slug));
+  if(!container)return;
+  if(force)container.dataset.loaded='0';
+  container.dataset.loaded='1';
+  container.dataset.slug=slug;
+  container.innerHTML='<div style="font-size:11px;color:var(--t3);padding:8px 2px">⏳ pages/'+escH(slug)+'/ 파일을 불러오는 중...</div>';
+  try{
+    const r=await GHC('pages/'+slug);
+    if(!r.ok){
+      let msg='파일 목록 로드 실패 ('+r.status+')';
+      try{const j=await r.json(); if(j&&j.message)msg+=' - '+j.message;}catch(_){}
+      throw new Error(msg);
+    }
+    const list=await r.json();
+    const files=(Array.isArray(list)?list:[]).filter(f=>f.type==='file');
+    refreshAdFolderMeta(slug,files.length);
+    if(!files.length){
+      container.innerHTML='<div style="font-size:11px;color:var(--t3);padding:8px 2px">📂 pages/'+escH(slug)+'/ 안에 표시할 파일이 없습니다. <button class="file-btn fbtn-view" style="margin-left:6px" onclick="uploadToAdFolder(\''+encArg(slug)+'\')">➕ 파일추가</button></div>';
+      container._files=[];
+      return;
+    }
+    const encSlug=encArg(slug);
+    let html='<div class="file-sel-bar"><span data-role="file-sel-count">0개 선택</span>'
+      +'<button class="file-btn fbtn-view" onclick="copySelectedFileUrls(\''+encSlug+'\')">🔗 선택 URL 복사</button>'
+      +'<button class="file-btn fbtn-del" onclick="delSelectedFiles(\''+encSlug+'\')">🗑 선택 삭제</button></div>';
+    html+='<div class="file-row file-all-row" style="background:var(--s2);border-color:var(--bd2)">'
+      +'<div class="file-cb" onclick="toggleAllFiles(\''+encSlug+'\')"></div>'
+      +'<div class="file-info"><div class="file-name" style="color:var(--t2)">전체 선택</div><div class="file-size">광고배포 폴더: pages/'+escH(slug)+'/</div></div>'
+      +'<div class="file-acts"><button class="file-btn fbtn-view" onclick="uploadToAdFolder(\''+encSlug+'\')">➕ 파일추가</button><span style="font-size:10px;color:var(--t3);align-self:center">'+files.length+'개 파일</span></div></div>';
+    html+=files.map(f=>{
+      const name=f.name||'';
+      const encName=encArg(name);
+      const isText=isTextFileName(name);
+      const isImg=isImageFileName(name);
+      const url=pageFileUrl(slug,name);
+      const fsz=f.size?(f.size>1024?(Math.round(f.size/1024)+'KB'):f.size+'B'):'';
+      const ico=isText?'📄':isImg?'🖼':'📎';
+      return '<div class="file-row" data-file-name="'+escH(name)+'" data-file-url="'+escH(url)+'">'
+        +'<div class="file-cb" onclick="toggleFileCheck(\''+encSlug+'\',\''+encName+'\',this)"></div>'
+        +'<span class="file-ico">'+ico+'</span>'
+        +'<div class="file-info"><div class="file-name">'+escH(name)+'</div><div class="file-size">'+fsz+'</div><div class="file-url">'+escH(url)+'</div></div>'
+        +'<div class="file-acts">'
+        +'<button class="file-btn fbtn-view" onclick="openPageFileUrl(\''+encSlug+'\',\''+encName+'\')">열기</button>'
+        +'<button class="file-btn" style="background:rgba(6,182,212,.08);color:var(--cyan)" onclick="copyPageFileUrl(\''+encSlug+'\',\''+encName+'\')">URL복사</button>'
+        +((isText||isImg)?'<button class="file-btn fbtn-view" onclick="openFileView(\''+encSlug+'\',\''+encName+'\','+isText+','+isImg+')">보기</button>':'')
+        +(isText?'<button class="file-btn" style="background:rgba(34,197,94,.1);color:var(--green)" onclick="openFileView(\''+encSlug+'\',\''+encName+'\',true,false,true)">수정</button>':'')
+        +'<button class="file-btn fbtn-del" onclick="delFile(\''+encSlug+'\',\''+encName+'\')">삭제</button>'
+        +'</div></div>';
+    }).join('');
+    container.innerHTML=html;
+    container._files=files;
+  }catch(e){
+    container.dataset.loaded='0';
+    container.innerHTML='<div style="font-size:11px;color:var(--red);padding:8px 2px">⚠️ '+escH(e.message)+'<br>직접입력 값이 맞는지 확인하십시오. 예: pages/ad-001 또는 ad-001<br><button class="file-btn fbtn-view" style="margin-top:6px" onclick="loadSelectedAdFolderFiles(true)">🔄 다시 시도</button></div>';
+  }
+}
+async function openFileView(slug,fileName,isText,isImg,editable){
+  slug=normalizePageSlug(decArg(slug));
+  fileName=decArg(fileName);
+  _fvSlug=slug; _fvName=fileName; _fvEditable=!!editable;
+  const modal=document.getElementById('file-view-modal');
+  const nameEl=document.getElementById('fv-name');
+  const body=document.getElementById('fv-body');
+  const saveBtn=document.getElementById('fv-save-btn');
+  const info=document.getElementById('fv-info');
+  if(nameEl)nameEl.textContent=fileName;
+  if(saveBtn)saveBtn.style.display=editable?'block':'none';
+  if(info)info.textContent='불러오는 중...';
+  if(body)body.innerHTML='<div style="padding:20px;color:var(--t2);font-size:12px">⏳ 불러오는 중...</div>';
+  if(modal)modal.classList.add('open');
+  document.body.style.overflow='hidden';
+  try{
+    const r=await GHC('pages/'+slug+'/'+fileName);
+    if(!r.ok)throw new Error('파일 로드 실패 ('+r.status+')');
+    const j=await r.json(); _fvSha=j.sha;
+    const rawContent=String(j.content||'').replace(/\n/g,'');
+    if(isImg){
+      const ext=fileName.split('.').pop().toLowerCase();
+      const mime=ext==='jpg'||ext==='jpeg'?'image/jpeg':ext==='png'?'image/png':ext==='gif'?'image/gif':ext==='webp'?'image/webp':'image/*';
+      body.innerHTML='<img src="data:'+mime+';base64,'+rawContent+'" style="max-width:100%;display:block;margin:16px auto;border-radius:8px">';
+      if(info)info.textContent=Math.round((j.size||0)/1024)+'KB · '+fileName;
+    }else{
+      const text=decodeURIComponent(escape(atob(rawContent)));
+      if(editable){
+        body.innerHTML='<textarea id="fv-ta" spellcheck="false">'+escH(text)+'</textarea>';
+      }else{
+        body.innerHTML='<pre style="padding:16px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-all">'+escH(text)+'</pre>';
+      }
+      if(info)info.textContent=Math.round((j.size||text.length)/1024*10)/10+'KB · '+text.split('\n').length+'줄';
+    }
+  }catch(e){
+    if(body)body.innerHTML='<div style="padding:20px;color:var(--red);font-size:12px">⚠️ '+escH(e.message)+'</div>';
+  }
+}
+async function saveFileView(){
+  const ta=document.getElementById('fv-ta');
+  if(!ta){showToast('편집 모드가 아닙니다','error');return;}
+  try{
+    showToast('💾 저장 중...','info');
+    const b64=btoa(unescape(encodeURIComponent(ta.value)));
+    const r=await GHC('pages/'+_fvSlug+'/'+_fvName,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'[수정] '+_fvSlug+'/'+_fvName,content:b64,sha:_fvSha})});
+    if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||r.status);}
+    const j=await r.json(); _fvSha=j.content?.sha||_fvSha;
+    closeFileView();
+    showToast('✅ '+_fvName+' 저장 완료','success');
+    await loadAdFolderFilesBySlug(_fvSlug,true);
+  }catch(e){showToast('저장 실패: '+e.message,'error');}
+}
+async function delFile(slug,fileName){
+  slug=normalizePageSlug(decArg(slug)); fileName=decArg(fileName);
+  if(!confirm('"'+fileName+'" 파일을 삭제하시겠습니까?\n되돌릴 수 없습니다.'))return;
+  try{
+    showToast('🗑 삭제 중...','info');
+    const r=await GHC('pages/'+slug+'/'+fileName);
+    if(!r.ok)throw new Error('파일 정보 조회 실패 ('+r.status+')');
+    const j=await r.json();
+    const dr=await GHC('pages/'+slug+'/'+fileName,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'[삭제] '+slug+'/'+fileName,sha:j.sha})});
+    if(!dr.ok){const dj=await dr.json().catch(()=>({}));throw new Error(dj.message||dr.status);}
+    showToast('🗑 '+fileName+' 삭제 완료','success');
+    await loadAdFolderFilesBySlug(slug,true);
+  }catch(e){showToast('삭제 실패: '+e.message,'error');}
+}
+async function delFileFromView(){
+  if(!confirm('"'+_fvName+'" 파일을 삭제하시겠습니까?'))return;
+  try{
+    const r=await GHC('pages/'+_fvSlug+'/'+_fvName,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'[삭제] '+_fvSlug+'/'+_fvName,sha:_fvSha})});
+    if(!r.ok)throw new Error(r.status);
+    closeFileView();
+    showToast('🗑 '+_fvName+' 삭제 완료','success');
+    await loadAdFolderFilesBySlug(_fvSlug,true);
+  }catch(e){showToast('삭제 실패: '+e.message,'error');}
+}
+async function uploadToSelectedAdFolder(){
+  ensureDirectFolderManualControls();
+  const sel=document.getElementById('ad-folder-direct-select');
+  const man=document.getElementById('ad-folder-direct-manual');
+  const slug=normalizePageSlug((sel&&sel.value)||((man&&man.value)||''));
+  if(!slug){showToast('파일을 올릴 광고배포 폴더를 선택하거나 직접 입력하십시오','error');return;}
+  await uploadToAdFolder(encArg(slug));
+}
+async function applySamsungFromManual(){
+  ensureSamsungManualControls();
+  const slug=normalizePageSlug(document.getElementById('samsung-chatbot-manual')?.value||'');
+  if(!slug){showToast('적용할 광고폴더를 직접 입력하십시오','error');return;}
+  await applySamsungChatbotToAdFolder(encArg(slug));
+}
+async function applySamsungFromTop(){
+  if(!CFG.owner||!CFG.token){showToast('먼저 GitHub 설정을 입력하십시오','error');toggleConfig();return;}
+  ensureSamsungManualControls();
+  const sel=document.getElementById('samsung-chatbot-folder-select');
+  const man=document.getElementById('samsung-chatbot-manual');
+  const slug=normalizePageSlug((sel&&sel.value)||((man&&man.value)||''));
+  if(!slug){showToast('적용할 광고폴더를 선택하거나 직접 입력하십시오','error');return;}
+  await applySamsungChatbotToAdFolder(encArg(slug));
+}
+function openSamsungChatbotManager(){
+  const p=document.getElementById('samsung-chatbot-panel');
+  if(!CFG.owner||!CFG.token){showToast('먼저 GitHub 설정을 입력하십시오','error');toggleConfig();return;}
+  ensureSamsungManualControls();
+  refreshAllAdFolderSelects(false);
+  if(p){p.style.display='block';p.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+ensureDirectFolderManualControls();
+ensureSamsungManualControls();
+
+
+/* ══ 최종 보강 패치: 광고·폴더 전체 재귀 삭제 ══
+   목적:
+   1) 광고 삭제 시 pages/{광고폴더}/ 아래 모든 파일과 하위폴더 파일까지 한 번에 삭제
+   2) 선택 광고 일괄삭제도 각 광고폴더 전체 재귀 삭제
+   3) GitHub 저장소 폴더관리의 폴더 삭제도 내부 하위폴더까지 완전 삭제
+   4) GitHub는 빈 폴더를 별도로 유지하지 않으므로, 모든 파일 삭제 후 폴더는 자동 소멸됨
+*/
+async function collectRepoFilesRecursive(path, acc, onStep){
+  const clean=normFolderPath(path);
+  if(!clean)return acc||[];
+  acc=acc||[];
+  const r=await GHC(clean);
+  if(r.status===404){
+    return acc;
+  }
+  if(!r.ok){
+    let msg='조회 실패 ('+r.status+')';
+    try{const j=await r.json(); if(j&&j.message)msg+=' - '+j.message;}catch(_){ }
+    throw new Error(clean+' '+msg);
+  }
+  const data=await r.json();
+  const items=Array.isArray(data)?data:[data];
+  for(const item of items){
+    if(!item)continue;
+    if(item.type==='file'){
+      acc.push({path:item.path||clean,name:item.name||'',sha:item.sha||'',size:item.size||0});
+      if(onStep)onStep('확인: '+(item.path||clean));
+    }else if(item.type==='dir'){
+      await collectRepoFilesRecursive(item.path,acc,onStep);
+    }
+  }
+  return acc;
+}
+
+async function deleteRepoFilesCompletely(files, messagePrefix, onStep){
+  let deleted=0;
+  const total=files.length;
+  for(const f of files){
+    const label=(f.path||f.name||'file');
+    if(onStep)onStep('삭제 중... ('+(deleted+1)+'/'+total+') '+label);
+    const dr=await GHC(f.path,{
+      method:'DELETE',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:(messagePrefix||'[Admin] 전체 삭제')+': '+label,sha:f.sha})
+    });
+    if(!dr.ok){
+      let msg='삭제 실패 ('+dr.status+')';
+      try{const j=await dr.json(); if(j&&j.message)msg+=' - '+j.message;}catch(_){ }
+      throw new Error(label+' '+msg);
+    }
+    deleted++;
+  }
+  return deleted;
+}
+
+async function deleteFolderTreeCompletely(folderPath, messagePrefix, onStep){
+  const clean=normFolderPath(folderPath);
+  if(!clean)throw new Error('삭제할 폴더 경로가 비어 있습니다.');
+  if(onStep)onStep('삭제할 전체 파일 목록을 확인하는 중... '+clean);
+  const files=await collectRepoFilesRecursive(clean,[],onStep);
+  if(!files.length){
+    return {deleted:0,total:0,path:clean};
+  }
+  const deleted=await deleteRepoFilesCompletely(files,messagePrefix,onStep);
+  return {deleted,total:files.length,path:clean};
+}
+
+function removeDeletedAdLocally(slug){
+  slug=normalizePageSlug(slug);
+  ALL_ADS=(ALL_ADS||[]).filter(a=>a.slug!==slug);
+  if(typeof DIRECT_PAGE_FOLDERS!=='undefined'){
+    DIRECT_PAGE_FOLDERS=(DIRECT_PAGE_FOLDERS||[]).filter(v=>normalizePageSlug(v)!==slug);
+  }
+  const dsel=document.getElementById('ad-folder-direct-select');
+  if(dsel&&normalizePageSlug(dsel.value)===slug)dsel.value='';
+  const cont=document.getElementById('ad-folder-direct-files');
+  if(cont&&normalizePageSlug(cont.dataset.slug||'')===slug){
+    cont.innerHTML='<div style="font-size:11px;color:var(--t3);padding:8px 2px">삭제된 광고배포 폴더입니다.</div>';
+    cont.dataset.slug='';
+  }
+}
+
+async function confirmDel(){
+  if(!delTarget)return;
+  const slug=normalizePageSlug(delTarget);
+  const btn=document.getElementById('del-confirm-btn');
+  const ld=document.getElementById('del-loading');
+  const err=document.getElementById('del-err');
+  const loadingText=ld?ld.querySelector('span'):null;
+  if(btn)btn.disabled=true;
+  if(ld)ld.style.display='flex';
+  if(err)err.classList.remove('show');
+  try{
+    const result=await deleteFolderTreeCompletely('pages/'+slug,'[Admin] 광고 폴더 전체 삭제',msg=>{
+      if(loadingText)loadingText.textContent=msg;
+    });
+    removeDeletedAdLocally(slug);
+    updateStats();
+    renderAds();
+    await refreshAllAdFolderSelects(false).catch(()=>{});
+    closeModal('del');
+    showToast('🗑 '+slug+' 광고폴더 전체 삭제 완료 ('+result.deleted+'개 파일)','success');
+  }catch(e){
+    if(err){err.textContent='삭제 실패: '+e.message;err.classList.add('show');}
+    if(btn)btn.disabled=false;
+  }finally{
+    if(ld)ld.style.display='none';
+    if(loadingText)loadingText.textContent='삭제 중...';
+  }
+}
+
+async function confirmBulkDel(){
+  const slugs=[...SELECTED].map(normalizePageSlug).filter(Boolean);
+  if(!slugs.length)return;
+  const btn=document.getElementById('bdel-confirm-btn');
+  const ld=document.getElementById('bdel-loading');
+  const err=document.getElementById('bdel-err');
+  const msg=document.getElementById('bdel-msg');
+  if(btn)btn.disabled=true;
+  if(ld)ld.style.display='flex';
+  if(err)err.classList.remove('show');
+  let okFolders=0,totalFiles=0;
+  const failed=[];
+  for(let i=0;i<slugs.length;i++){
+    const slug=slugs[i];
+    try{
+      const result=await deleteFolderTreeCompletely('pages/'+slug,'[Admin] 광고 폴더 일괄 전체 삭제',m=>{
+        if(msg)msg.textContent='('+ (i+1) +'/'+slugs.length+') '+m;
+      });
+      totalFiles+=result.deleted;
+      okFolders++;
+      removeDeletedAdLocally(slug);
+    }catch(e){
+      failed.push(slug+' - '+e.message);
+    }
+  }
+  updateStats();
+  SELECTED.clear();SELECT_MODE=false;
+  closeModal('bdel');
+  const btn2=document.getElementById('sel-mode-btn');
+  if(btn2){btn2.textContent='☑ 선택';btn2.classList.remove('active');}
+  renderAds();updateBulkBar();
+  await refreshAllAdFolderSelects(false).catch(()=>{});
+  if(failed.length){
+    showToast('⚠ '+okFolders+'개 광고폴더 삭제, '+failed.length+'개 실패','error');
+    console.warn('[bulk delete failed]',failed);
+  }else{
+    showToast('🗑 '+okFolders+'개 광고폴더 전체 삭제 완료 ('+totalFiles+'개 파일)','success');
+  }
+  if(btn)btn.disabled=false;
+  if(ld)ld.style.display='none';
+}
+
+async function getFilesInFolder(path,acc){
+  return collectRepoFilesRecursive(path,acc||[]);
+}
+
+async function deleteRepoFolder(rawPath){
+  const path=normFolderPath(String(rawPath||'').replace(/%27/g,"'"));
+  const err=document.getElementById('folder-err');
+  if(err){err.classList.remove('show');err.textContent='';}
+  if(!isValidFolderPath(path)){
+    folderError('삭제할 폴더를 선택하십시오.');
+    return;
+  }
+  if(!confirm('"'+path+'" 폴더를 삭제하시겠습니까?\n이 폴더 안의 모든 파일과 하위폴더 파일까지 한 번에 삭제됩니다.\nGitHub에서는 모든 파일이 삭제되면 폴더도 자동으로 사라집니다.\n되돌릴 수 없습니다.'))return;
+  setFolderBusy(true,'삭제할 전체 파일 목록을 확인하는 중...');
+  try{
+    const result=await deleteFolderTreeCompletely(path,'[Admin] 저장소 폴더 전체 삭제',msg=>setFolderBusy(true,msg));
+    showToast('🗑 '+path+' 폴더 전체 삭제 완료 ('+result.deleted+'개 파일)','success');
+    await refreshFolderManager();
+    await diagAndLoad();
+    await refreshAllAdFolderSelects(false).catch(()=>{});
+  }catch(e){
+    folderError('폴더 삭제 실패: '+e.message);
+  }finally{
+    setFolderBusy(false);
+  }
+}
+
+
+
+/* ══ 추가 보강 패치: 일반 프로그램 전체 삭제 ══
+   목적:
+   1) apps/ 루트의 일반 프로그램 HTML 파일뿐 아니라 apps/하위폴더도 일반 프로그램 목록에 표시
+   2) 일반 프로그램 삭제 시 단일 파일만 삭제하지 않고 관련 폴더까지 한 번에 전체 삭제
+   3) 예: apps/sample.html 삭제 시 apps/sample/ 폴더가 있으면 그 안의 모든 파일까지 함께 삭제
+      예: apps/sample/ 폴더형 프로그램 삭제 시 폴더 내부 전체 파일과 하위폴더 파일까지 재귀 삭제
+*/
+function normalizeAppPath(v){
+  let s=String(v||'').trim();
+  try{s=decodeURIComponent(s);}catch(_){ }
+  s=s.replace(/^https?:\/\/[^/]+\/[^/]+\/apps\//i,'');
+  s=s.replace(/^\/+|\/+$/g,'');
+  if(!s)return '';
+  if(!/^apps\//i.test(s))s='apps/'+s;
+  s=s.replace(/\/+$|\s+$/g,'');
+  return s;
+}
+function appSlugFromPath(path){
+  const clean=normalizeAppPath(path).replace(/^apps\//i,'').replace(/\/+$/,'');
+  const first=clean.split('/')[0]||clean;
+  return first.replace(/\.html?$/i,'');
+}
+function appUrlFromPath(path,isDir){
+  const clean=normalizeAppPath(path).replace(/^apps\//i,'');
+  const parts=clean.split('/').filter(Boolean).map(v=>encodeURIComponent(v));
+  let url='https://'+CFG.owner+'.github.io/'+CFG.repo+'/apps/'+parts.join('/');
+  if(isDir&&!url.endsWith('/'))url+='/';
+  return url;
+}
+async function repoContentItemSafe(path){
+  const clean=normFolderPath?normFolderPath(path):String(path||'').replace(/^\/+|\/+$/g,'');
+  if(!clean)return null;
+  const r=await GHC(clean);
+  if(r.status===404)return null;
+  if(!r.ok){
+    let msg='조회 실패 ('+r.status+')';
+    try{const j=await r.json();if(j&&j.message)msg+=' - '+j.message;}catch(_){ }
+    throw new Error(clean+' '+msg);
+  }
+  return await r.json();
+}
+async function refreshAppsDeepList(){
+  if(!CFG.owner||!CFG.token)return;
+  const r=await GHC('apps');
+  if(r.status===404){ALL_APPS=[];return;}
+  if(!r.ok){
+    let msg='apps 폴더 조회 실패 ('+r.status+')';
+    try{const j=await r.json();if(j&&j.message)msg+=' - '+j.message;}catch(_){ }
+    throw new Error(msg);
+  }
+  const items=await r.json();
+  if(!Array.isArray(items)){ALL_APPS=[];return;}
+  const list=[];
+  for(const item of items){
+    if(item.type==='file'&&/\.html?$/i.test(item.name||'')){
+      list.push({
+        fileName:item.name,
+        displayName:item.name,
+        slug:(item.name||'').replace(/\.html?$/i,''),
+        size:item.size||0,
+        sha:item.sha||null,
+        path:item.path||('apps/'+item.name),
+        type:'file',
+        isDir:false,
+        fileCount:1,
+        url:appUrlFromPath(item.path||('apps/'+item.name),false),
+        updatedAt:null
+      });
+    }else if(item.type==='dir'){
+      let files=[];
+      try{files=await collectRepoFilesRecursive(item.path,[]);}catch(_){files=[];}
+      const hasIndex=files.some(f=>/\/index\.html$/i.test(f.path||''));
+      list.push({
+        fileName:(item.name||'')+'/',
+        displayName:(item.name||'')+'/',
+        slug:item.name||'',
+        size:files.reduce((s,f)=>s+(f.size||0),0),
+        sha:item.sha||null,
+        path:item.path||('apps/'+item.name),
+        type:'dir',
+        isDir:true,
+        fileCount:files.length,
+        hasIndex,
+        url:appUrlFromPath(item.path||('apps/'+item.name),true),
+        updatedAt:null
+      });
+    }
+  }
+  ALL_APPS=list.sort((a,b)=>(a.displayName||a.fileName||'').localeCompare(b.displayName||b.fileName||''));
+}
+function appCard(a,idx){
+  const display=escH(a.displayName||a.fileName||a.slug||'일반 프로그램');
+  const rawPath=a.path||('apps/'+String(a.fileName||'').replace(/\/+$/,''));
+  const encPath=encodeURIComponent(rawPath);
+  const safeUrl=String(a.url||appUrlFromPath(rawPath,!!a.isDir)).replace(/'/g,'%27');
+  const rowId='app-row-'+idx;
+  const detId='app-det-'+idx;
+  const typeLabel=a.isDir?'📁 폴더형':'📄 파일형';
+  const countLabel=a.isDir?(' · '+(a.fileCount||0)+'개 파일'):'';
+  const sizeLabel=a.size?(a.size>1024?Math.round(a.size/1024)+'KB':a.size+'B'):'';
+  return`<div class="ad-row" id="${rowId}">
+    <div class="ad-row-main" onclick="toggleRow('${detId}','${rowId}')">
+      <div class="ad-row-num">${idx+1}</div>
+      <div class="ad-row-icon">${a.isDir?'📁':'🧩'}</div>
+      <div class="ad-row-info">
+        <div class="ad-row-name" title="${display}">${display}</div>
+        <div class="ad-row-meta">
+          <span>${typeLabel}${countLabel}</span>${sizeLabel?`<span>💾 ${sizeLabel}</span>`:''}
+        </div>
+      </div>
+      <div class="ad-row-badge b-live">🌐 일반</div>
+      <div class="ad-row-chevron" id="app-chv-${idx}">›</div>
+    </div>
+    <div class="ad-row-detail" id="${detId}">
+      <div class="detail-url">
+        <div class="url-dot"></div>
+        <div class="detail-url-txt">${safeUrl}</div>
+        <button class="ca ca-copy" style="padding:4px 8px;border-radius:6px" onclick="cpy('${safeUrl}')">📋</button>
+      </div>
+      <div class="detail-chips">
+        <span class="meta-chip">경로: ${escH(rawPath)}</span>
+        <span class="meta-chip">${a.isDir?'폴더 전체 삭제 가능':'같은 이름 폴더까지 함께 삭제'}</span>
+      </div>
+      <div class="detail-acts">
+        <button class="ca ca-open" onclick="window.open('${safeUrl}','_blank')">
+          <span class="cai">🌐</span>열기
+        </button>
+        <button class="ca ca-copy" onclick="cpy('${safeUrl}')">
+          <span class="cai">🔗</span>복사
+        </button>
+        <button class="ca ca-qr" onclick="openQR('${safeUrl}','${display}')">
+          <span class="cai">📱</span>QR
+        </button>
+        <button class="ca ca-del" onclick="delApp('${encPath}')">
+          <span class="cai">🗑</span>전체삭제
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+async function deleteGeneralProgramCompletely(rawPath,onStep){
+  const clean=normalizeAppPath(rawPath);
+  if(!clean)throw new Error('삭제할 일반 프로그램 경로가 비어 있습니다.');
+  const targets=[];
+  const item=await repoContentItemSafe(clean);
+  if(item&&Array.isArray(item)){
+    // 혹시 폴더 응답이 배열로 온 경우
+    const files=await collectRepoFilesRecursive(clean,[],onStep);
+    targets.push(...files);
+  }else if(item&&item.type==='dir'){
+    targets.push(...await collectRepoFilesRecursive(clean,[],onStep));
+  }else if(item&&item.type==='file'){
+    targets.push({path:item.path||clean,name:item.name||clean.split('/').pop(),sha:item.sha||'',size:item.size||0});
+    const fileName=clean.replace(/^apps\//i,'');
+    const base=fileName.replace(/\.html?$/i,'');
+    if(base&&base!==fileName&&!base.includes('/')){
+      const pairedFolder='apps/'+base;
+      const paired=await repoContentItemSafe(pairedFolder);
+      if(paired&&(Array.isArray(paired)||paired.type==='dir')){
+        targets.push(...await collectRepoFilesRecursive(pairedFolder,[],onStep));
+      }
+    }
+  }else{
+    // 루트 파일은 없지만 같은 이름 폴더가 있는 경우까지 처리
+    const base=clean.replace(/^apps\//i,'').replace(/\.html?$/i,'');
+    const fallbackFolder=base?'apps/'+base:'';
+    if(fallbackFolder&&fallbackFolder!==clean){
+      const paired=await repoContentItemSafe(fallbackFolder);
+      if(paired&&(Array.isArray(paired)||paired.type==='dir')){
+        targets.push(...await collectRepoFilesRecursive(fallbackFolder,[],onStep));
+      }
+    }
+  }
+  const seen=new Set();
+  const unique=targets.filter(f=>{
+    const p=f&&f.path;
+    if(!p||seen.has(p))return false;
+    seen.add(p);return true;
+  });
+  if(!unique.length)throw new Error('삭제할 파일을 찾지 못했습니다. 이미 삭제되었거나 경로가 잘못되었습니다.');
+  const deleted=await deleteRepoFilesCompletely(unique,'[Admin] 일반 프로그램 전체 삭제',onStep);
+  return {deleted,total:unique.length,path:clean};
+}
+async function delApp(encAppPath){
+  let raw=String(encAppPath||'');
+  try{raw=decodeURIComponent(raw);}catch(_){ }
+  const clean=normalizeAppPath(raw);
+  const slug=appSlugFromPath(clean);
+  const relatedFolder=(!clean.endsWith('/')&&/\.html?$/i.test(clean))?'apps/'+slug:'';
+  const msg='"'+clean+'" 일반 프로그램을 전체 삭제하시겠습니까?\n'
+    +'선택한 일반 프로그램 파일이 삭제됩니다.\n'
+    +(relatedFolder?'같은 이름의 관련 폴더가 있으면 "'+relatedFolder+'" 안의 모든 파일과 하위폴더 파일도 함께 삭제됩니다.\n':'폴더형 프로그램이면 폴더 안의 모든 파일과 하위폴더 파일이 함께 삭제됩니다.\n')
+    +'GitHub에서는 파일이 모두 삭제되면 폴더도 자동으로 사라집니다.\n되돌릴 수 없습니다.';
+  if(!confirm(msg))return;
+  showToast('🗑 일반 프로그램 전체 삭제 중...','info');
+  try{
+    const result=await deleteGeneralProgramCompletely(clean,step=>showToast(step,'info'));
+    await refreshAppsDeepList().catch(()=>{});
+    updateStats();
+    renderAds();
+    showToast('🗑 일반 프로그램 전체 삭제 완료 ('+result.deleted+'개 파일)','success');
+  }catch(e){
+    showToast('일반 프로그램 전체 삭제 실패: '+e.message,'error');
+  }
+}
+
+const __loadAdsBeforeGeneralAppFullDeletePatch=loadAds;
+loadAds=async function(){
+  await __loadAdsBeforeGeneralAppFullDeletePatch.apply(this,arguments);
+  try{
+    await refreshAppsDeepList();
+    if((ALL_ADS&&ALL_ADS.length)||(ALL_APPS&&ALL_APPS.length)){
+      const sb=document.getElementById('stats-bar');if(sb)sb.style.display='grid';
+      const tb=document.getElementById('toolbar');if(tb)tb.style.display='flex';
+      updateStats();
+      renderAds();
+    }
+  }catch(e){
+    console.warn('[일반 프로그램 전체삭제 패치: 앱 목록 재조회 실패]',e);
+  }
+};
+
+const __refreshCurrentListsAfterDeployBeforeGeneralAppFullDeletePatch=typeof refreshCurrentListsAfterDeploy==='function'?refreshCurrentListsAfterDeploy:null;
+if(__refreshCurrentListsAfterDeployBeforeGeneralAppFullDeletePatch){
+  refreshCurrentListsAfterDeploy=async function(){
+    await __refreshCurrentListsAfterDeployBeforeGeneralAppFullDeletePatch.apply(this,arguments);
+    try{await refreshAppsDeepList();renderAds();}catch(e){console.warn('[일반 프로그램 배포 후 목록 재조회 실패]',e);}
+  };
+}
 
 /* ══ 시작 ══ */
 init();
