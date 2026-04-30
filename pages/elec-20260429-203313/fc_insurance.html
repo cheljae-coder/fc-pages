@@ -222,7 +222,8 @@
         }
         function applyData(){
             const admin=getAdminData();
-            const logo = localStorage.getItem('fc_logo') || localStorage.getItem('fc_logo_saved') || localStorage.getItem('fc_logo_backup') || (admin && admin.logo) || (window.FC_EXPORTED_DATA && window.FC_EXPORTED_DATA.fc_logo) || '';
+            const exportedLogo = window.FC_EXPORTED_DATA && (window.FC_EXPORTED_DATA.logo || window.FC_EXPORTED_DATA.fc_logo);
+            const logo = exportedLogo || localStorage.getItem('fc_logo') || localStorage.getItem('fc_logo_saved') || localStorage.getItem('fc_logo_backup') || (admin && admin.logo) || '';
             if(logo){ const img=document.getElementById('main-logo'); img.src=logo; img.classList.remove('hidden'); document.getElementById('logo-text').classList.add('hidden'); }
             else { document.getElementById('main-logo').classList.add('hidden'); document.getElementById('logo-text').classList.remove('hidden'); }
             setText('company-label', getValue('fc_company_label'));
