@@ -11,7 +11,7 @@
         :root { --brand:#0046ad; --brand-dark:#003278; --bg:#f8fafc; --text:#0f172a; --muted:#64748b; --border:#e2e8f0; --safe-bottom:env(safe-area-inset-bottom,0px); --safe-top:env(safe-area-inset-top,0px); }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         html, body { margin:0; width:100%; min-height:100%; overflow-x:hidden; scroll-behavior:smooth; }
-        body { font-family:'Noto Sans KR',sans-serif; background:linear-gradient(180deg,#f8fafc 0%,#eef4ff 100%); color:var(--text); padding-bottom:calc(98px + var(--safe-bottom)); }
+        body { font-family:'Noto Sans KR',sans-serif; background:linear-gradient(180deg,#f8fafc 0%,#eef4ff 100%); color:var(--text); padding-bottom:calc(24px + var(--safe-bottom)); }
         .mobile-shell { width:100%; max-width:520px; margin:0 auto; }
         .glass-nav { padding-top:calc(10px + var(--safe-top)); background:rgba(255,255,255,.94); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
         .hero-title { word-break:keep-all; letter-spacing:-.045em; }
@@ -26,11 +26,10 @@
         .feature-card p { word-break:keep-all; }
         .nav-company { font-size:17px; line-height:1.18; letter-spacing:-.045em; }
         .nav-fc { font-size:16px; line-height:1.15; letter-spacing:-.04em; }
-        .logo-img { max-height:40px; max-width:130px; object-fit:contain; }
-        .sms-float { position:fixed; left:18px; right:18px; bottom:calc(16px + var(--safe-bottom)); z-index:40; max-width:520px; margin:0 auto; }
+        .logo-img { max-height:64px; max-width:220px; object-fit:contain; }
         .chat-panel { width:calc(100vw - 28px); max-width:460px; right:14px; bottom:calc(86px + var(--safe-bottom)); }
-        @media (max-width:420px){ .step-grid{ gap:8px; } .step-card{ min-height:174px; padding:16px 7px !important; border-radius:24px !important; } .step-number{ font-size:27px; } .step-label{ font-size:13px !important; } .step-desc{ font-size:11px; line-height:1.38; } .nav-company{ font-size:16px; } .nav-fc{ font-size:15px; } .logo-img{ max-width:112px; } }
-        @media (max-width:360px){ .step-grid{ grid-template-columns:1fr; } .step-card{ min-height:auto; align-items:flex-start; text-align:left; padding:18px !important; } .step-number{ font-size:25px; } .step-label{ font-size:20px !important; margin-top:8px; } .step-desc{ font-size:14px; } .nav-company{ font-size:15px; } .nav-fc{ font-size:14px; padding-left:.55rem !important; padding-right:.55rem !important; } .logo-img{ max-width:96px; } #logo-text{ font-size:12px; padding:.45rem .65rem; } }
+        @media (max-width:420px){ .step-grid{ gap:8px; } .step-card{ min-height:174px; padding:16px 7px !important; border-radius:24px !important; } .step-number{ font-size:27px; } .step-label{ font-size:13px !important; } .step-desc{ font-size:11px; line-height:1.38; } .nav-company{ font-size:16px; } .nav-fc{ font-size:15px; } .logo-img{ max-width:180px; max-height:58px; } }
+        @media (max-width:360px){ .step-grid{ grid-template-columns:1fr; } .step-card{ min-height:auto; align-items:flex-start; text-align:left; padding:18px !important; } .step-number{ font-size:25px; } .step-label{ font-size:20px !important; margin-top:8px; } .step-desc{ font-size:14px; } .nav-company{ font-size:15px; } .nav-fc{ font-size:14px; padding-left:.55rem !important; padding-right:.55rem !important; } .logo-img{ max-width:160px; max-height:54px; } #logo-text{ font-size:12px; padding:.45rem .65rem; } }
     </style>
 </head>
 <body>
@@ -71,12 +70,7 @@
             </form>
         </section>
     </main>
-
-    <button onclick="scrollToForm()" class="sms-float bg-blue-700 text-white py-5 rounded-[24px] font-black text-xl shadow-2xl active:scale-[.99]">
-        <span id="floating-cta-text">무료 보장 분석 신청하기</span> →
-    </button>
-
-    <button id="chat-toggle" onclick="toggleChat()" class="fixed right-5 bottom-[112px] bg-blue-700 text-white px-5 py-4 rounded-full shadow-2xl z-50 font-black">💬 AI 상담</button>
+    <button id="chat-toggle" onclick="toggleChat()" class="fixed right-5 bottom-[24px] bg-blue-700 text-white px-5 py-4 rounded-full shadow-2xl z-50 font-black">💬 AI 상담</button>
     <div id="chat-box" class="hidden fixed chat-panel bg-white rounded-[26px] shadow-2xl border border-slate-200 overflow-hidden z-50">
         <div class="bg-blue-800 text-white p-4 font-black flex justify-between text-sm"><span>삼성 FC AI 비서</span><button onclick="toggleChat()">✕</button></div>
         <div id="chat-msgs" class="h-60 p-4 overflow-y-auto space-y-3 text-sm bg-white">
@@ -84,14 +78,7 @@
         </div>
         <div id="chat-quick" class="px-3 py-3 border-t bg-blue-50/60">
             <p class="text-[11px] font-black text-slate-500 mb-2">기본 보험 질문을 눌러보세요</p>
-            <div class="grid grid-cols-2 gap-2">
-                <button type="button" data-question="내 보험 보장이 부족한지 확인하려면 어떻게 해야 하나요?" onclick="askQuickQuestion(this.dataset.question)" class="text-left px-3 py-2 rounded-xl bg-white border border-blue-100 text-blue-800 text-xs font-bold leading-snug active:scale-[.99]">보장 부족 확인</button>
-                <button type="button" data-question="암·뇌·심장 보장은 어떤 기준으로 준비해야 하나요?" onclick="askQuickQuestion(this.dataset.question)" class="text-left px-3 py-2 rounded-xl bg-white border border-blue-100 text-blue-800 text-xs font-bold leading-snug active:scale-[.99]">암·뇌·심장 보장</button>
-                <button type="button" data-question="보험료를 줄이면서 꼭 필요한 보장은 유지할 수 있나요?" onclick="askQuickQuestion(this.dataset.question)" class="text-left px-3 py-2 rounded-xl bg-white border border-blue-100 text-blue-800 text-xs font-bold leading-snug active:scale-[.99]">보험료 줄이기</button>
-                <button type="button" data-question="실손보험과 진단비 보험은 무엇이 다른가요?" onclick="askQuickQuestion(this.dataset.question)" class="text-left px-3 py-2 rounded-xl bg-white border border-blue-100 text-blue-800 text-xs font-bold leading-snug active:scale-[.99]">실손·진단비 차이</button>
-                <button type="button" data-question="기존 보험을 해지하고 새 보험으로 바꿔도 괜찮나요?" onclick="askQuickQuestion(this.dataset.question)" class="text-left px-3 py-2 rounded-xl bg-white border border-blue-100 text-blue-800 text-xs font-bold leading-snug active:scale-[.99]">해지·전환 상담</button>
-                <button type="button" data-question="상담 신청을 하면 어떤 절차로 진행되나요?" onclick="askQuickQuestion(this.dataset.question)" class="text-left px-3 py-2 rounded-xl bg-white border border-blue-100 text-blue-800 text-xs font-bold leading-snug active:scale-[.99]">상담 절차 안내</button>
-            </div>
+<div id="quick-question-grid" class="grid grid-cols-2 gap-2"></div>
         </div>
         <div class="p-3 border-t bg-slate-50 flex gap-2">
             <input type="text" id="chat-input" class="flex-1 p-3 border rounded-xl text-sm outline-none" placeholder="문의 입력" onkeydown="if(event.key==='Enter') sendChat()">
@@ -125,17 +112,90 @@
                 {icon:'🛡️', title:'보장 공백 점검', desc:'가입 중인 보험증권을 기준으로 암진단비, 뇌혈관·허혈성심장질환, 실손, 운전자, 후유장해, 간병 보장까지 실제 위험에 비어 있는 부분을 찾아드립니다.'},
                 {icon:'📊', title:'보험료 효율 분석', desc:'갱신형 특약, 중복 특약, 납입기간, 보장기간을 함께 검토해 같은 보험료로 더 필요한 보장에 집중할 수 있는지 확인합니다.'},
                 {icon:'🤝', title:'맞춤형 상품 상담', desc:'나이, 직업, 가족력, 기존 보험, 월 납입 가능 보험료를 반영해 삼성생명·삼성화재 상품 중 필요한 방향을 설명합니다.'}
+            ],
+            chatQuickQuestions: [
+                {label:'보장 부족 확인', question:'내 보험 보장이 부족한지 확인하려면 어떻게 해야 하나요?'},
+                {label:'암·뇌·심장 보장', question:'암·뇌·심장 보장은 어떤 기준으로 준비해야 하나요?'},
+                {label:'보험료 줄이기', question:'보험료를 줄이면서 꼭 필요한 보장은 유지할 수 있나요?'},
+                {label:'실손·진단비 차이', question:'실손보험과 진단비 보험은 무엇이 다른가요?'},
+                {label:'해지·전환 상담', question:'기존 보험을 해지하고 새 보험으로 바꿔도 괜찮나요?'},
+                {label:'상담 절차 안내', question:'상담 신청을 하면 어떤 절차로 진행되나요?'}
             ]
         };
         function parseJSONSafe(v, fallback){ try { return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; } }
-        function isDynamicProductMode(){ if(window.FC_EXPORTED_DATA) return window.FC_EXPORTED_DATA.fc_product_mode === 'dynamic'; return localStorage.getItem('fc_product_mode') === 'dynamic'; }
+        function getAdminData(){
+            return parseJSONSafe(localStorage.getItem('fc_app_data_v5'), null) || parseJSONSafe(localStorage.getItem('fc_admin_data_standalone_v1'), null) || null;
+        }
+        function adminValue(key){
+            const d=getAdminData(); if(!d) return '';
+            const map={
+                fc_company_label:'company', fc_name:'fcName', fc_phone:'fcPhone', fc_email:'fcEmail',
+                fc_badge_left:'badge1', fc_badge_right:'badge2', fc_title:'title', fc_desc:'desc',
+                fc_form_title:'formTitle', fc_form_desc:'formDesc', fc_form_button:'formButton', fc_chat_initial:'chatInitial',
+                fc_product_name:'productName', fc_product_brief:'productText', fc_material_text:'productText', fc_target:'productTarget',
+                fc_chat_product_name:'chatProductName', fc_chat_product_brief:'chatProductSummary', fc_chat_material_text:'chatProductRaw'
+            };
+            const k=map[key] || key; return d[k] || '';
+        }
+        function isDynamicProductMode(){
+            const d=getAdminData();
+            if(d && (d.productName || d.productText || d.chatProductName || d.chatProductSummary || d.chatProductRaw)) return true;
+            if(window.FC_EXPORTED_DATA) return window.FC_EXPORTED_DATA.fc_product_mode === 'dynamic';
+            return localStorage.getItem('fc_product_mode') === 'dynamic';
+        }
         function getValue(key){
+            const direct = localStorage.getItem(key);
+            const fromAdmin = adminValue(key);
+            if(direct) return direct;
+            if(fromAdmin) return fromAdmin;
             if(window.FC_EXPORTED_DATA && window.FC_EXPORTED_DATA[key] !== undefined) return window.FC_EXPORTED_DATA[key];
-            if(isDynamicProductMode() || key === 'fc_name' || key === 'fc_company_label' || key === 'fc_phone' || key === 'fc_email') return localStorage.getItem(key) || DEFAULTS[key] || '';
             return DEFAULTS[key] || '';
         }
-        function getMenus(){ if(window.FC_EXPORTED_DATA && Array.isArray(window.FC_EXPORTED_DATA.menus)) return window.FC_EXPORTED_DATA.menus; if(isDynamicProductMode()){ const stored = parseJSONSafe(localStorage.getItem('fc_menus'), null); if(Array.isArray(stored) && stored.length) return stored; } return DEFAULTS.menus; }
-        function getFeatures(){ if(window.FC_EXPORTED_DATA && Array.isArray(window.FC_EXPORTED_DATA.features)) return window.FC_EXPORTED_DATA.features; if(isDynamicProductMode()){ const stored = parseJSONSafe(localStorage.getItem('fc_features'), null); if(Array.isArray(stored) && stored.length) return stored; } return DEFAULTS.features; }
+        function getMenus(){
+            const d=getAdminData();
+            if(d && Array.isArray(d.menus) && d.menus.length) return d.menus;
+            const stored = parseJSONSafe(localStorage.getItem('fc_menus'), null); if(Array.isArray(stored) && stored.length) return stored;
+            if(window.FC_EXPORTED_DATA && Array.isArray(window.FC_EXPORTED_DATA.menus)) return window.FC_EXPORTED_DATA.menus;
+            return DEFAULTS.menus;
+        }
+        function getFeatures(){
+            const d=getAdminData();
+            if(d && Array.isArray(d.features) && d.features.length) return d.features;
+            const stored = parseJSONSafe(localStorage.getItem('fc_features'), null); if(Array.isArray(stored) && stored.length) return stored;
+            if(window.FC_EXPORTED_DATA && Array.isArray(window.FC_EXPORTED_DATA.features)) return window.FC_EXPORTED_DATA.features;
+            return DEFAULTS.features;
+        }
+        function normalizeQuickQuestions(list){
+            if(!Array.isArray(list)) return [];
+            return list.map(function(x){
+                if(typeof x === 'string'){
+                    const p=x.split('|'); return {label:(p[0]||'').trim(), question:(p[1]||p[0]||'').trim()};
+                }
+                return {label:String(x.label||x.title||x.text||'').trim(), question:String(x.question||x.q||x.value||x.label||'').trim()};
+            }).filter(function(x){return x.label && x.question}).slice(0,8);
+        }
+        function getQuickQuestions(){
+            const d=getAdminData();
+            let qs = d && Array.isArray(d.chatQuickQuestions) ? d.chatQuickQuestions : [];
+            if(!qs.length) qs = parseJSONSafe(localStorage.getItem('fc_chat_quick_questions'), []);
+            if(!qs.length && window.FC_EXPORTED_DATA && Array.isArray(window.FC_EXPORTED_DATA.chatQuickQuestions)) qs = window.FC_EXPORTED_DATA.chatQuickQuestions;
+            qs = normalizeQuickQuestions(qs);
+            return qs.length ? qs : DEFAULTS.chatQuickQuestions;
+        }
+        function renderQuickQuestions(){
+            const grid=document.getElementById('quick-question-grid');
+            if(!grid) return;
+            grid.innerHTML='';
+            getQuickQuestions().forEach(function(item){
+                const btn=document.createElement('button');
+                btn.type='button';
+                btn.dataset.question=item.question;
+                btn.className='text-left px-3 py-2 rounded-xl bg-white border border-blue-100 text-blue-800 text-xs font-bold leading-snug active:scale-[.99]';
+                btn.textContent=item.label;
+                btn.onclick=function(){ askQuickQuestion(this.dataset.question); };
+                grid.appendChild(btn);
+            });
+        }
         function setText(id, value){ const el=document.getElementById(id); if(el) el.textContent=value || ''; }
         function setMultiline(id, value){ const el=document.getElementById(id); if(el) el.innerHTML=(value || '').replace(/\n/g,'<br>'); }
         function renderMenus(){
@@ -161,8 +221,10 @@
             });
         }
         function applyData(){
-            const logo = (window.FC_EXPORTED_DATA && window.FC_EXPORTED_DATA.fc_logo) ? window.FC_EXPORTED_DATA.fc_logo : localStorage.getItem('fc_logo');
+            const admin=getAdminData();
+            const logo = localStorage.getItem('fc_logo') || localStorage.getItem('fc_logo_saved') || localStorage.getItem('fc_logo_backup') || (admin && admin.logo) || (window.FC_EXPORTED_DATA && window.FC_EXPORTED_DATA.fc_logo) || '';
             if(logo){ const img=document.getElementById('main-logo'); img.src=logo; img.classList.remove('hidden'); document.getElementById('logo-text').classList.add('hidden'); }
+            else { document.getElementById('main-logo').classList.add('hidden'); document.getElementById('logo-text').classList.remove('hidden'); }
             setText('company-label', getValue('fc_company_label'));
             const fcName = getValue('fc_name');
             const fcTop = document.getElementById('fc-name-top');
@@ -172,8 +234,8 @@
             }
             setText('badge-left', getValue('fc_badge_left')); setText('badge-right', getValue('fc_badge_right'));
             setMultiline('hero-title', getValue('fc_title')); setText('hero-desc', getValue('fc_desc'));
-            setText('form-title', getValue('fc_form_title')); setText('form-desc', getValue('fc_form_desc')); setText('form-button', getValue('fc_form_button')); setText('floating-cta-text', getValue('fc_floating_cta')); setText('chat-initial', getValue('fc_chat_initial'));
-            renderMenus(); renderFeatures();
+            setText('form-title', getValue('fc_form_title')); setText('form-desc', getValue('fc_form_desc')); setText('form-button', getValue('fc_form_button')); setText('chat-initial', getValue('fc_chat_initial'));
+            renderMenus(); renderFeatures(); renderQuickQuestions();
         }
         function scrollToForm(){
             const section=document.getElementById('form-section');
